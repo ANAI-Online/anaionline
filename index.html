@@ -456,98 +456,105 @@ BIO.heart = {
   id:"corazon", nombre:"Corazón humano", unidad:6, dominio:"anat",
   nota:"Modelo tridimensional simplificado con fines educativos. Proporciones y trayectos vasculares esquemáticos; sustituible por un modelo anatómico glTF definitivo.",
   structures:[
-    {id:"auricula-derecha", nombre:"Aurícula derecha", capa:"camaras", color:"#B85C55", pos:[-1.05,0.95,0.15], lbl:[-1.6,1.55,0.4],
+    {id:"auricula-derecha", nombre:"Aurícula derecha", capa:"camaras", color:"#8E3438", pos:[-1.12,0.62,-0.05], lbl:[-1.95,1.15,0.45],
       n1:"Cámara superior derecha. Recibe sangre pobre en oxígeno que regresa del cuerpo por las venas cavas.",
       n2:"Es una cámara de paredes delgadas porque solo necesita impulsar la sangre hacia el ventrículo derecho, situado justo debajo. Recibe sangre desoxigenada de la vena cava superior (cabeza y brazos), la vena cava inferior (tronco y piernas) y el seno coronario (el propio corazón). Cuando se contrae (sístole auricular), la sangre atraviesa la válvula tricúspide.",
       n3:"En su pared se localiza el nodo sinoauricular (nodo SA), el marcapasos natural: un grupo de células cardíacas especializadas que generan espontáneamente el impulso eléctrico que inicia cada latido (unos 60–100 impulsos por minuto en reposo). Por eso el latido comienza en las aurículas y se propaga hacia los ventrículos a través del nodo auriculoventricular.",
       dato:"Aquí nace cada latido: el nodo sinoauricular marca el ritmo del corazón.",
       conecta:["vena-cava-superior","vena-cava-inferior","valvula-tricuspide","ventriculo-derecho"], temas:["Sistema circulatorio","Homeostasis","Ritmo cardíaco"],
       quiz:{q:"¿Qué tipo de sangre recibe la aurícula derecha?", ops:["Sangre rica en oxígeno desde los pulmones","Sangre pobre en oxígeno que regresa del cuerpo","Sangre mezclada de ambos circuitos"], ok:1, fb:"La aurícula derecha recibe sangre desoxigenada de las venas cavas. La sangre oxigenada llega a la aurícula izquierda por las venas pulmonares."}},
-    {id:"auricula-izquierda", nombre:"Aurícula izquierda", capa:"camaras", color:"#C0605A", pos:[0.85,0.95,-0.15], lbl:[1.55,1.6,0.1],
+    {id:"auricula-izquierda", nombre:"Aurícula izquierda", capa:"camaras", color:"#963A3C", pos:[0.7,0.8,-0.65], lbl:[2.05,0.6,-0.45],
       n1:"Cámara superior izquierda. Recibe sangre rica en oxígeno que llega de los pulmones por las venas pulmonares.",
       n2:"Cuatro venas pulmonares (dos por cada pulmón) desembocan en ella. Al contraerse, envía la sangre oxigenada al ventrículo izquierdo a través de la válvula mitral (bicúspide). Sus paredes son delgadas, como las de la aurícula derecha, porque el trayecto hasta el ventrículo es muy corto.",
       n3:"Las aurículas cumplen además una función endocrina: sus células liberan el péptido natriurético auricular (PNA) cuando se estiran por exceso de volumen, lo que estimula a los riñones a eliminar sodio y agua, ayudando a regular la presión arterial. Es un buen ejemplo de la conexión entre el sistema circulatorio, el endocrino y el urinario.",
       dato:"Es la única cámara que recibe sangre directamente desde los pulmones.",
       conecta:["venas-pulmonares","valvula-mitral","ventriculo-izquierdo"], temas:["Circulación pulmonar","Intercambio gaseoso"],
       quiz:{q:"¿Por qué vasos llega la sangre a la aurícula izquierda?", ops:["Venas cavas","Arteria pulmonar","Venas pulmonares"], ok:2, fb:"Las venas pulmonares son los únicos vasos del cuerpo llamados 'venas' que transportan sangre oxigenada: traen la sangre desde los pulmones hasta la aurícula izquierda."}},
-    {id:"ventriculo-derecho", nombre:"Ventrículo derecho", capa:"camaras", color:"#A8433D", pos:[-0.75,-0.7,0.25], lbl:[-1.75,-0.9,0.7],
+    {id:"ventriculo-derecho", nombre:"Ventrículo derecho", capa:"camaras", color:"#A8443C", pos:[-0.35,-0.55,0.7], lbl:[-1.55,-1.0,1.0],
       n1:"Cámara inferior derecha. Bombea sangre pobre en oxígeno hacia los pulmones por la arteria pulmonar.",
       n2:"Recibe la sangre de la aurícula derecha y la impulsa a través de la válvula pulmonar hacia el tronco pulmonar. Su pared es más gruesa que la de las aurículas pero más delgada que la del ventrículo izquierdo, porque los pulmones están muy cerca y el circuito pulmonar ofrece poca resistencia.",
       n3:"La presión que genera el ventrículo derecho durante la sístole es de unos 25 mmHg, frente a los 120 mmHg del ventrículo izquierdo. Ambos ventrículos expulsan, sin embargo, el mismo volumen de sangre por latido (unos 70 mL en reposo): si no fuera así, la sangre se acumularía en uno de los dos circuitos. Este equilibrio se conoce como ley de Frank-Starling.",
       dato:"Bombea el mismo volumen que el ventrículo izquierdo, pero con cinco veces menos presión.",
       conecta:["auricula-derecha","valvula-pulmonar","arteria-pulmonar","tabique"], temas:["Circulación pulmonar","Presión arterial"],
       quiz:{q:"¿Hacia dónde envía la sangre el ventrículo derecho?", ops:["Hacia la aorta y todo el cuerpo","Hacia los pulmones por la arteria pulmonar","Hacia la aurícula izquierda"], ok:1, fb:"El ventrículo derecho impulsa la sangre desoxigenada a los pulmones a través de la válvula pulmonar y la arteria pulmonar."}},
-    {id:"ventriculo-izquierdo", nombre:"Ventrículo izquierdo", capa:"camaras", color:"#9E3A34", pos:[0.7,-0.9,-0.05], lbl:[1.85,-1.1,0.4],
+    {id:"ventriculo-izquierdo", nombre:"Ventrículo izquierdo", capa:"camaras", color:"#9A3B34", pos:[0.8,-1.1,-0.2], lbl:[2.05,-1.4,0.3],
       n1:"Cámara inferior izquierda, la más musculosa. Bombea sangre oxigenada a todo el cuerpo por la aorta.",
       n2:"Su pared muscular (miocardio) es dos o tres veces más gruesa que la del ventrículo derecho porque debe generar presión suficiente para que la sangre llegue hasta los pies y el cerebro. Recibe sangre de la aurícula izquierda a través de la válvula mitral y la expulsa por la válvula aórtica.",
       n3:"El volumen que expulsa en cada latido (volumen sistólico, ~70 mL) multiplicado por la frecuencia cardíaca da el gasto cardíaco: unos 5 L/min en reposo, que puede superar los 20 L/min durante ejercicio intenso. El músculo cardíaco, a diferencia del esquelético, no se fatiga y se contrae de forma involuntaria y rítmica; sus células están unidas por discos intercalares que transmiten el impulso eléctrico de una a otra.",
       dato:"Su pared es hasta tres veces más gruesa que la del ventrículo derecho.",
       conecta:["auricula-izquierda","valvula-mitral","valvula-aortica","aorta","tabique"], temas:["Circulación sistémica","Presión arterial","Actividad física"],
       quiz:{q:"¿Por qué el ventrículo izquierdo tiene la pared más gruesa?", ops:["Porque recibe más sangre que el derecho","Porque debe generar más presión para impulsar la sangre a todo el cuerpo","Porque contiene el marcapasos del corazón"], ok:1, fb:"Ambos ventrículos bombean el mismo volumen; la diferencia está en la presión. El circuito sistémico es mucho más largo y resistente, así que el ventrículo izquierdo necesita más músculo."}},
-    {id:"vena-cava-superior", nombre:"Vena cava superior", capa:"vasos", color:"#4A6FB5", pos:[-1.1,2.4,0.1], lbl:[-1.9,2.7,0.3],
+    {id:"vena-cava-superior", nombre:"Vena cava superior", capa:"vasos", color:"#4A6FB5", pos:[-1.12,2.4,0.05], lbl:[-1.9,3.05,0.2],
       n1:"Gran vena que trae sangre pobre en oxígeno de la cabeza, el cuello y los brazos a la aurícula derecha.",
       n2:"Se forma por la unión de las venas braquiocefálicas. Al igual que la vena cava inferior, no tiene válvula en su desembocadura: la sangre entra en la aurícula derecha impulsada por la diferencia de presión y con ayuda de la respiración.",
       n3:"Las venas tienen paredes más delgadas y menos elásticas que las arterias, y su presión es muy baja (cerca de 0–5 mmHg cuando llegan al corazón). Por eso el retorno venoso depende de mecanismos auxiliares: la 'bomba muscular' de las piernas, las válvulas venosas y los cambios de presión torácica durante la inspiración.",
       dato:"La sangre de las venas cavas ha entregado su oxígeno y regresa cargada de CO₂.",
       conecta:["auricula-derecha","vena-cava-inferior"], temas:["Retorno venoso","Sistema circulatorio"],
       quiz:{q:"¿De qué regiones del cuerpo trae sangre la vena cava superior?", ops:["De las piernas y el abdomen","De la cabeza, el cuello y los brazos","De los pulmones"], ok:1, fb:"La cava superior drena la mitad superior del cuerpo; la cava inferior, la mitad inferior."}},
-    {id:"vena-cava-inferior", nombre:"Vena cava inferior", capa:"vasos", color:"#4A6FB5", pos:[-1.15,-1.5,0.55], lbl:[-2.0,-2.0,0.9],
+    {id:"vena-cava-inferior", nombre:"Vena cava inferior", capa:"vasos", color:"#4A6FB5", pos:[-1.2,-0.9,-0.4], lbl:[-2.05,-1.95,-0.2],
       n1:"Gran vena que trae sangre pobre en oxígeno del tronco, el abdomen y las piernas a la aurícula derecha.",
       n2:"Es la vena de mayor diámetro del cuerpo. Recoge la sangre de las venas ilíacas, renales y hepáticas, entre otras, y entra en la aurícula derecha por su parte inferior.",
       n3:"Antes de llegar al corazón, la sangre de los intestinos pasa primero por el hígado a través de la vena porta (sistema porta hepático), donde se filtran y procesan los nutrientes absorbidos. Luego las venas hepáticas la vierten en la cava inferior. Es un ejemplo de conexión directa entre el sistema digestivo y el circulatorio.",
       dato:"Es la vena más ancha del cuerpo humano.",
       conecta:["auricula-derecha","vena-cava-superior"], temas:["Retorno venoso","Sistema digestivo"],
       quiz:{q:"La sangre de la vena cava inferior es…", ops:["rica en oxígeno","pobre en oxígeno y rica en CO₂","igual a la de la aorta"], ok:1, fb:"Toda la sangre que llega por las cavas ya entregó oxígeno a los tejidos y transporta el CO₂ producido por la respiración celular."}},
-    {id:"arteria-pulmonar", nombre:"Arteria pulmonar", capa:"vasos", color:"#3E63B8", pos:[-0.35,1.6,0.6], lbl:[-0.2,2.55,1.0],
+    {id:"arteria-pulmonar", nombre:"Arteria pulmonar", capa:"vasos", color:"#3E63B8", pos:[0.42,1.3,0.52], lbl:[1.05,1.6,0.95],
       n1:"Lleva sangre pobre en oxígeno desde el ventrículo derecho hasta los pulmones. Es la única arteria con sangre desoxigenada.",
       n2:"Sale del ventrículo derecho como tronco pulmonar y se divide en arteria pulmonar derecha e izquierda, una para cada pulmón. Se llama 'arteria' porque sale del corazón, no por el tipo de sangre que transporta: las arterias siempre alejan la sangre del corazón y las venas siempre la devuelven.",
       n3:"Dentro de los pulmones se ramifica hasta formar capilares que rodean los alvéolos; allí el CO₂ difunde hacia el aire alveolar y el O₂ hacia la sangre. La presión en la circulación pulmonar es baja (~25/8 mmHg), lo que evita que el plasma se filtre hacia los alvéolos y los inunde.",
       dato:"Es la excepción de la regla: una arteria con sangre pobre en oxígeno.",
       conecta:["ventriculo-derecho","valvula-pulmonar","venas-pulmonares"], temas:["Circulación pulmonar","Intercambio gaseoso","Respiración"],
       quiz:{q:"¿Por qué la arteria pulmonar se llama 'arteria' aunque transporta sangre desoxigenada?", ops:["Porque tiene paredes musculares gruesas","Porque sale del corazón: las arterias siempre alejan la sangre del corazón","Porque conecta con la aorta"], ok:1, fb:"Arteria y vena se definen por la dirección del flujo respecto al corazón, no por el contenido de oxígeno."}},
-    {id:"venas-pulmonares", nombre:"Venas pulmonares", capa:"vasos", color:"#C8322E", pos:[1.7,1.05,-0.55], lbl:[2.5,1.35,-0.6],
+    {id:"venas-pulmonares", nombre:"Venas pulmonares", capa:"vasos", color:"#C8322E", pos:[1.9,1.2,-0.9], lbl:[2.65,1.75,-0.6],
       n1:"Cuatro venas que traen sangre rica en oxígeno desde los pulmones hasta la aurícula izquierda.",
       n2:"Dos salen de cada pulmón. Son las únicas venas del cuerpo que transportan sangre oxigenada, porque acaban de recoger el oxígeno captado en los alvéolos.",
       n3:"La sangre que sale de los pulmones tiene una saturación de oxígeno cercana al 97–99 %: casi todas las moléculas de hemoglobina de los glóbulos rojos llevan cuatro moléculas de O₂ unidas. Al pasar por los tejidos la saturación baja a ~70–75 % en reposo, y mucho más durante el ejercicio intenso.",
       dato:"Son las únicas venas con sangre oxigenada.",
       conecta:["auricula-izquierda","arteria-pulmonar"], temas:["Circulación pulmonar","Hemoglobina"],
       quiz:{q:"¿Qué tienen de especial las venas pulmonares?", ops:["Son las únicas venas que llevan sangre oxigenada","Son las venas más largas del cuerpo","Tienen válvulas que impiden el retorno"], ok:0, fb:"Recogen la sangre recién oxigenada en los alvéolos y la conducen a la aurícula izquierda."}},
-    {id:"aorta", nombre:"Aorta", capa:"vasos", color:"#C8322E", pos:[-0.1,2.5,-0.3], lbl:[0.35,3.3,-0.3],
+    {id:"aorta", nombre:"Aorta", capa:"vasos", color:"#C8322E", pos:[-0.3,2.3,0.05], lbl:[0.15,3.5,-0.15],
       n1:"La arteria más grande del cuerpo. Distribuye la sangre oxigenada desde el ventrículo izquierdo a todos los órganos.",
       n2:"Sale del ventrículo izquierdo, forma un arco (cayado aórtico) del que nacen las arterias hacia la cabeza y los brazos, y desciende por el tórax y el abdomen dando ramas a todos los órganos. Sus paredes son gruesas y elásticas para soportar la alta presión de cada latido.",
       n3:"La elasticidad de la aorta funciona como un amortiguador: se distiende en la sístole y se retrae en la diástole, manteniendo el flujo continuo aunque el corazón bombee a pulsos. Con la edad o por hábitos poco saludables las arterias pueden endurecerse (arteriosclerosis), lo que eleva la presión arterial y sobrecarga el ventrículo izquierdo.",
       dato:"Tiene unos 2,5 cm de diámetro y sus paredes son elásticas.",
-      conecta:["ventriculo-izquierdo","valvula-aortica"], temas:["Circulación sistémica","Presión arterial","Homeostasis"],
+      conecta:["ventriculo-izquierdo","valvula-aortica","vasos-coronarios"], temas:["Circulación sistémica","Presión arterial","Homeostasis"],
       quiz:{q:"¿Qué tipo de sangre transporta la aorta?", ops:["Sangre oxigenada hacia los tejidos","Sangre desoxigenada hacia los pulmones","Sangre desoxigenada hacia el corazón"], ok:0, fb:"La aorta recibe la sangre del ventrículo izquierdo, que acaba de llegar oxigenada desde los pulmones, y la reparte a todo el cuerpo."}},
-    {id:"valvula-tricuspide", nombre:"Válvula tricúspide", capa:"valvulas", color:"#E8D5C4", pos:[-0.9,0.12,0.2], lbl:[-2.2,0.2,0.9],
+    {id:"valvula-tricuspide", nombre:"Válvula tricúspide", capa:"valvulas", color:"#E8DCCB", pos:[-0.85,0.02,0.2], lbl:[-2.15,0.3,0.85],
       n1:"Válvula de tres valvas entre la aurícula derecha y el ventrículo derecho. Impide que la sangre retroceda.",
       n2:"Se abre cuando la aurícula se contrae y se cierra cuando el ventrículo se contrae, de modo que la sangre solo puede avanzar hacia la arteria pulmonar. Su cierre produce el primer ruido cardíaco ('lub').",
       n3:"Las valvas están sujetas por cuerdas tendinosas a los músculos papilares de la pared ventricular; estos se contraen junto con el ventrículo para que la válvula no se invierta hacia la aurícula. Cuando una válvula no cierra bien se produce un soplo cardíaco, un sonido audible con el estetoscopio.",
       dato:"El cierre de las válvulas auriculoventriculares produce el sonido 'lub'.",
       conecta:["auricula-derecha","ventriculo-derecho"], temas:["Ciclo cardíaco","Ruidos cardíacos"],
       quiz:{q:"¿Cuál es la función principal de las válvulas cardíacas?", ops:["Generar el impulso eléctrico","Impedir que la sangre retroceda","Oxigenar la sangre"], ok:1, fb:"Las válvulas garantizan un flujo en un solo sentido; el impulso lo genera el nodo sinoauricular y la oxigenación ocurre en los pulmones."}},
-    {id:"valvula-mitral", nombre:"Válvula mitral (bicúspide)", capa:"valvulas", color:"#E8D5C4", pos:[0.72,0.05,-0.15], lbl:[2.1,0.1,0.2],
+    {id:"valvula-mitral", nombre:"Válvula mitral (bicúspide)", capa:"valvulas", color:"#E8DCCB", pos:[0.62,0.05,-0.35], lbl:[2.15,-0.05,0.15],
       n1:"Válvula de dos valvas entre la aurícula izquierda y el ventrículo izquierdo.",
       n2:"Funciona igual que la tricúspide: se abre durante el llenado del ventrículo y se cierra durante su contracción, evitando que la sangre regrese a la aurícula izquierda y a los pulmones.",
       n3:"Es la válvula que soporta mayor presión, porque el ventrículo izquierdo genera unos 120 mmHg. Su nombre proviene de la mitra, el gorro de dos puntas de los obispos. La estenosis mitral (estrechamiento) y la insuficiencia mitral (cierre incompleto) son alteraciones frecuentes.",
       dato:"Es la única válvula del corazón con solo dos valvas.",
       conecta:["auricula-izquierda","ventriculo-izquierdo"], temas:["Ciclo cardíaco"],
       quiz:{q:"¿Entre qué cámaras se encuentra la válvula mitral?", ops:["Aurícula derecha y ventrículo derecho","Aurícula izquierda y ventrículo izquierdo","Ventrículo izquierdo y aorta"], ok:1, fb:"La mitral separa las cámaras izquierdas; entre el ventrículo izquierdo y la aorta está la válvula aórtica."}},
-    {id:"valvula-pulmonar", nombre:"Válvula pulmonar", capa:"valvulas", color:"#E8D5C4", pos:[-0.42,0.55,0.55], lbl:[-1.3,0.9,1.3],
+    {id:"valvula-pulmonar", nombre:"Válvula pulmonar", capa:"valvulas", color:"#E8DCCB", pos:[0.3,0.62,0.72], lbl:[-0.45,1.25,1.3],
       n1:"Válvula semilunar entre el ventrículo derecho y la arteria pulmonar.",
       n2:"Tiene tres valvas en forma de media luna. Se abre cuando el ventrículo derecho se contrae y se cierra cuando se relaja, para que la sangre de la arteria pulmonar no regrese al ventrículo.",
       n3:"El cierre simultáneo de las válvulas pulmonar y aórtica produce el segundo ruido cardíaco ('dub'). A diferencia de las válvulas auriculoventriculares, las semilunares no tienen cuerdas tendinosas: se cierran pasivamente cuando la presión del vaso supera la del ventrículo.",
       dato:"Las válvulas semilunares se cierran solas cuando la presión del vaso supera la del ventrículo.",
       conecta:["ventriculo-derecho","arteria-pulmonar"], temas:["Ciclo cardíaco"],
       quiz:{q:"¿Cuándo se cierra la válvula pulmonar?", ops:["Cuando el ventrículo derecho se contrae","Cuando el ventrículo derecho se relaja","Cuando la aurícula derecha se contrae"], ok:1, fb:"Al relajarse el ventrículo, la presión en la arteria pulmonar es mayor y empuja las valvas hasta cerrarlas."}},
-    {id:"valvula-aortica", nombre:"Válvula aórtica", capa:"valvulas", color:"#E8D5C4", pos:[0.28,0.62,-0.1], lbl:[1.35,0.75,-0.7],
+    {id:"valvula-aortica", nombre:"Válvula aórtica", capa:"valvulas", color:"#E8DCCB", pos:[0.1,0.38,-0.1], lbl:[1.25,0.55,0.95],
       n1:"Válvula semilunar entre el ventrículo izquierdo y la aorta.",
       n2:"Se abre cuando el ventrículo izquierdo se contrae y expulsa la sangre a la aorta; se cierra al relajarse el ventrículo, evitando que la sangre regrese.",
       n3:"Justo por encima de la válvula aórtica nacen las arterias coronarias, que irrigan al propio músculo cardíaco. Se llenan sobre todo durante la diástole, cuando la válvula está cerrada y la presión de la aorta empuja la sangre hacia ellas. La obstrucción de una arteria coronaria provoca un infarto de miocardio.",
       dato:"Sobre esta válvula nacen las arterias coronarias que alimentan al corazón.",
-      conecta:["ventriculo-izquierdo","aorta"], temas:["Ciclo cardíaco","Salud cardiovascular"],
+      conecta:["ventriculo-izquierdo","aorta","vasos-coronarios"], temas:["Ciclo cardíaco","Salud cardiovascular"],
       quiz:{q:"¿Qué ocurriría si la válvula aórtica no cerrara bien?", ops:["La sangre regresaría al ventrículo izquierdo durante la diástole","La sangre pasaría al ventrículo derecho","No pasaría nada porque la aorta es elástica"], ok:0, fb:"Sin un cierre correcto, parte de la sangre expulsada retorna al ventrículo (insuficiencia aórtica), reduciendo la eficiencia de cada latido."}},
-    {id:"tabique", nombre:"Tabique interventricular", capa:"camaras", color:"#8E3A36", pos:[0.0,-0.75,0.1], lbl:[0.0,-2.3,0.9], interno:true,
+    {id:"vasos-coronarios", nombre:"Vasos coronarios", capa:"vasos", color:"#C8463C", pos:[0.4,-0.6,1.15], lbl:[0.75,-0.35,1.6],
+      n1:"Arterias y venas que recorren la superficie del corazón y alimentan al propio músculo cardíaco. Van acompañadas de grasa epicárdica.",
+      n2:"Las arterias coronarias derecha e izquierda nacen de la aorta, justo por encima de la válvula aórtica. La izquierda se divide en la descendente anterior, que baja por el surco entre los dos ventrículos, y la circunfleja, que rodea el corazón por el surco auriculoventricular. Las venas cardíacas recogen la sangre ya usada y la vierten en el seno coronario, que desemboca en la aurícula derecha.",
+      n3:"El corazón pesa unos 300 g, pero recibe cerca del 5 % del gasto cardíaco. Las coronarias se llenan sobre todo durante la diástole, porque en la sístole el músculo contraído las comprime. Si una placa de ateroma obstruye una arteria coronaria, el músculo que depende de ella queda sin oxígeno: es el infarto de miocardio. La grasa amarillenta de los surcos es normal y rodea y protege a los vasos.",
+      dato:"El corazón no se alimenta de la sangre que pasa por sus cavidades, sino de sus propias arterias.",
+      conecta:["aorta","valvula-aortica","ventriculo-izquierdo","auricula-derecha"], temas:["Infarto de miocardio","Salud cardiovascular","Irrigación"],
+      quiz:{q:"¿Por qué la obstrucción de una arteria coronaria causa un infarto?", ops:["Porque impide que la sangre salga del corazón hacia el cuerpo","Porque una parte del músculo cardíaco deja de recibir oxígeno","Porque las válvulas dejan de cerrarse"], ok:1, fb:"El miocardio depende de las coronarias para recibir O₂; sin él, sus células mueren.", wrong:["La sangre sigue saliendo por la aorta; el problema es la irrigación del propio músculo.","Las válvulas no son el problema principal: el daño es la muerte del músculo sin oxígeno."]}},
+    {id:"tabique", nombre:"Tabique interventricular", capa:"camaras", color:"#7E2C2A", pos:[0.2,-0.85,0.25], lbl:[0.3,-2.7,0.95], interno:true,
       n1:"Pared muscular que separa completamente el ventrículo derecho del izquierdo.",
       n2:"Gracias al tabique, la sangre desoxigenada del lado derecho nunca se mezcla con la sangre oxigenada del lado izquierdo. Existe también un tabique interauricular entre las dos aurículas.",
       n3:"Antes del nacimiento, el tabique interauricular tiene un orificio (foramen oval) que permite a la sangre saltarse los pulmones, que aún no funcionan. Normalmente se cierra tras el primer llanto. Si el tabique interventricular no se cierra por completo, queda una comunicación interventricular, una de las cardiopatías congénitas más frecuentes.",
@@ -716,80 +723,80 @@ BIO.brain = {
   id:"cerebro", nombre:"Cerebro humano", unidad:6, dominio:"anat", eyebrow:"Atlas 3D · Unidad 6 · Sistema nervioso", em:"🧠",
   intro:"Explora la corteza, el cerebelo, el tronco y las estructuras profundas. Activa el impulso nervioso para ver el camino de un estímulo hasta la respuesta.",
   nota:"Modelo tridimensional simplificado con fines educativos. Los lóbulos se representan como regiones coloreadas; los surcos son esquemáticos.",
-  focusR:6, radius:11, target:[0,-0.5,0], phi:1.4, theta:0.35,
+  focusR:6, radius:12, target:[0,-0.6,0], phi:1.42, theta:0.3, floor:-4.3, floorSize:8,
   capas:[{id:"corteza",n:"Corteza (lóbulos)"},{id:"cerebelo-tronco",n:"Cerebelo, tronco y médula"},{id:"profundas",n:"Estructuras profundas"}],
   opacityCapas:["corteza","cerebelo-tronco"], opacityLabel:"Transparencia de la corteza",
   activity:"explorar-cerebro", guidedActivity:"guiada-cerebro", badge:"neuroexplorador", seenThreshold:7,
   related:[{t:"Simulador cardiorrespiratorio",href:"#/simuladores/circulacion"},{t:"Explorar el corazón",href:"#/explorar/corazon"}],
   funciones:[{t:"Ver una imagen",ids:["lobulo-occipital","talamo"]},{t:"Hablar",ids:["lobulo-frontal","lobulo-temporal"]},{t:"Mover la mano",ids:["lobulo-frontal","medula","cerebelo"]},{t:"Sentir un roce",ids:["lobulo-parietal","talamo","medula"]},{t:"Mantener el equilibrio",ids:["cerebelo"]},{t:"Respirar y latir",ids:["tronco"]},{t:"Recordar un nombre",ids:["hipocampo","lobulo-temporal"]},{t:"Regular la temperatura",ids:["hipotalamo","hipofisis"]}],
   structures:[
-    {id:"lobulo-frontal", nombre:"Lóbulo frontal", capa:"corteza", color:"#D9827A", pos:[1.2,0.7,0], lbl:[1.9,1.9,0.6],
+    {id:"lobulo-frontal", nombre:"Lóbulo frontal", capa:"corteza", color:"#D9827A", pos:[1.35,0.8,1.0], lbl:[2.05,1.75,1.35],
       n1:"Parte anterior de la corteza cerebral. Planifica, decide, controla el movimiento voluntario y produce el lenguaje hablado.",
       n2:"Contiene la corteza motora primaria, justo delante de la cisura central, que envía órdenes a los músculos del lado opuesto del cuerpo, y el área de Broca (en el hemisferio izquierdo en la mayoría de las personas), necesaria para producir el habla. La corteza prefrontal, la región más anterior, se encarga del razonamiento, la atención, la toma de decisiones y el control de los impulsos.",
       n3:"La corteza prefrontal es la última región del cerebro en madurar: su desarrollo continúa hasta los 20–25 años, lo que ayuda a explicar por qué en la adolescencia la búsqueda de recompensas y el control de impulsos aún no están en equilibrio. El caso de Phineas Gage (1848), que sobrevivió a una barra de hierro que atravesó su lóbulo frontal, mostró por primera vez que esta región influye en la personalidad y el juicio.",
       dato:"Es la última región cerebral en madurar: hasta los 20–25 años.", conecta:["lobulo-parietal","lobulo-temporal","medula","cerebelo"], temas:["Sistema nervioso","Movimiento voluntario","Toma de decisiones"],
       quiz:{q:"¿Qué función se afectaría más si se lesionara la corteza prefrontal?", ops:["La visión","La planificación y el control de impulsos","El equilibrio"], ok:1, fb:"La corteza prefrontal integra información para planificar, decidir y frenar impulsos.", wrong:["La visión se procesa en el lóbulo occipital, en la parte posterior.","El equilibrio depende sobre todo del cerebelo."]}},
-    {id:"lobulo-parietal", nombre:"Lóbulo parietal", capa:"corteza", color:"#D8A55E", pos:[-0.3,1.3,0], lbl:[-0.6,2.5,0.7],
+    {id:"lobulo-parietal", nombre:"Lóbulo parietal", capa:"corteza", color:"#D8A55E", pos:[-0.45,1.3,1.0], lbl:[-0.55,2.35,1.25],
       n1:"Región superior y posterior. Procesa las sensaciones del cuerpo: tacto, temperatura, dolor y posición de las extremidades.",
       n2:"Su franja anterior es la corteza somatosensorial, que recibe información del lado opuesto del cuerpo; las regiones con más receptores (manos, labios, lengua) ocupan más corteza. Integra además información espacial: dónde están los objetos y dónde está el cuerpo respecto a ellos.",
       n3:"El 'homúnculo sensorial' es un mapa distorsionado del cuerpo sobre la corteza: las manos y la cara ocupan más superficie que el tronco entero. Las lesiones parietales del hemisferio derecho pueden producir 'negligencia': la persona ignora el lado izquierdo del espacio aunque vea con normalidad.",
       dato:"Las manos y los labios ocupan más corteza que todo el tronco.", conecta:["talamo","lobulo-frontal","lobulo-occipital"], temas:["Sensibilidad","Percepción espacial"],
       quiz:{q:"La información del tacto de la mano derecha llega principalmente a…", ops:["el lóbulo parietal izquierdo","el lóbulo parietal derecho","el cerebelo"], ok:0, fb:"Las vías sensoriales se cruzan: cada hemisferio procesa el lado opuesto del cuerpo.", wrong:["Recuerda que las vías se cruzan en el tronco y la médula: el lado derecho del cuerpo se procesa en el hemisferio izquierdo.","El cerebelo coordina el movimiento; no es donde se percibe el tacto."]}},
-    {id:"lobulo-temporal", nombre:"Lóbulo temporal", capa:"corteza", color:"#7FA9C9", pos:[0.3,-0.55,0], lbl:[0.9,-1.5,1.4],
+    {id:"lobulo-temporal", nombre:"Lóbulo temporal", capa:"corteza", color:"#7FA9C9", pos:[0.3,-0.55,1.35], lbl:[1.0,-1.25,1.95],
       n1:"Región lateral, a la altura de las orejas. Procesa la audición, comprende el lenguaje y participa en la memoria.",
       n2:"La corteza auditiva primaria recibe la información del oído. El área de Wernicke (hemisferio izquierdo en la mayoría de las personas) permite comprender el lenguaje: quien la lesiona habla con fluidez pero sin sentido. En su cara interna aloja el hipocampo, esencial para formar nuevos recuerdos.",
       n3:"El giro fusiforme, en la base del lóbulo temporal, se especializa en reconocer caras: su lesión produce prosopagnosia, la incapacidad de reconocer rostros conocidos, incluso el propio. Las áreas de Broca (frontal) y Wernicke (temporal) están conectadas por un haz de fibras, el fascículo arqueado.",
       dato:"Alberga el área que permite comprender lo que escuchamos.", conecta:["hipocampo","lobulo-frontal","talamo"], temas:["Audición","Lenguaje","Memoria"],
       quiz:{q:"Una persona escucha con normalidad pero no comprende las palabras. ¿Qué región está probablemente afectada?", ops:["El lóbulo occipital","El área de Wernicke, en el lóbulo temporal","El cerebelo"], ok:1, fb:"El área de Wernicke da significado a las palabras que oímos.", wrong:["El occipital procesa la visión, no el lenguaje oído.","El cerebelo coordina movimientos; no interpreta el lenguaje."]}},
-    {id:"lobulo-occipital", nombre:"Lóbulo occipital", capa:"corteza", color:"#8FB98A", pos:[-1.9,0.5,0], lbl:[-2.9,1.4,0.5],
+    {id:"lobulo-occipital", nombre:"Lóbulo occipital", capa:"corteza", color:"#8FB98A", pos:[-2.05,0.45,0.8], lbl:[-3.0,1.1,1.0],
       n1:"Región posterior. Recibe e interpreta la información visual que llega desde los ojos.",
       n2:"La corteza visual primaria recibe las señales de la retina (a través del tálamo) y detecta bordes, orientaciones y colores; áreas vecinas reconocen formas, movimiento y objetos. Un golpe en la nuca puede hacer 'ver estrellas' por la estimulación de esta corteza.",
       n3:"Cada hemisferio procesa el campo visual opuesto: el occipital izquierdo 've' la mitad derecha del mundo. La información viaja luego por dos rutas: la ventral ('qué es', hacia el temporal) y la dorsal ('dónde está', hacia el parietal).",
       dato:"El ojo capta la luz, pero es el lóbulo occipital el que 've'.", conecta:["talamo","lobulo-parietal","lobulo-temporal"], temas:["Visión","Percepción"],
       quiz:{q:"¿Qué ocurriría si se lesionara por completo el lóbulo occipital aunque los ojos estuvieran sanos?", ops:["Nada, la visión depende solo de los ojos","Ceguera cortical: los ojos captan luz pero el cerebro no la interpreta","Pérdida de audición"], ok:1, fb:"Ver es interpretar: sin corteza visual no hay percepción aunque la retina funcione.", wrong:["Los ojos captan, pero interpretar la imagen es tarea de la corteza.","La audición se procesa en el lóbulo temporal."]}},
-    {id:"cerebelo", nombre:"Cerebelo", capa:"cerebelo-tronco", color:"#B08AC9", pos:[-1.5,-1.15,0], lbl:[-2.7,-1.6,0.6],
+    {id:"cerebelo", nombre:"Cerebelo", capa:"cerebelo-tronco", color:"#B08AC9", pos:[-1.55,-1.15,0.7], lbl:[-2.65,-1.75,1.2],
       n1:"'Cerebro pequeño', situado bajo los hemisferios. Coordina los movimientos, el equilibrio y la postura.",
       n2:"No inicia el movimiento, pero lo afina: compara la orden motora de la corteza con la información que llega de los músculos y del oído interno y corrige los errores en tiempo real. Por eso podemos caminar sin pensar en cada paso o tocar un instrumento con precisión.",
       n3:"Contiene más de la mitad de todas las neuronas del encéfalo a pesar de ocupar solo el 10 % de su volumen. Participa en el aprendizaje motor: la práctica repetida 'graba' en el cerebelo movimientos que al principio eran torpes. El alcohol afecta especialmente al cerebelo, de ahí la pérdida de coordinación.",
       dato:"Contiene más de la mitad de las neuronas del encéfalo.", conecta:["tronco","lobulo-frontal","medula"], temas:["Coordinación","Equilibrio","Aprendizaje motor"],
       quiz:{q:"El cerebelo…", ops:["decide qué movimiento realizar","coordina y afina los movimientos que decide la corteza","procesa la visión"], ok:1, fb:"La decisión es cortical; el cerebelo ajusta fuerza, tiempo y precisión.", wrong:["La decisión de moverse nace en la corteza frontal.","La visión se procesa en el occipital."]}},
-    {id:"tronco", nombre:"Tronco encefálico", capa:"cerebelo-tronco", color:"#C9B79A", pos:[-0.45,-1.5,0], lbl:[0.9,-2.4,0.4],
+    {id:"tronco", nombre:"Tronco encefálico", capa:"cerebelo-tronco", color:"#C9B79A", pos:[-0.4,-1.3,0], lbl:[0.75,-2.2,0.7],
       n1:"Conecta el cerebro con la médula espinal. Controla funciones vitales automáticas: respiración, latido y presión arterial.",
       n2:"Está formado por el mesencéfalo, el puente y el bulbo raquídeo. En el bulbo se encuentran los centros respiratorio y cardiovascular, que ajustan la frecuencia respiratoria y cardíaca según el CO₂ y el pH de la sangre. Por él pasan todas las vías que unen el cerebro con el cuerpo, y en él se cruza la mayoría.",
       n3:"El bulbo controla también reflejos como toser, estornudar, tragar y vomitar. La formación reticular, una red de neuronas del tronco, regula la vigilia y el sueño. Una lesión grave del tronco es incompatible con la vida sin soporte artificial: por eso la 'muerte encefálica' se define por la pérdida irreversible de sus funciones.",
       dato:"Aquí se decide cuántas veces respiras por minuto sin que lo pienses.", conecta:["medula","cerebelo","hipotalamo"], temas:["Funciones vitales","Homeostasis","Respiración"],
       quiz:{q:"Durante el ejercicio aumenta el CO₂ en sangre. ¿Qué estructura lo detecta y aumenta la respiración?", ops:["El lóbulo frontal","El centro respiratorio del bulbo raquídeo","El cerebelo"], ok:1, fb:"El bulbo ajusta la respiración de forma automática según el CO₂ y el pH.", wrong:["El lóbulo frontal puede modificar la respiración de forma voluntaria, pero el control automático es del tronco.","El cerebelo coordina movimientos; no regula la respiración."]}},
-    {id:"medula", nombre:"Médula espinal", capa:"cerebelo-tronco", color:"#C9B79A", pos:[-0.65,-3.1,0], lbl:[0.6,-3.4,0.4],
+    {id:"medula", nombre:"Médula espinal", capa:"cerebelo-tronco", color:"#C9B79A", pos:[-0.66,-3.2,0], lbl:[0.45,-3.55,0.6],
       n1:"Cordón nervioso dentro de la columna vertebral. Comunica el encéfalo con el cuerpo y produce los reflejos.",
       n2:"Por ella descienden las órdenes motoras y ascienden las sensaciones. Los reflejos (retirar la mano de algo caliente) se procesan en la médula sin esperar al cerebro: el receptor envía la señal, una interneurona la pasa a una neurona motora y el músculo responde en milisegundos. El cerebro se entera después.",
       n3:"En su interior la sustancia gris (cuerpos neuronales) tiene forma de mariposa y la sustancia blanca (axones con mielina) la rodea, al revés que en el cerebro. Una lesión medular interrumpe la comunicación por debajo del nivel dañado: cuanto más alta, mayor es la zona afectada.",
       dato:"Un reflejo tarda ~30 ms; la sensación consciente, unos 500 ms.", conecta:["tronco","lobulo-frontal","lobulo-parietal"], temas:["Reflejos","Vías nerviosas"],
       quiz:{q:"¿Por qué retiras la mano de una estufa caliente antes de sentir dolor?", ops:["Porque el dolor no existe hasta que el cerebro lo procesa","Porque el reflejo se procesa en la médula espinal, sin pasar por el cerebro","Porque el cerebelo actúa más rápido que el cerebro"], ok:1, fb:"El arco reflejo medular responde en milisegundos; la sensación consciente llega después.", wrong:["Es cierto que el dolor es consciente en el cerebro, pero la retirada ocurre antes gracias a la médula.","El cerebelo coordina, pero el reflejo de retirada es medular."]}},
-    {id:"cuerpo-calloso", nombre:"Cuerpo calloso", capa:"profundas", color:"#EFE6D6", pos:[0,0.55,0], lbl:[0.2,1.2,-1.2], interno:true,
+    {id:"cuerpo-calloso", nombre:"Cuerpo calloso", capa:"profundas", color:"#EFE6D6", pos:[0,0.8,0], lbl:[0.3,1.35,-1.5], interno:true,
       n1:"Haz de unos 200 millones de fibras que une los dos hemisferios cerebrales.",
       n2:"Permite que la información de un hemisferio llegue al otro: lo que ve el hemisferio derecho (campo visual izquierdo) puede ser nombrado por el izquierdo (donde suele estar el lenguaje) gracias a él.",
       n3:"En pacientes con 'cerebro dividido' (cuerpo calloso seccionado para tratar epilepsias graves), los experimentos de Sperry y Gazzaniga mostraron que cada hemisferio puede procesar información sin que el otro 'lo sepa'.",
       dato:"Es la 'autopista' de 200 millones de fibras entre hemisferios.", conecta:["lobulo-frontal","lobulo-parietal","lobulo-occipital"], temas:["Hemisferios","Comunicación interna"],
       quiz:{q:"¿Qué función cumple el cuerpo calloso?", ops:["Producir líquido cefalorraquídeo","Comunicar los dos hemisferios","Controlar la respiración"], ok:1, fb:"Sin él, cada hemisferio trabajaría de forma aislada.", wrong:["El líquido cefalorraquídeo lo producen los plexos coroideos de los ventrículos.","La respiración la controla el tronco encefálico."]}},
-    {id:"talamo", nombre:"Tálamo", capa:"profundas", color:"#9B6FB5", pos:[-0.1,0.05,0], lbl:[-1.3,0.2,-1.3], interno:true,
+    {id:"talamo", nombre:"Tálamo", capa:"profundas", color:"#9B6FB5", pos:[-0.1,0.05,0.3], lbl:[-1.35,0.25,-1.4], interno:true,
       n1:"Estación de relevo en el centro del cerebro: casi toda la información sensorial pasa por él antes de llegar a la corteza.",
       n2:"Recibe señales de la vista, el oído, el tacto y el gusto (no del olfato) y las dirige a la región correspondiente de la corteza. También filtra: decide qué información merece atención.",
       n3:"Participa en la regulación del sueño y la conciencia; durante el sueño profundo 'cierra la puerta' a la mayoría de estímulos sensoriales. Las lesiones talámicas pueden producir dolor intenso y persistente (síndrome talámico).",
       dato:"El olfato es el único sentido que llega a la corteza sin pasar por el tálamo.", conecta:["lobulo-parietal","lobulo-occipital","hipotalamo"], temas:["Sensibilidad","Atención","Sueño"],
       quiz:{q:"¿Cuál es el único sentido que NO pasa por el tálamo?", ops:["La vista","El olfato","El tacto"], ok:1, fb:"El olfato llega directamente a la corteza olfativa; es el sentido más antiguo evolutivamente.", wrong:["La vista pasa por el tálamo (núcleo geniculado lateral) antes de llegar al occipital.","El tacto pasa por el tálamo antes de llegar al parietal."]}},
-    {id:"hipotalamo", nombre:"Hipotálamo", capa:"profundas", color:"#E0A040", pos:[0.25,-0.5,0], lbl:[1.6,-0.7,-1.0], interno:true,
+    {id:"hipotalamo", nombre:"Hipotálamo", capa:"profundas", color:"#E0A040", pos:[0.3,-0.36,0], lbl:[1.65,-0.65,-1.1], interno:true,
       n1:"Pequeña región bajo el tálamo. Regula la temperatura, el hambre, la sed, el sueño y controla la hipófisis.",
       n2:"Es el puente entre el sistema nervioso y el endocrino: mide la temperatura y la composición de la sangre y responde con señales nerviosas (sudar, tiritar) y hormonales (a través de la hipófisis). Es un centro clave de la homeostasis.",
       n3:"Contiene el 'reloj biológico' (núcleo supraquiasmático), que sincroniza los ritmos circadianos con la luz del día. Produce oxitocina y vasopresina (hormona antidiurética), que se liberan en la hipófisis posterior.",
       dato:"Pesa unos 4 gramos y regula la temperatura de todo el cuerpo.", conecta:["hipofisis","talamo","tronco"], temas:["Homeostasis","Sistema endocrino","Ritmos circadianos"],
       quiz:{q:"Tienes fiebre. ¿Qué estructura 'sube el termostato' del cuerpo?", ops:["El hipotálamo","El cerebelo","El lóbulo occipital"], ok:0, fb:"Sustancias liberadas durante la infección hacen que el hipotálamo eleve la temperatura de referencia.", wrong:["El cerebelo coordina movimientos.","El occipital procesa la visión."]}},
-    {id:"hipofisis", nombre:"Hipófisis", capa:"profundas", color:"#E8C0A0", pos:[0.4,-1.05,0], lbl:[1.9,-1.5,-0.6],
+    {id:"hipofisis", nombre:"Hipófisis", capa:"profundas", color:"#E8C0A0", pos:[0.42,-1.0,0], lbl:[1.9,-1.55,-0.6],
       n1:"Glándula del tamaño de un guisante, colgada bajo el hipotálamo. Produce hormonas que controlan otras glándulas.",
       n2:"Su parte anterior libera hormona del crecimiento, TSH (tiroides), ACTH (suprarrenales), FSH y LH (gónadas) y prolactina, bajo las órdenes del hipotálamo. Su parte posterior almacena y libera oxitocina y vasopresina producidas en el hipotálamo.",
       n3:"Se aloja en una cavidad ósea llamada silla turca. Un exceso de hormona del crecimiento en la infancia produce gigantismo; en la adultez, acromegalia. Los tumores hipofisarios pueden comprimir el quiasma óptico y reducir el campo visual lateral.",
       dato:"Llamada 'glándula maestra', aunque obedece al hipotálamo.", conecta:["hipotalamo"], temas:["Sistema endocrino","Crecimiento","Pubertad"],
       quiz:{q:"La hipófisis pertenece…", ops:["solo al sistema nervioso","al sistema endocrino, controlada por el hipotálamo","al sistema digestivo"], ok:1, fb:"Es una glándula endocrina cuyas órdenes vienen del hipotálamo: un ejemplo de conexión nervioso-endocrina.", wrong:["Produce hormonas: es una glándula endocrina, aunque está unida al hipotálamo.","No tiene relación con la digestión."]}},
-    {id:"hipocampo", nombre:"Hipocampo", capa:"profundas", color:"#5F9DB0", pos:[0.1,-0.5,0.75], lbl:[-0.4,-2.0,1.9], interno:true,
+    {id:"hipocampo", nombre:"Hipocampo", capa:"profundas", color:"#5F9DB0", pos:[-0.2,-0.55,0.85], lbl:[-0.7,-2.05,1.95], interno:true,
       n1:"Estructura curva dentro del lóbulo temporal. Imprescindible para formar nuevos recuerdos y orientarse en el espacio.",
       n2:"Convierte la memoria a corto plazo en memoria a largo plazo, que luego se almacena en la corteza. Contiene 'células de lugar' que se activan cuando estamos en un sitio concreto: una especie de GPS interno.",
       n3:"El paciente H.M., al que se le extirparon ambos hipocampos en 1953, no pudo formar recuerdos nuevos el resto de su vida, aunque conservó los antiguos y podía aprender habilidades motoras. Es una de las pocas regiones donde nacen neuronas nuevas en adultos; el estrés crónico y la falta de sueño lo perjudican.",
@@ -809,68 +816,74 @@ BIO.brain = {
 BIO.lungs = {
   id:"pulmones", nombre:"Pulmones y vía aérea", unidad:6, dominio:"anat", eyebrow:"Atlas 3D · Unidad 6 · Sistema respiratorio", em:"🫁",
   intro:"Sigue el aire desde la laringe hasta los alvéolos, activa la respiración para ver cómo trabaja el diafragma y observa el intercambio gaseoso con los capilares.",
-  nota:"Modelo tridimensional simplificado con fines educativos. El árbol bronquial se representa con pocas ramas; los alvéolos, a escala muy ampliada.",
-  focusR:6, radius:15, target:[0,0.5,0], phi:1.35, theta:0.3,
-  capas:[{id:"via-aerea",n:"Vía aérea"},{id:"pulmones",n:"Pulmones y pleura"},{id:"intercambio",n:"Alvéolos y capilares"},{id:"musculos",n:"Diafragma"}],
-  opacityCapas:["pulmones"], opacityLabel:"Transparencia de los pulmones", opacityDefault:0.55,
+  nota:"Modelo tridimensional simplificado con fines educativos. El árbol bronquial se representa con pocas generaciones de ramas; los alvéolos se muestran en una lupa, muy ampliados.",
+  focusR:6, radius:15, target:[-0.35,0.6,0], phi:1.45, theta:0.22, floor:-3.35, floorSize:9,
+  capas:[{id:"via-aerea",n:"Vía aérea"},{id:"pulmones",n:"Pulmones y pleura"},{id:"vasos",n:"Vasos pulmonares"},{id:"intercambio",n:"Alvéolos y capilares (lupa)"},{id:"musculos",n:"Diafragma"}],
+  opacityCapas:["pulmones"], opacityLabel:"Transparencia de los pulmones", opacityDefault:0.78,
   activity:"explorar-pulmones", guidedActivity:"guiada-pulmones", badge:"anatomista", seenThreshold:6,
   related:[{t:"Misión: el viaje de un glóbulo rojo",href:"#/mision/globulo-rojo"},{t:"Simulador cardiorrespiratorio",href:"#/simuladores/circulacion"}],
   structures:[
-    {id:"laringe", nombre:"Laringe", capa:"via-aerea", color:"#D8C4A8", pos:[0,4.0,0], lbl:[1.3,4.4,0.3],
+    {id:"laringe", nombre:"Laringe", capa:"via-aerea", color:"#D8C4A8", pos:[0,4.0,0], lbl:[1.25,4.5,0.4],
       n1:"Órgano de la voz, entre la faringe y la tráquea. Contiene las cuerdas vocales y protege la entrada de la vía aérea.",
       n2:"Al tragar, la epiglotis cierra la laringe para que el alimento vaya al esófago y no a los pulmones. Al espirar con las cuerdas vocales tensas, el aire las hace vibrar y produce la voz; la boca y la lengua la convierten en palabras.",
       n3:"Su cartílago tiroides forma la 'nuez de Adán', más visible en los varones porque las hormonas sexuales agrandan la laringe en la pubertad y hacen la voz más grave. Cuando algo 'se va por otro lado', el reflejo de la tos, coordinado por el bulbo raquídeo, lo expulsa.",
       dato:"La voz se produce con aire que sale, no con aire que entra.", conecta:["traquea"], temas:["Sistema respiratorio","Comunicación","Reflejos"],
       quiz:{q:"¿Qué impide que el alimento entre en la tráquea al tragar?", ops:["El diafragma","La epiglotis, que cierra la laringe","Los bronquios"], ok:1, fb:"La epiglotis actúa como una tapa durante la deglución.", wrong:["El diafragma está muy abajo; no interviene en la deglución.","Los bronquios están dentro del tórax; el cierre ocurre arriba, en la laringe."]}},
-    {id:"traquea", nombre:"Tráquea", capa:"via-aerea", color:"#E4D2BD", pos:[0,2.6,0], lbl:[1.2,3.0,0.4],
+    {id:"traquea", nombre:"Tráquea", capa:"via-aerea", color:"#E4D2BD", pos:[0,2.6,0], lbl:[1.05,3.1,0.5],
       n1:"Tubo de unos 12 cm reforzado con anillos de cartílago que conduce el aire desde la laringe hasta los bronquios.",
       n2:"Los anillos en forma de C mantienen la tráquea abierta aunque la presión cambie. Su interior está tapizado por células con cilios y células que producen moco: el moco atrapa polvo y microbios y los cilios lo barren hacia la garganta (escalera mucociliar).",
       n3:"El humo del tabaco paraliza y destruye los cilios; el moco se acumula y solo puede eliminarse tosiendo ('tos del fumador'). En la tráquea y los bronquios el aire también se calienta y humedece antes de llegar a los alvéolos.",
       dato:"Los cilios barren el moco hacia arriba a ~1 cm por minuto.", conecta:["laringe","bronquios"], temas:["Defensa","Vía aérea"],
       quiz:{q:"¿Para qué sirven los anillos de cartílago de la tráquea?", ops:["Para producir la voz","Para mantenerla abierta ante cambios de presión","Para intercambiar gases"], ok:1, fb:"Sin ellos, la tráquea se colapsaría al inspirar con fuerza.", wrong:["La voz se produce en la laringe.","El intercambio gaseoso ocurre solo en los alvéolos."]}},
-    {id:"bronquios", nombre:"Bronquios principales", capa:"via-aerea", color:"#E4D2BD", pos:[-0.6,1.1,0.05], lbl:[0.0,0.2,1.3],
+    {id:"bronquios", nombre:"Bronquios principales", capa:"via-aerea", color:"#E4D2BD", pos:[-0.45,1.3,0], lbl:[0.35,0.55,1.45],
       n1:"Las dos ramas en que se divide la tráquea, una para cada pulmón.",
       n2:"El bronquio derecho es más corto, ancho y vertical que el izquierdo, por lo que los objetos aspirados suelen ir al pulmón derecho. Dentro del pulmón se ramifican en bronquios lobares y segmentarios, cada vez más finos.",
       n3:"El árbol bronquial se ramifica unas 23 veces desde la tráquea hasta los alvéolos. Sus paredes tienen músculo liso: en el asma se contrae y estrecha la vía aérea; los inhaladores broncodilatadores lo relajan.",
       dato:"Un objeto aspirado suele terminar en el pulmón derecho.", conecta:["traquea","bronquiolos","pulmon-derecho","pulmon-izquierdo"], temas:["Vía aérea","Asma"],
       quiz:{q:"¿Por qué las piezas aspiradas suelen alojarse en el pulmón derecho?", ops:["Porque el pulmón derecho es más pequeño","Porque el bronquio derecho es más ancho y vertical","Porque el corazón empuja el aire hacia la derecha"], ok:1, fb:"La geometría del bronquio derecho lo convierte en la vía más directa.", wrong:["El pulmón derecho es en realidad el más grande.","El corazón no dirige el aire."]}},
-    {id:"bronquiolos", nombre:"Bronquiolos", capa:"via-aerea", color:"#EAD9C6", pos:[-1.9,-0.2,0.2], lbl:[-3.2,0.9,0.6],
+    {id:"bronquiolos", nombre:"Bronquiolos", capa:"via-aerea", color:"#EAD9C6", pos:[-1.9,-0.2,0.2], lbl:[-3.25,0.95,0.7],
       n1:"Ramas finísimas (menos de 1 mm) sin cartílago que llevan el aire hasta los sacos alveolares.",
       n2:"Sus paredes son de músculo liso, que puede contraerse (broncoconstricción) o relajarse (broncodilatación) para regular el paso del aire. Los bronquiolos terminales se abren en bronquiolos respiratorios ya rodeados de alvéolos.",
       n3:"En la bronquiolitis, frecuente en bebés, la inflamación de estos conductos tan finos dificulta mucho la respiración. La adrenalina dilata los bronquiolos: por eso durante el ejercicio o el miedo entra más aire.",
       dato:"Un adulto tiene unos 30.000 bronquiolos terminales.", conecta:["bronquios","alveolos"], temas:["Vía aérea","Regulación"],
       quiz:{q:"¿Qué ocurre con los bronquiolos durante una crisis de asma?", ops:["Se dilatan y entra demasiado aire","Su músculo se contrae y se estrechan: cuesta respirar","Se llenan de sangre"], ok:1, fb:"La broncoconstricción reduce el diámetro; los broncodilatadores relajan ese músculo.", wrong:["Ocurre lo contrario: se estrechan.","No se llenan de sangre; se estrechan por contracción muscular e inflamación."]}},
-    {id:"alveolos", nombre:"Alvéolos", capa:"intercambio", color:"#F1B8B0", pos:[-2.35,-1.45,0.5], lbl:[-3.4,-2.0,1.0],
+    {id:"alveolos", nombre:"Alvéolos", capa:"intercambio", color:"#F1B8B0", pos:[-3.75,-1.95,1.15], lbl:[-4.35,-3.0,1.4],
       n1:"Diminutos sacos (0,2 mm) donde ocurre el intercambio gaseoso entre el aire y la sangre.",
       n2:"Unos 300–500 millones de alvéolos suman ~70 m² de superficie, medio campo de tenis. Sus paredes tienen una sola capa de células y están rodeadas de capilares; el O₂ difunde hacia la sangre y el CO₂ hacia el aire en apenas 0,25 s.",
       n3:"Células especiales producen surfactante, una sustancia que reduce la tensión superficial y evita que los alvéolos se colapsen al espirar; los bebés prematuros pueden no tener suficiente. En el enfisema las paredes alveolares se destruyen y la superficie de intercambio se reduce; en la neumonía se llenan de líquido.",
       dato:"Desplegados, los alvéolos cubrirían medio campo de tenis.", conecta:["bronquiolos","capilares"], temas:["Intercambio gaseoso","Difusión","Circulación pulmonar"],
       quiz:{q:"¿Por qué el O₂ pasa del alvéolo a la sangre y no al revés?", ops:["Porque el corazón lo bombea","Porque hay más O₂ en el alvéolo que en la sangre venosa: difusión","Porque los alvéolos tienen músculo"], ok:1, fb:"Los gases difunden de mayor a menor concentración; el CO₂ hace el camino inverso.", wrong:["El corazón mueve la sangre, no los gases a través de la membrana.","Los alvéolos no tienen músculo; su pared es finísima."]}},
-    {id:"capilares", nombre:"Capilares pulmonares", capa:"intercambio", color:"#C8322E", pos:[-2.35,-1.45,0.5], lbl:[-1.2,-2.4,1.3],
+    {id:"capilares", nombre:"Capilares pulmonares", capa:"intercambio", color:"#C8322E", pos:[-3.75,-1.95,1.15], lbl:[-3.0,-3.1,1.55],
       n1:"Red de vasos finísimos que envuelve cada alvéolo; aquí la sangre se carga de O₂ y libera CO₂.",
       n2:"Llegan con sangre pobre en O₂ desde la arteria pulmonar (ventrículo derecho) y salen ricos en O₂ hacia las venas pulmonares y la aurícula izquierda. Los glóbulos rojos pasan en fila india, uno a uno, para maximizar el contacto.",
       n3:"La barrera aire-sangre mide solo 0,5 µm. Un glóbulo rojo tarda ~0,75 s en cruzar un capilar pulmonar y se satura de O₂ en el primer tercio del recorrido, lo que deja margen durante el ejercicio, cuando la sangre pasa más rápido.",
       dato:"Aquí se conectan el sistema respiratorio y el circulatorio.", conecta:["alveolos"], temas:["Circulación pulmonar","Hemoglobina","Homeostasis"],
       quiz:{q:"La sangre que entra a los capilares pulmonares proviene de…", ops:["la aorta","la arteria pulmonar, desde el ventrículo derecho","las venas pulmonares"], ok:1, fb:"Es sangre pobre en O₂ que regresó del cuerpo; sale oxigenada por las venas pulmonares.", wrong:["La aorta reparte sangre ya oxigenada al cuerpo.","Las venas pulmonares llevan la sangre que sale de los capilares, no la que entra."]}},
-    {id:"pulmon-derecho", nombre:"Pulmón derecho", capa:"pulmones", color:"#E3A19A", pos:[-1.7,-0.2,0], lbl:[-3.3,2.0,0.3],
+    {id:"pulmon-derecho", nombre:"Pulmón derecho", capa:"pulmones", color:"#E3A19A", pos:[-1.75,-0.2,0.05], lbl:[-3.3,2.0,0.4],
       n1:"Pulmón de tres lóbulos (superior, medio e inferior), algo mayor que el izquierdo.",
       n2:"Los lóbulos están separados por cisuras y cada uno recibe su propio bronquio, lo que permite operar un lóbulo sin afectar a los demás. Su superficie está cubierta por la pleura.",
       n3:"Los pulmones son esponjosos y ligeros: flotan en agua gracias al aire de los alvéolos (un pulmón que nunca ha respirado se hunde). Pesan unos 600 g el derecho y 550 g el izquierdo.",
       dato:"Es más grande que el izquierdo porque el corazón ocupa espacio a la izquierda.", conecta:["bronquios","pleura","diafragma"], temas:["Anatomía torácica"],
       quiz:{q:"¿Cuántos lóbulos tiene el pulmón derecho?", ops:["Dos","Tres","Cuatro"], ok:1, fb:"Superior, medio e inferior; el izquierdo solo tiene dos.", wrong:["Dos lóbulos tiene el izquierdo.","Ningún pulmón humano tiene cuatro lóbulos."]}},
-    {id:"pulmon-izquierdo", nombre:"Pulmón izquierdo", capa:"pulmones", color:"#E3A19A", pos:[1.65,-0.35,0], lbl:[3.2,1.8,0.3],
+    {id:"pulmon-izquierdo", nombre:"Pulmón izquierdo", capa:"pulmones", color:"#E3A19A", pos:[1.75,-0.3,0.05], lbl:[3.2,1.8,0.4],
       n1:"Pulmón de dos lóbulos (superior e inferior), con una escotadura donde se aloja el corazón.",
       n2:"Es algo más pequeño y estrecho que el derecho. Entre ambos pulmones, en el mediastino, se encuentran el corazón, los grandes vasos, la tráquea y el esófago.",
       n3:"Los pulmones no tienen músculos propios: se inflan y desinflan pasivamente siguiendo los movimientos del diafragma y las costillas gracias a la pleura, que los mantiene 'pegados' a la pared torácica.",
       dato:"La escotadura cardíaca es el hueco que deja para el corazón.", conecta:["bronquios","pleura","diafragma"], temas:["Anatomía torácica"],
       quiz:{q:"¿Por qué el pulmón izquierdo tiene solo dos lóbulos?", ops:["Porque recibe menos aire","Porque el corazón ocupa parte del lado izquierdo del tórax","Porque es más antiguo evolutivamente"], ok:1, fb:"El corazón se inclina hacia la izquierda y deja menos espacio.", wrong:["Ambos pulmones reciben aire en proporción a su tamaño; la causa es el espacio que ocupa el corazón.","No hay diferencia evolutiva entre ambos pulmones."]}},
-    {id:"pleura", nombre:"Pleura", capa:"pulmones", color:"#BFD8E8", pos:[-1.7,-0.2,0], lbl:[-2.6,2.4,-0.4],
+    {id:"pleura", nombre:"Pleura", capa:"pulmones", color:"#BFD8E8", pos:[-1.7,-0.2,0], lbl:[-2.7,2.6,-0.3],
       n1:"Doble membrana que envuelve cada pulmón y lo une a la pared torácica.",
       n2:"Entre sus dos hojas hay una fina capa de líquido con presión negativa que hace que el pulmón siga a la caja torácica cuando esta se expande, como dos vidrios mojados que se deslizan pero no se separan.",
       n3:"Si entra aire en el espacio pleural (neumotórax, por una herida o la rotura de alvéolos), la presión negativa se pierde y el pulmón se colapsa. La pleuritis, su inflamación, produce dolor agudo al respirar.",
       dato:"Sin la pleura, el pulmón no seguiría a las costillas y no se inflaría.", conecta:["pulmon-derecho","pulmon-izquierdo","diafragma"], temas:["Mecánica respiratoria","Presión"],
       quiz:{q:"¿Qué ocurre si entra aire entre las dos hojas de la pleura?", ops:["El pulmón se infla más","El pulmón se colapsa (neumotórax)","No pasa nada"], ok:1, fb:"Se pierde la presión negativa que mantiene el pulmón expandido.", wrong:["Ocurre lo contrario: sin presión negativa, el pulmón se retrae.","Es una urgencia médica: el pulmón deja de seguir a la caja torácica."]}},
-    {id:"diafragma", nombre:"Diafragma", capa:"musculos", color:"#C45A4A", pos:[0,-2.55,0], lbl:[2.4,-2.9,0.8],
+    {id:"vasos-pulmonares", nombre:"Arterias y venas pulmonares", capa:"vasos", color:"#5B6FB8", pos:[0.6,1.2,0.35], lbl:[1.45,0.35,1.55],
+      n1:"Vasos que llevan la sangre pobre en O₂ desde el corazón a los pulmones (arterias, en azul) y la devuelven oxigenada (venas, en rojo).",
+      n2:"Las arterias pulmonares entran por el hilio y se ramifican acompañando a los bronquios hasta formar los capilares que rodean los alvéolos. Las venas pulmonares recogen la sangre oxigenada y la llevan a la aurícula izquierda. Es la circulación menor o pulmonar.",
+      n3:"Toda la sangre del cuerpo pasa por los pulmones en cada vuelta: unos 5 litros por minuto en reposo. La presión en esta circulación es baja (unos 25/10 mmHg); si aumenta (hipertensión pulmonar), el ventrículo derecho se sobrecarga. Un coágulo que obstruye una arteria pulmonar se llama embolia pulmonar y es una urgencia médica.",
+      dato:"Es la única circulación en la que las arterias llevan sangre pobre en oxígeno.", conecta:["capilares","bronquios","pulmon-derecho","pulmon-izquierdo"], temas:["Circulación pulmonar","Sistema circulatorio","Intercambio gaseoso"],
+      quiz:{q:"¿Qué tipo de sangre llevan las arterias pulmonares?", ops:["Sangre rica en oxígeno hacia el cuerpo","Sangre pobre en oxígeno desde el ventrículo derecho hacia los pulmones","Sangre rica en oxígeno hacia el corazón"], ok:1, fb:"Salen del ventrículo derecho con sangre desoxigenada; en los capilares alveolares se cargará de O₂.", wrong:["Esa es la función de la aorta.","Esa sangre viaja por las venas pulmonares."]}},
+    {id:"diafragma", nombre:"Diafragma", capa:"musculos", color:"#C45A4A", pos:[0,-2.2,0], lbl:[2.7,-2.75,1.0],
       n1:"Músculo en forma de cúpula bajo los pulmones. Es el principal músculo de la respiración.",
       n2:"Al contraerse se aplana y desciende: el tórax aumenta de volumen, la presión interna baja y el aire entra (inspiración). Al relajarse vuelve a subir y el aire sale (espiración), de forma pasiva en reposo. Los músculos intercostales ayudan elevando las costillas.",
       n3:"Está controlado por el nervio frénico, que nace en la médula cervical (C3–C5); una lesión medular por encima de ese nivel impide respirar sin ventilación mecánica. El hipo es una contracción brusca e involuntaria del diafragma. Al espirar con fuerza (toser, cantar) intervienen además los músculos abdominales.",
@@ -887,7 +900,7 @@ BIO.lungs = {
   ]
 };
 
-Object.assign(BIO.heart, { eyebrow:"Atlas 3D · Unidad 6 · Anatomía y fisiología", em:"🫀", intro:"Rota, acerca, transparenta y separa. Selecciona cualquier estructura para conocer qué es, qué hace y con qué se relaciona.", focusR:7, radius:11, target:[0,0.5,0], phi:1.3, theta:0.35, opacityCapas:["camaras"], opacityLabel:"Transparencia de las cámaras", activity:"explorar-corazon", guidedActivity:"guiada-corazon", badge:"anatomista", seenThreshold:8, related:[{t:"Misión relacionada",href:"#/mision/globulo-rojo"},{t:"Evaluación",href:"#/evaluacion/corazon"}] });
+Object.assign(BIO.heart, { eyebrow:"Atlas 3D · Unidad 6 · Anatomía y fisiología", em:"🫀", intro:"Rota, acerca, transparenta y separa. Selecciona cualquier estructura para conocer qué es, qué hace y con qué se relaciona.", focusR:7, radius:11.5, target:[0.2,0.5,0], phi:1.33, theta:0.35, floor:-2.95, floorSize:7, opacityCapas:["camaras"], opacityLabel:"Transparencia de las cámaras", activity:"explorar-corazon", guidedActivity:"guiada-corazon", badge:"anatomista", seenThreshold:8, related:[{t:"Misión relacionada",href:"#/mision/globulo-rojo"},{t:"Evaluación",href:"#/evaluacion/corazon"}] });
 BIO.organs = { corazon: BIO.heart, cerebro: BIO.brain, pulmones: BIO.lungs };
 Object.assign(BIO.activities, {
   "explorar-cerebro":{t:"Explorar el cerebro", unidad:6, peso:15, xp:60},
@@ -1152,6 +1165,140 @@ function lineChart(canvas, opts){
 </script>
 <script>
 /* =====================================================================
+   KIT DE RENDER — ruido, texturas procedurales, materiales de tejido,
+   geometría esculpida, tubos cónicos con lumen, fusión y división de mallas.
+   Todo determinista (semillas fijas) para que los hotspots sean estables.
+   ===================================================================== */
+const Kit = (() => {
+  /* ---------- aleatorio con semilla ---------- */
+  const rng = (seed=1) => { let s = seed >>> 0 || 1; return () => { s = (s + 0x6D2B79F5) >>> 0; let t = s; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; }; };
+
+  /* ---------- ruido simplex 3D ---------- */
+  const grad3 = [1,1,0,-1,1,0,1,-1,0,-1,-1,0,1,0,1,-1,0,1,1,0,-1,-1,0,-1,0,1,1,0,-1,1,0,1,-1,0,-1,-1];
+  const perm = new Uint8Array(512); (() => { const p = []; for (let i=0;i<256;i++) p.push(i); const R = rng(1337); for (let i=255;i>0;i--){ const j = Math.floor(R()*(i+1)); [p[i],p[j]]=[p[j],p[i]]; } for (let i=0;i<512;i++) perm[i]=p[i&255]; })();
+  const F3 = 1/3, G3 = 1/6;
+  function n3(x,y,z){
+    const s=(x+y+z)*F3, i=Math.floor(x+s), j=Math.floor(y+s), k=Math.floor(z+s), t=(i+j+k)*G3;
+    const x0=x-(i-t), y0=y-(j-t), z0=z-(k-t); let i1,j1,k1,i2,j2,k2;
+    if (x0>=y0){ if (y0>=z0){i1=1;j1=0;k1=0;i2=1;j2=1;k2=0;} else if (x0>=z0){i1=1;j1=0;k1=0;i2=1;j2=0;k2=1;} else {i1=0;j1=0;k1=1;i2=1;j2=0;k2=1;} }
+    else { if (y0<z0){i1=0;j1=0;k1=1;i2=0;j2=1;k2=1;} else if (x0<z0){i1=0;j1=1;k1=0;i2=0;j2=1;k2=1;} else {i1=0;j1=1;k1=0;i2=1;j2=1;k2=0;} }
+    const x1=x0-i1+G3, y1=y0-j1+G3, z1=z0-k1+G3, x2=x0-i2+2*G3, y2=y0-j2+2*G3, z2=z0-k2+2*G3, x3=x0-1+3*G3, y3=y0-1+3*G3, z3=z0-1+3*G3;
+    const ii=i&255, jj=j&255, kk=k&255;
+    const c = (tt, gi, a, b, d) => { if (tt<0) return 0; tt*=tt; const g=gi*3; return tt*tt*(grad3[g]*a+grad3[g+1]*b+grad3[g+2]*d); };
+    return 32*( c(0.6-x0*x0-y0*y0-z0*z0, perm[ii+perm[jj+perm[kk]]]%12, x0,y0,z0)
+              + c(0.6-x1*x1-y1*y1-z1*z1, perm[ii+i1+perm[jj+j1+perm[kk+k1]]]%12, x1,y1,z1)
+              + c(0.6-x2*x2-y2*y2-z2*z2, perm[ii+i2+perm[jj+j2+perm[kk+k2]]]%12, x2,y2,z2)
+              + c(0.6-x3*x3-y3*y3-z3*z3, perm[ii+1+perm[jj+1+perm[kk+1]]]%12, x3,y3,z3) );
+  }
+  const fbm = (x,y,z,o=4) => { let a=0.5,f=1,s=0; for (let i=0;i<o;i++){ s+=a*n3(x*f,y*f,z*f); f*=2.03; a*=0.5; } return s; };
+
+  /* ---------- ruido de valor periódico (texturas sin costuras) ---------- */
+  function pnoise(P, seed){ const g = new Float32Array(P*P); const R = rng(seed); for (let i=0;i<g.length;i++) g[i] = R()*2-1;
+    return (x,y) => { const fx=x*P, fy=y*P, x0=Math.floor(fx), y0=Math.floor(fy), tx=fx-x0, ty=fy-y0, sx=tx*tx*(3-2*tx), sy=ty*ty*(3-2*ty);
+      const i0=((x0%P)+P)%P, i1=(i0+1)%P, j0=((y0%P)+P)%P, j1=(j0+1)%P, a=g[j0*P+i0], b=g[j0*P+i1], c=g[j1*P+i0], d=g[j1*P+i1];
+      return a+(b-a)*sx+(c-a)*sy+(a-b-c+d)*sx*sy; }; }
+  const pf = (seed, base=4, oct=5) => { const L = []; for (let i=0;i<oct;i++) L.push(pnoise(base<<i, seed+i*97)); return (u,v) => { let s=0,a=0.5; for (const n of L){ s+=a*n(u,v); a*=0.5; } return s; }; };
+
+  /* ---------- texturas procedurales (color + relieve), cacheadas ---------- */
+  const cache = {};
+  const SZ = () => (lowEnd() ? 256 : 512);
+  function paint(key, fn){
+    if (cache[key]) return cache[key];
+    const N = SZ(); const cc = document.createElement('canvas'), bc = document.createElement('canvas'); cc.width=cc.height=bc.width=bc.height=N;
+    const cx = cc.getContext('2d'), bx = bc.getContext('2d'); const ci = cx.createImageData(N,N), bi = bx.createImageData(N,N);
+    const out = { c:[0,0,0], h:0 };
+    for (let y=0;y<N;y++) for (let x=0;x<N;x++){ fn(x/N, y/N, out); const k=(y*N+x)*4; ci.data[k]=out.c[0]; ci.data[k+1]=out.c[1]; ci.data[k+2]=out.c[2]; ci.data[k+3]=255; const hv = Math.max(0,Math.min(255,out.h*255)); bi.data[k]=bi.data[k+1]=bi.data[k+2]=hv; bi.data[k+3]=255; }
+    cx.putImageData(ci,0,0); bx.putImageData(bi,0,0);
+    return (cache[key] = { color:cc, bump:bc });
+  }
+  const mix = (a,b,t) => a+(b-a)*t;
+  const mixc = (A,B,t,o) => { o[0]=mix(A[0],B[0],t); o[1]=mix(A[1],B[1],t); o[2]=mix(A[2],B[2],t); return o; };
+  const hex = h => [(h>>16)&255,(h>>8)&255,h&255];
+  const cl = v => v<0?0:v>1?1:v;
+
+  const TEX = {
+    myocardium(){ const n = pf(11,4,5), f = pf(23,8,3); return paint('myo', (u,v,o) => { const fib = 0.5+0.5*Math.sin((u*38+v*22)*Math.PI*2/2 + f(u,v)*6); const nn = n(u,v); const t = cl(0.5+nn*0.9); mixc(hex(0x6E1E1C), hex(0xA8403A), t, o.c); const k = 0.9+0.12*fib; o.c[0]*=k; o.c[1]*=k; o.c[2]*=k; o.h = 0.5+0.25*nn+0.12*fib; }); },
+    atrium(){ const n = pf(31,6,5), w = pf(37,16,3); return paint('atr', (u,v,o) => { const nn=n(u,v), ww=w(u,v); mixc(hex(0x5E1A22), hex(0x94383A), cl(0.5+nn), o.c); o.h = 0.5+0.35*ww+0.2*nn; }); },
+    fat(){ const n = pf(41,8,4), m = pf(43,24,2); return paint('fat', (u,v,o) => { const nn=n(u,v), mm=m(u,v); const lob = Math.abs(mm); mixc(hex(0xC9993F), hex(0xF0D48A), cl(0.55+nn*0.8), o.c); const k = 0.85+0.3*Math.min(1,lob*4); o.c[0]*=k; o.c[1]*=k; o.c[2]*=k; o.h = 0.5+0.4*Math.min(1,lob*3)+0.1*nn; }); },
+    artery(){ const n = pf(51,4,4), s = pf(53,16,2); return paint('art', (u,v,o) => { const nn=n(u,v); mixc(hex(0xA42A26), hex(0xC4453C), cl(0.55+nn*0.6), o.c); o.h = 0.5+0.12*nn+0.08*s(u,v); }); },
+    vein(){ const n = pf(61,4,4); return paint('vein', (u,v,o) => { const nn=n(u,v); mixc(hex(0x34489A), hex(0x5670BE), cl(0.55+nn*0.6), o.c); o.h = 0.5+0.12*nn; }); },
+    lung(){ const n = pf(71,4,5), cell = pf(73,20,2), sp = pf(79,64,1); return paint('lung', (u,v,o) => { const nn=n(u,v), cc=cell(u,v), ss=sp(u,v); const lobule = 1-Math.min(1,Math.abs(cc)*9); mixc(hex(0xC06A66), hex(0xF0B0A6), cl(0.55+nn*0.9), o.c); const d = 1-0.18*lobule - (ss>0.42?0.25:0); o.c[0]*=d; o.c[1]*=d; o.c[2]*=d; o.h = 0.55+0.2*nn-0.25*lobule+0.15*ss; }); },
+    diaphragm(){ const n = pf(81,6,4); return paint('dia', (u,v,o) => { const x=u-0.5, y=v-0.5, r=Math.hypot(x,y)*2, a=Math.atan2(y,x); const fib = 0.5+0.5*Math.sin(a*140 + n(u,v)*6); const tendon = cl((0.4 - r)*5 + n(u,v)*1.4); mixc(mixc(hex(0x6A221E), hex(0x7C2E28), 0.5+0.5*n(u*2,v*2), [0,0,0]), hex(0xD9D2C6), tendon, o.c); o.h = 0.5 + 0.12*fib*(1-tendon) + 0.1*n(u*4,v*4); }); },
+    cartilage(){ const n = pf(91,6,4); return paint('cart', (u,v,o) => { const nn=n(u,v); mixc(hex(0xCDBB9E), hex(0xF2E8D6), cl(0.6+nn), o.c); o.h = 0.5+0.2*nn; }); },
+    membrane(){ const n = pf(101,32,3); return paint('memb', (u,v,o) => { const nn=n(u,v); mixc(hex(0x8FD3DC), hex(0xD6F1F4), cl(0.5+nn), o.c); o.h = 0.5+0.45*nn; }); },
+    granular(){ const n = pf(111,48,2), m = pf(113,6,3); return paint('gran', (u,v,o) => { const nn=n(u,v), mm=m(u,v); const g = 0.5+0.5*Math.sign(nn)*Math.min(1,Math.abs(nn)*3); mixc([200,200,200],[255,255,255], g*0.7+0.3*cl(0.5+mm), o.c); o.h = g; }); },
+    tissue(){ const n = pf(121,8,5); return paint('tis', (u,v,o) => { const nn=n(u,v); mixc([215,215,215],[255,255,255], cl(0.6+nn), o.c); o.h = 0.5+0.3*nn; }); }
+  };
+  const texCache = new WeakMap();
+  function texFrom(canvas, srgb, rep){ const t = new THREE.CanvasTexture(canvas); t.wrapS = t.wrapT = THREE.RepeatWrapping; if (srgb) t.encoding = THREE.sRGBEncoding; t.anisotropy = 4; if (rep) t.repeat.set(rep[0], rep[1]); return t; }
+
+  /* ---------- materiales ---------- */
+  function tissue(o={}){
+    const m = new THREE.MeshPhysicalMaterial({ color: o.color ?? 0xffffff, roughness: o.rough ?? 0.46, metalness: 0, clearcoat: o.coat ?? 0.5, clearcoatRoughness: o.coatRough ?? 0.32, side: o.side ?? THREE.FrontSide, vertexColors: !!o.vc, transparent: !!o.transparent, opacity: o.opacity ?? 1, depthWrite: o.depthWrite ?? !o.transparent, envMapIntensity: o.env ?? 1 });
+    if (o.tex){ const T = TEX[o.tex](); m.map = texFrom(T.color, true, o.rep); if (o.bump !== 0){ m.bumpMap = texFrom(T.bump, false, o.rep); m.bumpScale = o.bump ?? 0.02; } if (o.color === undefined) m.color.set(0xffffff); }
+    return m;
+  }
+
+  /* ---------- geometría ---------- */
+  function weldNormals(g){ const pos = g.attributes.position, nor = g.attributes.normal, map = new Map(); const key = i => `${Math.round(pos.getX(i)*1e4)},${Math.round(pos.getY(i)*1e4)},${Math.round(pos.getZ(i)*1e4)}`;
+    for (let i=0;i<pos.count;i++){ const k = key(i); const a = map.get(k); if (a){ a[0]+=nor.getX(i); a[1]+=nor.getY(i); a[2]+=nor.getZ(i); a.push(i); } else map.set(k, [nor.getX(i),nor.getY(i),nor.getZ(i), i]); }
+    map.forEach(a => { if (a.length<5) return; const l = Math.hypot(a[0],a[1],a[2])||1; for (let j=3;j<a.length;j++) nor.setXYZ(a[j], a[0]/l, a[1]/l, a[2]/l); }); nor.needsUpdate = true; return g; }
+  /* Esfera esculpida: shape(d) → posición; disp(p,d) → desplazamiento a lo largo de d; color(p,d,disp,out) opcional */
+  function sculpt(o){
+    const low = lowEnd(); const g = new THREE.SphereGeometry(1, o.w ?? (low?56:96), o.h ?? (low?40:72), o.phiStart ?? 0, o.phiLength ?? Math.PI*2, o.thetaStart ?? 0, o.thetaLength ?? Math.PI);
+    const pos = g.attributes.position, d = new THREE.Vector3(), p = new THREE.Vector3(); const cols = o.color ? new Float32Array(pos.count*3) : null; const out = [1,1,1];
+    const extra = o.store ? [] : null;
+    for (let i=0;i<pos.count;i++){ d.fromBufferAttribute(pos,i).normalize(); if (o.shape) p.copy(o.shape(d.clone())); else p.copy(d).multiply(o.radii ? V3(o.radii) : new THREE.Vector3(1,1,1));
+      const dz = o.disp ? o.disp(p, d) : 0; if (dz) { const nrm = o.dispDir ? o.dispDir(p,d) : d; p.addScaledVector(nrm, dz); }
+      pos.setXYZ(i, p.x, p.y, p.z); if (cols){ o.color(p, d, dz, out, i); cols[i*3]=out[0]; cols[i*3+1]=out[1]; cols[i*3+2]=out[2]; } if (extra) extra.push(o.store(p,d,dz)); }
+    if (cols) g.setAttribute('color', new THREE.BufferAttribute(cols,3));
+    g.computeVertexNormals(); weldNormals(g); if (extra) g.userData.extra = extra; return g;
+  }
+  const curve = pts => pts.isCurve ? pts : new THREE.CatmullRomCurve3(pts.map(p => p.isVector3 ? p : V3(p)), false, 'catmullrom', 0.5);
+  /* Tubo cónico: radio r0→r1 o función rfn(u) */
+  function taper(pts, r0, r1, o={}){ const low = lowEnd(); const c = curve(pts); const T = o.seg ?? (low?28:56), R = o.rad ?? (low?10:18); const g = new THREE.TubeGeometry(c, T, 1, R, false);
+    const pos = g.attributes.position, P = new THREE.Vector3(), v = new THREE.Vector3();
+    for (let i=0;i<=T;i++){ const u=i/T; c.getPointAt(u,P); const rr = o.rfn ? o.rfn(u) : r0+(r1-r0)*u; for (let j=0;j<=R;j++){ const k=i*(R+1)+j; v.fromBufferAttribute(pos,k).sub(P); if (o.bumpy){ const b = 1 + o.bumpy*n3(u*o.bf, j/R*4, o.seed||0); v.multiplyScalar(b); } v.multiplyScalar(rr).add(P); pos.setXYZ(k,v.x,v.y,v.z); } }
+    g.userData.curve = c; g.userData.r0 = o.rfn ? o.rfn(0) : r0; g.userData.r1 = o.rfn ? o.rfn(1) : r1; return g; }
+  /* Tapa de vaso cortado: pared + lumen oscuro */
+  function cap(c, atEnd, r, wallMat, lumenColor){ const u = atEnd ? 1 : 0; const p = c.getPointAt(u), t = c.getTangentAt(u).normalize(); if (!atEnd) t.negate();
+    const g = new THREE.RingGeometry(r*0.7, r*1.0, 28, 1), l = new THREE.CircleGeometry(r*0.7, 28);
+    const m1 = new THREE.Mesh(g, wallMat), m2 = new THREE.Mesh(l, new THREE.MeshStandardMaterial({ color:lumenColor, roughness:0.9 }));
+    [m1,m2].forEach(m => { m.position.copy(p).addScaledVector(t, 0.002); m.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1), t); }); return [m1, m2]; }
+  /* Fusionar geometrías (para mallas con muchas piezas) */
+  function merge(geos){ let vc=0, ic=0; const uv = geos.every(g=>g.attributes.uv), col = geos.every(g=>g.attributes.color);
+    geos.forEach(g => { if (!g.attributes.normal) g.computeVertexNormals(); vc += g.attributes.position.count; ic += g.index ? g.index.count : g.attributes.position.count; });
+    const P = new Float32Array(vc*3), N = new Float32Array(vc*3), U = uv ? new Float32Array(vc*2) : null, C = col ? new Float32Array(vc*3) : null, I = new Uint32Array(ic); let vo=0, io=0;
+    geos.forEach(g => { const n = g.attributes.position.count; P.set(g.attributes.position.array, vo*3); N.set(g.attributes.normal.array, vo*3); if (U) U.set(g.attributes.uv.array, vo*2); if (C) C.set(g.attributes.color.array, vo*3);
+      if (g.index){ const a = g.index.array; for (let i=0;i<a.length;i++) I[io+i] = a[i]+vo; io += a.length; } else { for (let i=0;i<n;i++) I[io+i] = vo+i; io += n; } vo += n; g.dispose(); });
+    const out = new THREE.BufferGeometry(); out.setAttribute('position', new THREE.BufferAttribute(P,3)); out.setAttribute('normal', new THREE.BufferAttribute(N,3)); if (U) out.setAttribute('uv', new THREE.BufferAttribute(U,2)); if (C) out.setAttribute('color', new THREE.BufferAttribute(C,3)); out.setIndex(new THREE.BufferAttribute(I,1)); return out; }
+  /* Dividir una geometría indexada por regiones (lóbulos, cisuras) */
+  function split(g, regionOfVertex){ const pos=g.attributes.position, nor=g.attributes.normal, col=g.attributes.color, uv=g.attributes.uv, idx=g.index.array; const reg = new Array(pos.count); for (let i=0;i<pos.count;i++) reg[i] = regionOfVertex(i);
+    const buckets = {}; for (let t=0;t<idx.length;t+=3){ const a=idx[t],b=idx[t+1],c=idx[t+2]; const r = (reg[a]===reg[b]||reg[a]===reg[c]) ? reg[a] : reg[b]===reg[c] ? reg[b] : reg[a]; (buckets[r] ||= []).push(a,b,c); }
+    const out = {}; for (const [r,list] of Object.entries(buckets)){ const map = new Map(), Pp=[], Nn=[], Cc=[], Uu=[], Ii=[]; for (const vi of list){ let ni = map.get(vi); if (ni===undefined){ ni = map.size; map.set(vi,ni); Pp.push(pos.getX(vi),pos.getY(vi),pos.getZ(vi)); Nn.push(nor.getX(vi),nor.getY(vi),nor.getZ(vi)); if (col) Cc.push(col.getX(vi),col.getY(vi),col.getZ(vi)); if (uv) Uu.push(uv.getX(vi),uv.getY(vi)); } Ii.push(ni); }
+      const ng = new THREE.BufferGeometry(); ng.setAttribute('position', new THREE.Float32BufferAttribute(Pp,3)); ng.setAttribute('normal', new THREE.Float32BufferAttribute(Nn,3)); if (col) ng.setAttribute('color', new THREE.Float32BufferAttribute(Cc,3)); if (uv) ng.setAttribute('uv', new THREE.Float32BufferAttribute(Uu,2)); ng.setIndex(Ii); out[r] = ng; }
+    return out; }
+  /* Pegar puntos a una superficie mediante rayos desde fuera */
+  function snap(points, meshes, center, lift=0.03){ const ray = new THREE.Raycaster(); meshes.forEach(m=>m.updateMatrixWorld(true)); const out = [];
+    for (const q of points){ const p = q.isVector3 ? q.clone() : V3(q); const dir = p.clone().sub(center).normalize(); ray.set(center.clone().addScaledVector(dir, 12), dir.clone().negate()); const hit = ray.intersectObjects(meshes, false)[0]; if (hit){ const nrm = hit.face ? hit.face.normal.clone().transformDirection(hit.object.matrixWorld) : dir; out.push(hit.point.clone().addScaledVector(nrm, lift)); } }
+    return out; }
+  function densify(pts, n){ const c = curve(pts); const out = []; for (let i=0;i<=n;i++) out.push(c.getPointAt(i/n)); return out; }
+
+  /* ---------- entorno de estudio (reflejos) ---------- */
+  function studio(renderer, dark){ const pm = new THREE.PMREMGenerator(renderer); const sc = new THREE.Scene();
+    const g = new THREE.SphereGeometry(20, 32, 16); const cols = []; const pos = g.attributes.position; for (let i=0;i<pos.count;i++){ const y = pos.getY(i)/20; const c = new THREE.Color().setHSL(0.58, 0.18, (dark?0.05:0.14) + (dark?0.18:0.34)*Math.max(0,y) + 0.05*Math.max(0,-y)); cols.push(c.r,c.g,c.b); }
+    g.setAttribute('color', new THREE.Float32BufferAttribute(cols,3)); sc.add(new THREE.Mesh(g, new THREE.MeshBasicMaterial({ vertexColors:true, side:THREE.BackSide })));
+    const panel = (w,h,p,k,col) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w,h), new THREE.MeshBasicMaterial({ color:new THREE.Color(col).multiplyScalar(k), side:THREE.DoubleSide })); m.position.set(...p); m.lookAt(0,0,0); sc.add(m); };
+    panel(14,7,[2,15,7],3.4,0xffffff); panel(7,11,[-15,4,5],1.7,0xe3edff); panel(7,11,[15,2,-5],1.3,0xffeadc); panel(12,4,[0,-7,15],0.7,0xffffff); panel(5,5,[0,6,-16],1.6,0xcfe4ff);
+    const rt = pm.fromScene(sc, 0.035); pm.dispose(); sc.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); }); return rt.texture; }
+  function contactShadow(size, y, opacity=0.35){ const c = document.createElement('canvas'); c.width=c.height=128; const x = c.getContext('2d'); const gr = x.createRadialGradient(64,64,4,64,64,64); gr.addColorStop(0,'rgba(10,20,35,1)'); gr.addColorStop(0.45,'rgba(10,20,35,0.45)'); gr.addColorStop(1,'rgba(10,20,35,0)'); x.fillStyle=gr; x.fillRect(0,0,128,128);
+    const t = new THREE.CanvasTexture(c); const m = new THREE.Mesh(new THREE.PlaneGeometry(size,size), new THREE.MeshBasicMaterial({ map:t, transparent:true, opacity, depthWrite:false, toneMapped:false })); m.rotation.x = -Math.PI/2; m.position.y = y; m.renderOrder = -1; return m; }
+
+  return { rng, n3, fbm, TEX, tissue, sculpt, taper, cap, merge, split, snap, densify, curve, studio, contactShadow, weldNormals };
+})();
+</script>
+<script>
+/* =====================================================================
    MOTOR 3D — Three.js. Controles orbitales propios, picking, etiquetas,
    capas, transparencia, separación, animaciones. Reutilizable por modelo.
    ===================================================================== */
@@ -1160,17 +1307,19 @@ class Engine3D {
     this.opts = Object.assign({ interactive:true, autoRotate:false, radius:8, labels:true, minR:3, maxR:16, phi:1.25, theta:0.35 }, opts);
     this.container = container; this.parts = new Map(); this.labels = new Map(); this.frameCbs = []; this.selected = null; this.hovered = null; this.active = true; this.low = lowEnd();
     const r = this.renderer = new THREE.WebGLRenderer({ antialias: !this.low, alpha:true, powerPreference:'high-performance' });
-    r.setPixelRatio(Math.min(window.devicePixelRatio||1, this.low ? 1.25 : 2)); r.outputEncoding = THREE.sRGBEncoding;
+    r.setPixelRatio(Math.min(window.devicePixelRatio||1, this.low ? 1.25 : 2)); r.outputEncoding = THREE.sRGBEncoding; r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = this.opts.exposure ?? 1.0; r.localClippingEnabled = true;
     const c = this.canvas = r.domElement; c.setAttribute('tabindex','0'); c.setAttribute('role','img'); c.setAttribute('aria-label', opts.aria || 'Modelo 3D interactivo. Arrastra para rotar, rueda para acercar. Usa la lista de estructuras para seleccionar con teclado.');
     container.append(c);
     this.labelsEl = h('div',{class:'labels','aria-hidden':'true'}); container.append(this.labelsEl);
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
     this.home = new THREE.Vector3(...(this.opts.target||[0,0,0])); this.target = this.home.clone(); this.sph = { r:this.opts.radius, phi:this.opts.phi, theta:this.opts.theta }; this.goal = Object.assign({}, this.sph); this.goalTarget = this.target.clone();
-    const hemi = new THREE.HemisphereLight(0xffffff, 0x6b7f94, 0.45); this.scene.add(hemi);
-    const key = new THREE.DirectionalLight(0xffffff, 0.75); key.position.set(4,6,6); this.scene.add(key);
-    const fill = new THREE.DirectionalLight(0xbfd8e6, 0.25); fill.position.set(-5,-2,-4); this.scene.add(fill);
-    this.scene.add(new THREE.AmbientLight(0xffffff, 0.12));
+    try { this.scene.environment = Kit.studio(r, this.opts.dark); } catch(e){ console.warn('env', e); }
+    const hemi = new THREE.HemisphereLight(0xf2f6ff, 0x3a2a2a, 0.35); this.scene.add(hemi);
+    const key = new THREE.DirectionalLight(0xfff6ee, 1.15); key.position.set(4,7,6); this.scene.add(key);
+    const rim = new THREE.DirectionalLight(0xbcd6ff, 0.75); rim.position.set(-6,3,-7); this.scene.add(rim);
+    const fill = new THREE.DirectionalLight(0xffe2d6, 0.25); fill.position.set(-4,-3,5); this.scene.add(fill);
+    if (this.opts.floor !== undefined && this.opts.floor !== null) this.scene.add(Kit.contactShadow(this.opts.floorSize ?? 9, this.opts.floor, this.opts.dark ? 0.0 : 0.32));
     this.ray = new THREE.Raycaster(); this.mouse = new THREE.Vector2();
     this.ro = new ResizeObserver(()=>this.resize()); this.ro.observe(container); this.resize();
     if (this.opts.interactive) this.bindInput();
@@ -1201,13 +1350,13 @@ class Engine3D {
   pick(e){ this.setPointer(e); this.ray.setFromCamera(this.mouse, this.camera); const meshes = []; this.parts.forEach(p => { if (p.visible && p.pickable!==false) meshes.push(...p.meshes); }); const hits = this.ray.intersectObjects(meshes, false); let soft=null; for (const hit of hits){ const id = hit.object.userData.id; const p = this.parts.get(id); if (!p) continue; const translucent = p.passThrough || (p.opacity!==undefined && p.opacity<0.5); if (translucent){ if (!soft) soft=id; continue; } return id; } return soft; }
   hoverAt(e){ const now = performance.now(); if (now - (this._ht||0) < 50) return; this._ht = now; const id = this.pick(e); if (id !== this.hovered){ this.hovered = id; this.canvas.style.cursor = id ? 'pointer' : 'grab'; this.refreshEmissive(); this.opts.onHover && this.opts.onHover(id); } }
   clickAt(e){ const id = this.pick(e); this.opts.onSelect && this.opts.onSelect(id, 'modelo'); }
-  addPart(id, meshes, info={}){ meshes.forEach(m => { m.userData.id = id; m.userData.base = m.position.clone(); m.userData.baseScale = m.scale.clone(); this.scene.add(m); }); const p = Object.assign({ id, meshes, visible:true, opacity:1 }, info); this.parts.set(id, p); return p; }
+  addPart(id, meshes, info={}){ meshes.forEach(m => { m.userData.id = id; m.userData.base = m.position.clone(); m.userData.baseScale = m.scale.clone(); if (m.material){ m.userData.bo = m.material.opacity; m.userData.bt = m.material.transparent; m.userData.bd = m.material.depthWrite; } this.scene.add(m); }); const p = Object.assign({ id, meshes, visible:true, opacity:1 }, info); this.parts.set(id, p); return p; }
   addLabel(id, text, pos){ const el = h('button',{class:'lbl',type:'button',onclick:()=>this.opts.onSelect && this.opts.onSelect(id,'etiqueta')}, text); this.labelsEl.append(el); this.labels.set(id, { el, pos: new THREE.Vector3(...pos) }); }
   setLabels(on){ this.labelsEl.style.display = on ? '' : 'none'; this._labelsOn = on; }
   select(id){ this.selected = id; this.refreshEmissive(); this.labels.forEach((l,k)=>l.el.classList.toggle('sel', k===id)); }
-  refreshEmissive(){ this.parts.forEach(p => p.meshes.forEach(m => { if (!m.material.emissive) return; const sel = p.id===this.selected, hov = p.id===this.hovered; m.material.emissive.set(sel||hov ? 0xffffff : 0x000000); m.material.emissiveIntensity = sel ? 0.28 : hov ? 0.14 : 0; })); }
+  refreshEmissive(){ this.parts.forEach(p => p.meshes.forEach(m => { if (!m.material || !m.material.emissive) return; const sel = p.id===this.selected, hov = p.id===this.hovered; m.material.emissive.set(sel||hov ? 0xffffff : 0x000000); m.material.emissiveIntensity = sel ? 0.22 : hov ? 0.1 : 0; })); }
   setVisible(id, v){ const p = this.parts.get(id); if (!p) return; p.visible = v; p.meshes.forEach(m => m.visible = v); const l = this.labels.get(id); if (l) l.el.style.display = v ? '' : 'none'; }
-  setOpacity(id, o){ const p = this.parts.get(id); if (!p) return; p.opacity = o; p.meshes.forEach(m => { m.material.transparent = o<1; m.material.opacity = o; m.material.depthWrite = o>=0.99; }); }
+  setOpacity(id, o){ const p = this.parts.get(id); if (!p) return; p.opacity = o; p.meshes.forEach(m => { if (!m.material || m.userData.keepOpacity) return; const bo = m.userData.bo ?? 1; m.material.opacity = bo*o; m.material.transparent = !!m.userData.bt || o<0.99; m.material.depthWrite = o>=0.99 ? (m.userData.bd ?? true) : false; }); }
   setExplode(f){ this.parts.forEach(p => { if (!p.explodeDir) return; p.meshes.forEach(m => { m.position.copy(m.userData.base).addScaledVector(p.explodeDir, f*1.5); }); const l = this.labels.get(p.id); if (l) l.pos.copy(l.base||(l.base=l.pos.clone())).addScaledVector(p.explodeDir, f*1.5); }); }
   onFrame(fn){ this.frameCbs.push(fn); }
   updateLabels(){ if (this._labelsOn===false) return; const W = this.container.clientWidth, H = this.container.clientHeight; const cam = this.camera.position.clone().sub(this.target).normalize(); const v = new THREE.Vector3();
@@ -1223,139 +1372,15 @@ class Engine3D {
     this.renderer.render(this.scene, this.camera); this.updateLabels();
   }
   capture(){ this.renderer.render(this.scene, this.camera); const src = this.canvas; const out = document.createElement('canvas'); const w = 480, hh = Math.round(480*src.height/src.width); out.width=w; out.height=hh; const ctx = out.getContext('2d'); ctx.fillStyle = cssVar('--bg-2'); ctx.fillRect(0,0,w,hh); ctx.drawImage(src,0,0,w,hh); return out.toDataURL('image/jpeg', 0.72); }
-  dispose(){ this.active=false; cancelAnimationFrame(this.raf); this.ro.disconnect(); document.removeEventListener('visibilitychange', this.visHandler); this.scene.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material){ (Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose()); } }); this.renderer.dispose(); this.canvas.remove(); this.labelsEl.remove(); }
+  dispose(){ this.active=false; cancelAnimationFrame(this.raf); this.ro.disconnect(); document.removeEventListener('visibilitychange', this.visHandler); this.scene.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material){ (Array.isArray(o.material)?o.material:[o.material]).forEach(m=>{ ['map','bumpMap','normalMap','roughnessMap','alphaMap'].forEach(k => m[k] && m[k].dispose()); m.dispose(); }); } }); if (this.scene.environment) this.scene.environment.dispose(); this.renderer.dispose(); this.canvas.remove(); this.labelsEl.remove(); }
 }
 
 /* ---------- utilidades geométricas ---------- */
-const mat = (color, extra={}) => new THREE.MeshStandardMaterial(Object.assign({ color, roughness:0.55, metalness:0.05 }, extra));
+const mat = (color, extra={}) => new THREE.MeshPhysicalMaterial(Object.assign({ color, roughness:0.5, metalness:0, clearcoat:0.35, clearcoatRoughness:0.35 }, extra));
 const V3 = a => new THREE.Vector3(a[0],a[1],a[2]);
 const curveOf = pts => new THREE.CatmullRomCurve3(pts.map(V3), false, 'catmullrom', 0.4);
 function tube(pts, radius, color, low){ const c = curveOf(pts); const g = new THREE.TubeGeometry(c, low?32:64, radius, low?8:14, false); const m = new THREE.Mesh(g, mat(color)); m.userData.curve = c; return m; }
 function blob(radius, scale, pos, color, low){ const g = new THREE.SphereGeometry(radius, low?28:48, low?20:36); const m = new THREE.Mesh(g, mat(color)); m.scale.set(...scale); m.position.set(...pos); return m; }
-
-/* =====================================================================
-   MODELO: CORAZÓN (procedimental, simplificado). Sustituible por glTF.
-   ===================================================================== */
-function buildHeart(E, opts={}){
-  const low = E.low; const S = Object.fromEntries(BIO.heart.structures.map(s=>[s.id,s]));
-  const add = (id, meshes, extra={}) => { const s = S[id]; const center = V3(s.pos); const p = E.addPart(id, meshes, Object.assign({ capa:s.capa, interno:s.interno, explodeDir: center.clone().normalize() }, extra)); E.addLabel(id, s.nombre, s.lbl); return p; };
-  add('auricula-derecha', [blob(0.85,[1,0.95,0.9],S['auricula-derecha'].pos,S['auricula-derecha'].color,low)]);
-  add('auricula-izquierda', [blob(0.75,[1,0.9,0.9],S['auricula-izquierda'].pos,S['auricula-izquierda'].color,low)]);
-  add('ventriculo-derecho', [blob(1.0,[0.95,1.35,0.85],S['ventriculo-derecho'].pos,S['ventriculo-derecho'].color,low)]);
-  add('ventriculo-izquierdo', [blob(1.05,[1.05,1.55,1.0],S['ventriculo-izquierdo'].pos,S['ventriculo-izquierdo'].color,low)]);
-  const tab = new THREE.Mesh(new THREE.BoxGeometry(0.18,2.1,1.2), mat(S.tabique.color)); tab.position.set(...S.tabique.pos); tab.rotation.z = -0.12;
-  add('tabique', [tab], { explodeDir:new THREE.Vector3(0,0,1) });
-  add('vena-cava-superior', [tube([[-1.1,3.3,0.1],[-1.1,2.4,0.12],[-1.05,1.55,0.15]],0.27,S['vena-cava-superior'].color,low)]);
-  add('vena-cava-inferior', [tube([[-1.05,0.35,0.35],[-1.15,-1.0,0.5],[-1.2,-2.5,0.7]],0.29,S['vena-cava-inferior'].color,low)]);
-  add('arteria-pulmonar', [tube([[-0.5,-0.15,0.5],[-0.45,0.8,0.65],[-0.35,1.5,0.6],[-1.2,1.95,0.45],[-2.3,1.95,0.3]],0.3,S['arteria-pulmonar'].color,low), tube([[-0.35,1.5,0.6],[0.5,1.95,0.35],[1.6,2.15,0.2]],0.26,S['arteria-pulmonar'].color,low)]);
-  add('aorta', [tube([[0.35,0.2,-0.1],[0.2,1.3,-0.2],[0.0,2.6,-0.35],[-0.7,3.05,-0.6],[-1.35,2.4,-0.9],[-1.35,0.5,-1.0],[-1.25,-2.5,-1.0]],0.33,S.aorta.color,low), tube([[-0.35,2.95,-0.45],[-0.3,3.7,-0.5]],0.12,S.aorta.color,low), tube([[0.0,2.7,-0.35],[0.15,3.6,-0.4]],0.12,S.aorta.color,low)]);
-  const pv = S['venas-pulmonares'].color;
-  add('venas-pulmonares', [tube([[0.9,1.1,-0.3],[1.6,1.35,-0.6],[2.4,1.5,-0.7]],0.15,pv,low), tube([[0.9,0.8,-0.3],[1.6,0.8,-0.7],[2.4,0.7,-0.8]],0.15,pv,low), tube([[0.7,1.0,-0.45],[0.0,1.15,-0.9],[-0.9,1.25,-1.35]],0.15,pv,low), tube([[0.7,0.8,-0.45],[0.0,0.7,-0.95],[-0.9,0.6,-1.4]],0.15,pv,low)]);
-  const ring = (id, rot) => { const s=S[id]; const m = new THREE.Mesh(new THREE.TorusGeometry(0.4,0.07,10,28), mat(s.color,{roughness:0.35})); m.position.set(...s.pos); m.rotation.set(...rot); add(id,[m]); };
-  ring('valvula-tricuspide',[Math.PI/2,0,0]); ring('valvula-mitral',[Math.PI/2,0,0]); ring('valvula-pulmonar',[Math.PI/2+0.3,0,0.1]); ring('valvula-aortica',[Math.PI/2+0.15,0,-0.1]);
-
-  /* Flujo sanguíneo: partículas sobre trayectos */
-  const paths = [
-    { color:0x3E63B8, pts:[[-1.1,3.3,0.1],[-1.1,1.8,0.15],[-1.05,0.95,0.15],[-0.9,0.12,0.2],[-0.75,-0.7,0.25],[-0.5,-0.15,0.5],[-0.45,0.8,0.65],[-0.35,1.5,0.6],[-1.2,1.95,0.45],[-2.3,1.95,0.3]] },
-    { color:0x3E63B8, pts:[[-1.2,-2.5,0.7],[-1.15,-1.0,0.5],[-1.05,0.35,0.35],[-1.05,0.95,0.15],[-0.9,0.12,0.2],[-0.75,-0.7,0.25],[-0.5,-0.15,0.5],[-0.45,0.8,0.65],[-0.35,1.5,0.6],[0.5,1.95,0.35],[1.6,2.15,0.2]] },
-    { color:0xD64545, pts:[[2.4,1.5,-0.7],[1.6,1.35,-0.6],[0.85,0.95,-0.15],[0.72,0.05,-0.15],[0.7,-0.9,-0.05],[0.35,0.2,-0.1],[0.2,1.3,-0.2],[0.0,2.6,-0.35],[-0.7,3.05,-0.6],[-1.35,2.4,-0.9],[-1.35,0.5,-1.0],[-1.25,-2.5,-1.0]] },
-    { color:0xD64545, pts:[[-0.9,1.25,-1.35],[0.0,1.15,-0.9],[0.85,0.95,-0.15],[0.72,0.05,-0.15],[0.7,-0.9,-0.05],[0.35,0.2,-0.1],[0.2,1.3,-0.2],[0.0,2.6,-0.35],[-0.7,3.05,-0.6],[-1.35,2.4,-0.9],[-1.35,0.5,-1.0],[-1.25,-2.5,-1.0]] }
-  ];
-  const flow = { on:false, speed:1, meshes:[] };
-  const pg = new THREE.SphereGeometry(0.07, 8, 6);
-  paths.forEach(p => { const curve = curveOf(p.pts); const n = low ? 9 : 14; const m = new THREE.MeshStandardMaterial({ color:p.color, emissive:p.color, emissiveIntensity:0.5, roughness:0.4 }); for (let i=0;i<n;i++){ const mesh = new THREE.Mesh(pg, m); mesh.userData.t = i/n; mesh.userData.curve = curve; mesh.visible=false; E.scene.add(mesh); flow.meshes.push(mesh); } });
-  const model = {
-    flow, beat:{ on:false, speed:1, phase:0, label:'' }, opacity:1,
-    setFlow(on){ flow.on = on; flow.meshes.forEach(m => m.visible = on); },
-    setBeat(on){ this.beat.on = on; if (!on){ ['auricula-derecha','auricula-izquierda','ventriculo-derecho','ventriculo-izquierdo'].forEach(id => E.parts.get(id).meshes.forEach(m=>m.scale.copy(m.userData.baseScale))); this.beat.label=''; } },
-    setLayer(capa, on){ BIO.heart.structures.filter(s=>s.capa===capa).forEach(s => E.setVisible(s.id, on)); },
-    setOpacity(o){ this.opacity=o; BIO.heart.structures.forEach(s => { if (s.capa==='camaras' && !s.interno) E.setOpacity(s.id, o); }); },
-    phaseName(){ const p = this.beat.phase; return p<0.15 ? 'Sístole auricular · las aurículas se contraen' : p<0.45 ? 'Sístole ventricular · los ventrículos expulsan sangre' : 'Diástole · el corazón se relaja y se llena'; },
-    phaseText(){ return this.beat.on ? this.phaseName() : ''; },
-    setSpeed(k){ this.beat.speed=k; this.flow.speed=k; },
-    legend:[{color:'var(--deoxy)',txt:'Sangre pobre en O₂ (lado derecho, arteria pulmonar)'},{color:'var(--oxy)',txt:'Sangre rica en O₂ (lado izquierdo, aorta)'}],
-    observa:'el lado derecho y el izquierdo se contraen al mismo tiempo, pero la sangre de cada lado nunca se mezcla. Primero se contraen las aurículas; ~0,1 s después, los ventrículos.'
-  };
-  model.anims = [
-    { id:'latido', label:'Latido (ciclo cardíaco)', get on(){ return model.beat.on; }, set(on){ model.setBeat(on); } },
-    { id:'flujo', label:'Flujo sanguíneo', get on(){ return model.flow.on; }, set(on){ model.setFlow(on); }, needsOpacity:0.5 }
-  ];
-  E.onFrame((t, dt) => {
-    if (!motionOK()) return;
-    if (flow.on) flow.meshes.forEach(m => { m.userData.t = (m.userData.t + dt*0.06*flow.speed) % 1; m.position.copy(m.userData.curve.getPointAt(m.userData.t)); });
-    if (model.beat.on){ model.beat.phase = (model.beat.phase + dt*0.9*model.beat.speed) % 1; const p = model.beat.phase; const atr = p<0.15 ? 1-0.09*Math.sin(p/0.15*Math.PI) : 1; const ven = (p>=0.15 && p<0.45) ? 1-0.1*Math.sin((p-0.15)/0.3*Math.PI) : 1;
-      ['auricula-derecha','auricula-izquierda'].forEach(id => E.parts.get(id).meshes.forEach(m => m.scale.copy(m.userData.baseScale).multiplyScalar(atr)));
-      ['ventriculo-derecho','ventriculo-izquierdo'].forEach(id => E.parts.get(id).meshes.forEach(m => m.scale.copy(m.userData.baseScale).multiplyScalar(ven))); }
-  });
-  return model;
-}
-
-/* =====================================================================
-   MODELO: CÉLULA ANIMAL (procedimental, simplificado)
-   ===================================================================== */
-function buildCell(E){
-  const low = E.low; const S = Object.fromEntries(BIO.cell.structures.map(s=>[s.id,s]));
-  const add = (id, meshes, lblPos, extra={}) => { const p = E.addPart(id, meshes, Object.assign({ explodeDir: V3(lblPos).normalize() }, extra)); E.addLabel(id, S[id].nombre, lblPos); return p; };
-  // membrana
-  const memb = new THREE.Mesh(new THREE.SphereGeometry(3.1, low?32:56, low?24:40), new THREE.MeshPhysicalMaterial({ color:0x5FB8C4, transparent:true, opacity:0.22, roughness:0.2, side:THREE.DoubleSide, depthWrite:false }));
-  memb.scale.set(1.15,0.95,1.0);
-  add('membrana',[memb],[1.4,2.75,1.0],{ explodeDir:new THREE.Vector3(0,0,0), passThrough:true });
-  // citoplasma (invisible pickable no; usa lista) → representado por puntos tenues
-  const cytoG = new THREE.BufferGeometry(); const n = low?150:320; const arr = new Float32Array(n*3); for (let i=0;i<n;i++){ const r = 1.2+Math.random()*1.7, th=Math.random()*Math.PI*2, ph=Math.acos(2*Math.random()-1); arr[i*3]=r*Math.sin(ph)*Math.cos(th)*1.15; arr[i*3+1]=r*Math.sin(ph)*Math.sin(th)*0.95; arr[i*3+2]=r*Math.cos(ph); }
-  cytoG.setAttribute('position', new THREE.BufferAttribute(arr,3)); const cyto = new THREE.Points(cytoG, new THREE.PointsMaterial({ color:0x8fc7cf, size:0.05, transparent:true, opacity:0.5 }));
-  add('citoplasma',[cyto],[-2.7,-1.1,1.6],{ pickable:false, explodeDir:new THREE.Vector3(0,0,0) });
-  // núcleo + nucléolo
-  const nuc = new THREE.Mesh(new THREE.SphereGeometry(1.05, low?28:48, low?20:36), mat(0x6A58C7,{ transparent:true, opacity:0.7, roughness:0.45 })); nuc.position.set(0.3,0.2,0);
-  add('nucleo',[nuc],[0.3,1.55,0.2]);
-  const nucleolo = new THREE.Mesh(new THREE.SphereGeometry(0.34, 20, 16), mat(0x4B3D9C)); nucleolo.position.set(0.45,0.3,0.15);
-  add('nucleolo',[nucleolo],[1.3,0.6,0.9],{ interno:true });
-  // mitocondrias
-  const mitos = []; [[-1.9,0.9,0.6,0.6],[1.9,-0.9,0.4,-0.4],[-0.9,-1.9,-0.5,1.2],[1.4,1.6,-0.9,2.1],[-2.1,-0.6,-1.1,-0.8]].forEach(([x,y,z,rot]) => { const g = new THREE.SphereGeometry(0.42, low?18:28, low?12:20); const m = new THREE.Mesh(g, mat(0xE07A4F,{roughness:0.5})); m.scale.set(1.6,0.62,0.62); m.position.set(x,y,z); m.rotation.set(0.3,rot,0.2); mitos.push(m); });
-  add('mitocondria',mitos,[-2.6,1.4,0.9]);
-  // RER: anillos alrededor del núcleo con puntos (ribosomas)
-  const rer = []; for (let i=0;i<3;i++){ const m = new THREE.Mesh(new THREE.TorusGeometry(1.45+i*0.22, 0.07, 8, 48, Math.PI*1.1), mat(0x7FA7C9)); m.position.set(0.3,0.2,0); m.rotation.set(0.4+i*0.15, 0.3, 1.6+i*0.1); rer.push(m); }
-  add('rer',rer,[0.5,-1.6,1.4]);
-  // REL: túbulos
-  const rel = []; [[[1.6,0.9,0.9],[2.1,0.4,1.2],[2.4,-0.3,0.8]],[[1.5,1.1,1.0],[2.2,1.2,0.4],[2.6,0.6,-0.1]]].forEach(pts => rel.push(tube(pts,0.06,0x9CC1DD,low)));
-  add('rel',rel,[2.7,1.1,0.9]);
-  // Golgi: discos apilados
-  const golgi = []; for (let i=0;i<5;i++){ const w = 0.34 + i*0.05; const m = new THREE.Mesh(new THREE.CylinderGeometry(w, w, 0.05, 28), mat(0xD9A441)); m.position.set(-1.0, -0.5 + i*0.13, 1.5); m.rotation.set(0.5, 0.2, 0.15); m.scale.set(1.35,1,1); golgi.push(m); }
-  add('golgi',golgi,[-1.0,-1.4,2.3]);
-  // lisosomas
-  const lis = []; [[1.2,-1.9,1.1],[-2.0,1.9,-0.4],[2.3,0.4,-1.0],[-0.4,2.2,-1.1]].forEach(p => { const m = new THREE.Mesh(new THREE.SphereGeometry(0.2,16,12), mat(0xC25B8A)); m.position.set(...p); lis.push(m); });
-  add('lisosomas',lis,[1.9,-2.5,1.5]);
-  // ribosomas libres
-  const rg = new THREE.BufferGeometry(); const rn = low?70:140; const ra = new Float32Array(rn*3); for (let i=0;i<rn;i++){ const r = 1.4+Math.random()*1.5, th=Math.random()*Math.PI*2, ph=Math.acos(2*Math.random()-1); ra[i*3]=r*Math.sin(ph)*Math.cos(th)*1.1; ra[i*3+1]=r*Math.sin(ph)*Math.sin(th)*0.9; ra[i*3+2]=r*Math.cos(ph); }
-  rg.setAttribute('position', new THREE.BufferAttribute(ra,3)); const ribo = new THREE.Points(rg, new THREE.PointsMaterial({ color:0x3A3A4A, size:0.09 }));
-  add('ribosomas',[ribo],[2.4,-1.9,-0.9],{ pickable:false, explodeDir:new THREE.Vector3(0,0,0) });
-  // centríolos
-  const c1 = new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.09,0.42,12), mat(0x5B7C99)); c1.position.set(-0.3,1.25,0.8);
-  const c2 = c1.clone(); c2.rotation.z = Math.PI/2; c2.position.set(-0.05,1.05,0.8);
-  add('centriolos',[c1,c2],[-0.6,2.0,1.5]);
-
-  /* "Ver en acción": partículas que viajan entre organelos */
-  const anim = { active:null, parts:[], t:0 };
-  const pgeo = new THREE.SphereGeometry(0.06,8,6);
-  const routes = {
-    mitocondria:{ from:[-1.9,0.9,0.6], to:[[-0.5,2.5,0.4],[-2.6,-0.5,1.6],[-1.0,0.3,2.4]], color:0xF2A93B, txt:'ATP saliendo de la mitocondria hacia el citoplasma' },
-    nucleo:{ from:[0.3,0.2,0], to:[[2.4,-1.9,-0.9],[1.9,-1.4,1.6],[-2.0,-1.2,1.0]], color:0x9B8BE8, txt:'ARN mensajero saliendo por los poros nucleares hacia los ribosomas' },
-    nucleolo:{ from:[0.45,0.3,0.15], to:[[2.4,-1.9,-0.9],[-2.2,-1.5,0.8]], color:0x4B3D9C, txt:'Subunidades ribosómicas saliendo del núcleo' },
-    rer:{ from:[0.5,-1.3,1.2], to:[[-0.9,-0.3,1.5]], color:0x7FA7C9, txt:'Vesículas con proteínas viajando del retículo al Golgi' },
-    rel:{ from:[2.1,0.4,1.2], to:[[0,3.0,0.9],[2.9,-1.4,1.2]], color:0x9CC1DD, txt:'Lípidos nuevos incorporándose a las membranas' },
-    golgi:{ from:[-0.9,0.2,1.5], to:[[-1.6,-1.2,2.6],[0.2,-2.4,2.0]], color:0xD9A441, txt:'Vesículas de secreción viajando hacia la membrana (exocitosis)' },
-    lisosomas:{ from:[1.2,-1.9,1.1], to:[[1.6,-2.6,1.7]], color:0xC25B8A, txt:'Lisosoma fusionándose con una vesícula para digerir su contenido' },
-    ribosomas:{ from:[2.4,-1.9,-0.9], to:[[2.6,-1.2,-1.6],[1.6,-2.4,-1.2]], color:0x3A3A4A, txt:'Proteínas recién sintetizadas liberadas al citosol' },
-    membrana:{ from:[0,3.4,0.9], to:[[0.2,2.0,0.6]], color:0x5FB8C4, txt:'Moléculas cruzando la membrana por difusión' },
-    citoplasma:{ from:[-2.2,-2.2,1.0], to:[[-1.9,0.9,0.6]], color:0xA9D6DC, txt:'Piruvato (de la glucólisis) entrando a la mitocondria' },
-    centriolos:{ from:[-0.2,1.15,0.8], to:[[-2.8,1.15,0.8],[2.4,1.15,0.8]], color:0x5B7C99, txt:'Microtúbulos del huso mitótico extendiéndose hacia los polos' }
-  };
-  const model = {
-    action(id){ this.stop(); const r = routes[id]; if (!r) return null; anim.active = r; const m = new THREE.MeshStandardMaterial({ color:r.color, emissive:r.color, emissiveIntensity:0.6 }); r.to.forEach(to => { for (let i=0;i<6;i++){ const p = new THREE.Mesh(pgeo, m); p.userData = { from:V3(r.from), to:V3(to), off:i/6 }; E.scene.add(p); anim.parts.push(p); } }); return r.txt; },
-    stop(){ anim.parts.forEach(p=>E.scene.remove(p)); anim.parts=[]; anim.active=null; }
-  };
-  E.onFrame((t,dt) => { if (!anim.active || !motionOK()) return; anim.t += dt*0.35; anim.parts.forEach(p => { const k = (anim.t + p.userData.off) % 1; p.position.lerpVectors(p.userData.from, p.userData.to, k); p.scale.setScalar(0.6+0.8*Math.sin(k*Math.PI)); }); });
-  return model;
-}
 
 /* =====================================================================
    FALLBACK 2D (sin WebGL): esquema SVG con las mismas regiones seleccionables
@@ -1385,105 +1410,513 @@ function heart2D(onSelect){
 </script>
 <script>
 /* =====================================================================
-   MODELOS: CEREBRO · PULMONES (procedimentales, simplificados)
-   Contrato: build(E) → { anims:[{id,label,on,set,needsOpacity,focus}], setSpeed(k), phaseText(), legend, observa }
+   MODELO: CORAZÓN DETALLADO (procedimental, simplificado con fines educativos)
+   Ventrículos con ápex, orejuelas, surcos con grasa, vasos coronarios pegados
+   a la superficie, grandes vasos cónicos con lumen, válvulas con valvas que
+   se abren y cierran según el ciclo cardíaco. Sustituible por un glTF.
    ===================================================================== */
-function gyriSphere(radius, scale, pos, color, low, seed=0){
-  const g = new THREE.SphereGeometry(radius, low?36:64, low?26:48);
-  const p = g.attributes.position; const v = new THREE.Vector3();
-  for (let i=0;i<p.count;i++){ v.fromBufferAttribute(p,i); const n = v.clone().normalize(); const d = 0.045*Math.sin(n.x*11+seed)*Math.sin(n.y*9+seed*0.7) + 0.035*Math.sin(n.z*13+n.x*5+seed); v.addScaledVector(n, d*radius); p.setXYZ(i,v.x,v.y,v.z); }
-  g.computeVertexNormals();
-  const m = new THREE.Mesh(g, mat(color,{roughness:0.62})); m.scale.set(...scale); m.position.set(...pos); return m;
-}
-function buildBrain(E){
-  const low = E.low; const S = Object.fromEntries(BIO.brain.structures.map(s=>[s.id,s]));
-  const add = (id, meshes, extra={}) => { const s=S[id]; const p = E.addPart(id, meshes, Object.assign({ capa:s.capa, interno:s.interno, explodeDir:V3(s.pos).normalize() }, extra)); E.addLabel(id, s.nombre, s.lbl); return p; };
-  const lobe = (id, radius, scale, pos, zoff, seed) => add(id, [gyriSphere(radius,scale,[pos[0],pos[1],pos[2]+zoff],S[id].color,low,seed), gyriSphere(radius,scale,[pos[0],pos[1],pos[2]-zoff],S[id].color,low,seed+3)]);
-  lobe('lobulo-frontal', 1.0, [1.55,1.15,0.95], [1.2,0.7,0], 0.62, 1);
-  lobe('lobulo-parietal', 1.0, [1.35,1.05,0.95], [-0.35,1.25,0], 0.62, 2);
-  lobe('lobulo-temporal', 0.85, [1.55,0.75,0.75], [0.35,-0.55,0], 0.95, 3);
-  lobe('lobulo-occipital', 0.85, [1.0,0.95,0.95], [-1.9,0.55,0], 0.6, 4);
-  add('cerebelo', [gyriSphere(0.8,[1.15,0.7,0.85],[-1.5,-1.15,0.55],S.cerebelo.color,low,5), gyriSphere(0.8,[1.15,0.7,0.85],[-1.5,-1.15,-0.55],S.cerebelo.color,low,6)]);
-  add('tronco', [tube([[-0.2,-0.3,0],[-0.4,-1.3,0],[-0.6,-2.3,0]],0.38,S.tronco.color,low)]);
-  add('medula', [tube([[-0.6,-2.3,0],[-0.65,-3.2,0],[-0.7,-4.0,0]],0.24,S.medula.color,low)]);
-  const cc = new THREE.Mesh(new THREE.TorusGeometry(0.95,0.12,10,40,Math.PI), mat(S['cuerpo-calloso'].color,{roughness:0.4})); cc.position.set(0,0.35,0); cc.scale.set(1.3,0.9,1);
-  add('cuerpo-calloso',[cc]);
-  const tl = [0.32,-0.32].map(z => { const m = new THREE.Mesh(new THREE.SphereGeometry(0.42,24,18), mat(S.talamo.color)); m.scale.set(1.3,0.8,0.7); m.position.set(-0.1,0.05,z); return m; });
-  add('talamo', tl);
-  const ht = new THREE.Mesh(new THREE.SphereGeometry(0.3,20,16), mat(S.hipotalamo.color)); ht.position.set(0.25,-0.5,0); ht.scale.set(1.2,0.7,1);
-  add('hipotalamo',[ht]);
-  const hp = new THREE.Mesh(new THREE.SphereGeometry(0.2,18,14), mat(S.hipofisis.color)); hp.position.set(0.4,-1.05,0); const stalk = tube([[0.3,-0.65,0],[0.38,-0.9,0]],0.06,S.hipofisis.color,low);
-  add('hipofisis',[hp,stalk]);
-  add('hipocampo', [0.75,-0.75].map(z => tube([[-0.9,-0.4,z],[-0.3,-0.65,z*1.05],[0.5,-0.55,z*1.1]],0.14,S.hipocampo.color,low)));
-  /* Impulso nervioso: receptor (mano) → médula → tronco → tálamo → parietal → frontal → médula → músculo */
-  const route = curveOf([[3.0,-4.2,1.6],[1.2,-4.0,0.6],[-0.65,-3.6,0],[-0.5,-1.8,0],[-0.2,-0.3,0],[-0.1,0.1,0.3],[-0.3,1.4,0.55],[0.5,1.55,0.55],[1.2,1.2,0.5],[0.3,0.2,0.2],[-0.4,-1.6,0],[-0.65,-3.5,0],[1.0,-4.1,0.9],[3.0,-4.4,1.9]]);
-  const imp = { on:false, t:0, speed:1, parts:[] }; const pm = new THREE.MeshStandardMaterial({ color:0xF2C94C, emissive:0xF2C94C, emissiveIntensity:0.9 }); const pg = new THREE.SphereGeometry(0.09,8,6);
-  for (let i=0;i<8;i++){ const m = new THREE.Mesh(pg, pm); m.visible=false; m.userData.off = -i*0.012; E.scene.add(m); imp.parts.push(m); }
-  const hand = new THREE.Mesh(new THREE.SphereGeometry(0.3,16,12), mat(0xE0B090)); hand.position.set(3.1,-4.3,1.75); hand.visible=false; E.scene.add(hand);
-  const stim = new THREE.Mesh(new THREE.SphereGeometry(0.16,12,10), new THREE.MeshStandardMaterial({color:0xE05030, emissive:0xE05030, emissiveIntensity:0.8})); stim.position.set(3.4,-4.1,2.0); stim.visible=false; E.scene.add(stim);
-  const pulse = { ids:[], t:0 };
+function buildHeart(E){
+  const low = E.low; const D = BIO.heart; const S = Object.fromEntries(D.structures.map(s=>[s.id,s]));
+  const add = (id, meshes, extra={}) => { const s = S[id]; const p = E.addPart(id, meshes, Object.assign({ capa:s.capa, interno:s.interno, explodeDir: V3(s.pos).sub(new THREE.Vector3(0,-0.2,0)).normalize() }, extra)); E.addLabel(id, s.nombre, s.lbl); return p; };
+  const muscle = (tint, tex='myocardium') => Kit.tissue({ tex, rep:[3,2], bump:0.018, coat:0.65, coatRough:0.26, rough:0.4, color:tint });
+  const chamber = o => { const g = Kit.sculpt({ shape: d => { const p = d.clone(); if (o.apex && d.y<0){ const k = 1 - o.apex*Math.pow(-d.y,1.7); p.x*=k; p.z*=k; } if (o.flatBack && d.z<0) p.z*=o.flatBack; if (o.flatTop && d.y>0) p.y*=o.flatTop; p.x*=o.r[0]; p.y*=o.r[1]; p.z*=o.r[2]; return p; },
+      disp: p => o.amp*Kit.fbm(p.x*o.f+o.seed, p.y*o.f, p.z*o.f, 3) });
+    const m = new THREE.Mesh(g, o.mat); m.position.set(...o.c); if (o.rot) m.rotation.set(...o.rot); return m; };
+
+  /* --- cámaras --- */
+  /* Masa ventricular única, dividida por el plano del tabique: surcos interventriculares sin costuras */
+  const VR = [1.45,1.72,1.22], VC = [0.25,-0.9,0.05], VROT = [-0.25,0,0.4];
+  const sIV = (x,y,z) => 0.75*z - 0.62*x + 0.38*y;   // coordenadas normalizadas; >0.05 → ventrículo derecho
+  const vg = Kit.sculpt({ shape: d => { const p = d.clone(); if (d.y<0){ const k = 1 - 0.6*Math.pow(-d.y,1.6); p.x*=k; p.z*=k; } if (d.y>0) p.y*=0.72; if (d.z<0) p.z*=0.85; return p.multiply(V3(VR)); },
+    disp: (p,d) => { const n = d; const sv = sIV(n.x, n.y, n.z) - 0.05; return 0.028*Kit.fbm(p.x*2+1, p.y*2, p.z*2, 3) - 0.07*Math.exp(-Math.pow(sv/0.06,2)); }, store: (p,d) => sIV(d.x,d.y,d.z) > 0.05 ? 'rv' : 'lv' });
+  const vParts = Kit.split(vg, i => vg.userData.extra[i]);
+  const lv = new THREE.Mesh(vParts.lv, muscle(0xffffff)), rv = new THREE.Mesh(vParts.rv, muscle(0xfff2ef));
+  [lv, rv].forEach(m => { m.position.set(...VC); m.rotation.set(...VROT); });
+  const conus = chamber({ r:[0.4,0.66,0.38], c:[0.04,0.12,0.66], rot:[-0.15,0,-0.5], amp:0.025, f:2.4, seed:5, mat:rv.material });
+  const ra = chamber({ r:[0.82,0.86,0.76], c:[-1.12,0.62,-0.05], amp:0.04, f:3.2, seed:7, mat:muscle(0xf4dde2,'atrium') });
+  const raA = chamber({ r:[0.62,0.26,0.3], c:[-0.6,1.05,0.5], rot:[0.3,-0.75,0.5], amp:0.035, f:5, seed:9, mat:ra.material });
+  const la = chamber({ r:[0.86,0.62,0.7], c:[0.7,0.8,-0.65], amp:0.04, f:3.0, seed:11, mat:muscle(0xf6e2e4,'atrium') });
+  const laA = chamber({ r:[0.56,0.22,0.28], c:[1.25,0.85,0.25], rot:[0.2,0.6,-0.6], amp:0.035, f:5, seed:13, mat:la.material });
+  add('ventriculo-izquierdo', [lv]); add('ventriculo-derecho', [rv, conus]); add('auricula-derecha', [ra, raA]); add('auricula-izquierda', [la, laA]);
+  const sep = chamber({ r:[0.07,0.95,0.62], c:[0,0,0], amp:0.01, f:3, seed:15, mat:muscle(0xd8b0b0) });
+  { const nl = new THREE.Vector3(-0.62/VR[0], 0.38/VR[1], 0.75/VR[2]).normalize(); const q = new THREE.Quaternion().setFromEuler(new THREE.Euler(...VROT)); const nw = nl.clone().applyQuaternion(q);
+    const cl = new THREE.Vector3(0.0, -0.1*VR[1], (0.05+0.38*0.25)/0.75*VR[2]).applyQuaternion(q).add(V3(VC)); sep.position.copy(cl); sep.quaternion.setFromUnitVectors(new THREE.Vector3(1,0,0), nw).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0), 0)); }
+  add('tabique', [sep], { explodeDir:new THREE.Vector3(0,0,1) });
+
+  /* --- grandes vasos --- */
+  const artMat = () => Kit.tissue({ tex:'artery', rep:[5,1], bump:0.01, coat:0.75, coatRough:0.22, rough:0.35 });
+  const veinMat = () => Kit.tissue({ tex:'vein', rep:[5,1], bump:0.01, coat:0.75, coatRough:0.22, rough:0.35 });
+  const vessel = (pts, r0, r1, m, caps, lumen, o={}) => { const g = Kit.taper(pts, r0, r1, o); const c = g.userData.curve; const out = [new THREE.Mesh(g, m)]; if (caps.includes(1)) out.push(...Kit.cap(c, true, g.userData.r1, m, lumen)); if (caps.includes(0)) out.push(...Kit.cap(c, false, g.userData.r0, m, lumen)); return out; };
+  const LA_ = 0x3a0d0c, LV_ = 0x141a36;
+  const aM = artMat();
+  const aorta = [
+    ...vessel([[0.1,0.35,-0.1],[-0.2,1.4,0.1],[-0.3,2.3,0.05],[0.0,3.05,-0.3],[0.75,3.0,-0.85],[1.05,2.3,-1.25],[1.05,1.0,-1.35],[1.0,-1.0,-1.4],[0.95,-2.6,-1.4]], 0, 0, aM, [1], LA_, { rfn:u => 0.27 + 0.07*Math.exp(-Math.pow((u-0.03)/0.04,2)) + 0.04*(1-u), seg: low?60:120 }),
+    ...vessel([[-0.05,2.95,-0.2],[-0.3,3.55,-0.2],[-0.5,4.05,-0.15]], 0.17, 0.14, aM, [1], LA_),
+    ...vessel([[0.32,3.08,-0.45],[0.36,3.6,-0.47],[0.38,4.0,-0.48]], 0.12, 0.11, aM, [1], LA_),
+    ...vessel([[0.6,3.02,-0.72],[0.8,3.5,-0.8],[0.95,3.9,-0.82]], 0.13, 0.12, aM, [1], LA_)
+  ];
+  add('aorta', aorta);
+  const pM = veinMat();
+  add('arteria-pulmonar', [
+    ...vessel([[0.3,0.62,0.72],[0.42,1.3,0.52],[0.45,1.9,0.12]], 0.35, 0.31, pM, [], LV_),
+    ...vessel([[0.45,1.9,0.12],[1.1,2.05,-0.25],[1.95,2.0,-0.35]], 0.28, 0.22, pM, [1], LV_),
+    ...vessel([[0.45,1.9,0.12],[-0.1,1.95,-0.6],[-1.2,1.9,-0.68],[-2.3,1.85,-0.6]], 0.27, 0.22, pM, [1], LV_)
+  ]);
+  const cM = veinMat();
+  add('vena-cava-superior', vessel([[-1.05,3.4,0.0],[-1.12,2.4,0.05],[-1.15,1.45,0.02]], 0.27, 0.28, cM, [0], LV_));
+  add('vena-cava-inferior', vessel([[-1.15,0.2,-0.15],[-1.2,-0.9,-0.4],[-1.25,-2.4,-0.45]], 0.3, 0.3, veinMat(), [1], LV_));
+  const pvM = artMat();
+  add('venas-pulmonares', [
+    ...vessel([[0.2,1.0,-1.05],[-0.7,1.15,-1.25],[-1.7,1.25,-1.2]], 0.15, 0.13, pvM, [1], LA_),
+    ...vessel([[0.25,0.62,-1.05],[-0.7,0.58,-1.3],[-1.7,0.52,-1.25]], 0.15, 0.13, pvM, [1], LA_),
+    ...vessel([[1.3,1.0,-0.8],[1.9,1.2,-0.9],[2.5,1.35,-0.85]], 0.15, 0.13, pvM, [1], LA_),
+    ...vessel([[1.3,0.62,-0.85],[1.9,0.58,-0.95],[2.5,0.52,-0.9]], 0.15, 0.13, pvM, [1], LA_)
+  ]);
+
+  /* --- vasos coronarios y grasa epicárdica, pegados a la superficie --- */
+  const surf = [lv, rv, ra, la, raA, laA, conus]; const ctr = new THREE.Vector3(0.1,-0.4,0.1);
+  const onSurf = (pts, n, lift) => Kit.snap(Kit.densify(pts, n), surf, ctr, lift);
+  const corA = Kit.tissue({ color:0xC8352C, rough:0.3, coat:0.8, coatRough:0.2 }), corV = Kit.tissue({ color:0x4F5E9C, rough:0.32, coat:0.8, coatRough:0.2 }), fatM = Kit.tissue({ tex:'fat', rep:[8,1], bump:0.035, coat:0.6, rough:0.45, color:0xE8D2B0 });
+  const cor = []; const route = (pts, n, r0, r1, m, lift=0.055) => { const s = onSurf(pts, n, lift); if (s.length>3) cor.push(new THREE.Mesh(Kit.taper(s, r0, r1, { seg: low?24:48, rad:8 }), m)); return s; };
+  const fat = (pts, n, r) => { const s = onSurf(pts, n, -0.06); if (s.length>3) { const g = Kit.taper(s, r, r*0.65, { seg: low?30:60, rad:12, bumpy:0.55, bf:10, seed:3 }); cor.push(new THREE.Mesh(g, fatM)); } };
+  fat([[0.55,0.3,1.3],[0.4,-0.4,1.35],[0.35,-1.1,1.25],[0.6,-1.8,1.05],[0.95,-2.2,0.7]], 22, 0.15);
+  fat([[-0.3,0.35,1.1],[-1.0,0.25,1.0],[-1.6,-0.05,0.55],[-1.75,-0.6,-0.1]], 18, 0.17);
+  fat([[0.8,0.35,0.95],[1.45,0.3,0.4],[1.75,0.15,-0.3],[1.45,0.05,-1.0]], 18, 0.15);
+  route([[0.55,0.35,1.3],[0.4,-0.4,1.35],[0.35,-1.1,1.25],[0.6,-1.8,1.05],[1.02,-2.35,0.6]], 26, 0.07, 0.035, corA);
+  route([[0.4,-0.5,1.35],[0.9,-0.8,1.1],[1.4,-1.1,0.7]], 12, 0.045, 0.025, corA);
+  route([[0.8,0.35,0.95],[1.45,0.3,0.4],[1.75,0.15,-0.3],[1.45,0.05,-1.0]], 20, 0.06, 0.04, corA);
+  route([[1.72,0.1,-0.2],[1.95,-0.7,-0.1],[1.8,-1.4,0.0]], 12, 0.045, 0.025, corA);
+  route([[-0.3,0.4,1.1],[-1.0,0.25,1.0],[-1.6,-0.05,0.55],[-1.75,-0.6,-0.1],[-1.25,-1.1,-0.65]], 24, 0.065, 0.04, corA);
+  route([[-1.55,-0.1,0.6],[-1.4,-0.8,0.85],[-1.0,-1.4,0.9]], 12, 0.04, 0.022, corA);
+  route([[0.68,0.3,1.3],[0.58,-0.4,1.36],[0.54,-1.1,1.27],[0.78,-1.75,1.05]], 22, 0.045, 0.028, corV, 0.05);
+  route([[-0.25,-0.9,1.1],[-0.55,-1.4,0.95]], 8, 0.035, 0.02, corV, 0.06);
+  if (cor.length) add('vasos-coronarios', cor);
+
+  /* --- válvulas con valvas --- */
+  const leafMat = () => Kit.tissue({ color:0xEFE2D2, rough:0.35, coat:0.6, side:THREE.DoubleSide, tex:'tissue', rep:[1,1], bump:0.004 });
+  const X = new THREE.Vector3(1,0,0);
+  const valves = [];
+  const valve = (id, c, axis, r, n, semilunar) => { const C = V3(c), A = V3(axis).normalize(); const U = new THREE.Vector3().crossVectors(A, Math.abs(A.y)<0.9 ? new THREE.Vector3(0,1,0) : new THREE.Vector3(1,0,0)).normalize(); const W = new THREE.Vector3().crossVectors(A, U).normalize();
+    const m0 = leafMat(); const ring = new THREE.Mesh(new THREE.TorusGeometry(r, 0.035, 10, 40), Kit.tissue({ color:0xE6D3BE, rough:0.4, coat:0.5 })); ring.position.copy(C); ring.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1), A);
+    const meshes = [ring]; const span = Math.PI*2/n, gap = 0.05;
+    for (let k=0;k<n;k++){ const th = k*span + span/2; const rd = U.clone().multiplyScalar(Math.cos(th)).addScaledVector(W, Math.sin(th)); const td = U.clone().multiplyScalar(-Math.sin(th)).addScaledVector(W, Math.cos(th)); const H = C.clone().addScaledVector(rd, r);
+      const Q = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(td, rd.clone().negate(), A)); const Qi = Q.clone().invert();
+      const NS = 7, NT = 9, P = [], I = []; for (let i=0;i<=NS;i++){ const s = i/NS; for (let j=0;j<=NT;j++){ const t = j/NT*2-1; const ang = th + t*(span/2-gap)*(1-0.35*s); const dir = U.clone().multiplyScalar(Math.cos(ang)).addScaledVector(W, Math.sin(ang)); const w = C.clone().addScaledVector(dir, r*(1-s*0.96)).addScaledVector(A, (semilunar?-1:1)*0.22*r*Math.sin(Math.PI*s*0.9)*(1-Math.abs(t)*0.3)); w.sub(H).applyQuaternion(Qi); P.push(w.x,w.y,w.z); } }
+      for (let i=0;i<NS;i++) for (let j=0;j<NT;j++){ const a=i*(NT+1)+j, b=a+1, cc=a+NT+1, d=cc+1; I.push(a,cc,b, b,cc,d); }
+      const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(P,3)); g.setIndex(I); g.computeVertexNormals(); const uv = []; for (let i=0;i<=NS;i++) for (let j=0;j<=NT;j++) uv.push(j/NT, i/NS); g.setAttribute('uv', new THREE.Float32BufferAttribute(uv,2));
+      const leaf = new THREE.Mesh(g, m0); leaf.position.copy(H); leaf.quaternion.copy(Q); leaf.userData.q0 = Q.clone(); leaf.userData.leaf = true; meshes.push(leaf); }
+    add(id, meshes); valves.push({ id, meshes, semilunar, open:0 }); };
+  valve('valvula-tricuspide', S['valvula-tricuspide'].pos, [0.25,-1,0.25], 0.36, 3, false);
+  valve('valvula-mitral', S['valvula-mitral'].pos, [-0.1,-1,0.35], 0.34, 2, false);
+  valve('valvula-pulmonar', S['valvula-pulmonar'].pos, [0.15,1,-0.25], 0.3, 3, true);
+  valve('valvula-aortica', S['valvula-aortica'].pos, [-0.25,1,0.2], 0.3, 3, true);
+
+  /* --- flujo sanguíneo: glóbulos rojos (discos bicóncavos simplificados) --- */
+  const paths = [
+    { oxy:false, pts:[[-1.05,3.4,0.0],[-1.12,2.4,0.05],[-1.15,1.45,0.02],[-1.1,0.75,0.0],[-0.85,0.15,0.2],[-0.5,-0.5,0.45],[-0.3,-0.9,0.55],[-0.1,-0.3,0.72],[0.3,0.62,0.72],[0.42,1.3,0.52],[0.45,1.9,0.12],[-0.1,1.95,-0.6],[-1.2,1.9,-0.68],[-2.3,1.85,-0.6]] },
+    { oxy:false, pts:[[-1.25,-2.4,-0.45],[-1.2,-0.9,-0.4],[-1.15,0.2,-0.15],[-1.1,0.7,0.0],[-0.85,0.15,0.2],[-0.45,-0.55,0.45],[-0.2,-0.8,0.6],[-0.05,-0.2,0.74],[0.3,0.62,0.72],[0.42,1.3,0.52],[0.45,1.9,0.12],[1.1,2.05,-0.25],[1.95,2.0,-0.35]] },
+    { oxy:true, pts:[[-1.7,1.25,-1.2],[-0.7,1.15,-1.25],[0.2,1.0,-1.05],[0.7,0.8,-0.65],[0.62,0.05,-0.35],[0.8,-0.9,-0.1],[1.0,-1.6,0.05],[0.6,-0.8,-0.05],[0.1,0.38,-0.1],[-0.2,1.4,0.1],[-0.3,2.3,0.05],[0.0,3.05,-0.3],[0.75,3.0,-0.85],[1.05,2.3,-1.25],[1.05,1.0,-1.35],[0.95,-2.6,-1.4]] },
+    { oxy:true, pts:[[2.5,1.35,-0.85],[1.9,1.2,-0.9],[1.3,1.0,-0.8],[0.7,0.8,-0.65],[0.62,0.05,-0.35],[0.9,-1.0,-0.05],[0.55,-0.7,-0.1],[0.1,0.38,-0.1],[-0.2,1.4,0.1],[-0.3,2.3,0.05],[-0.05,2.95,-0.2],[-0.35,3.6,-0.2],[-0.5,4.05,-0.15]] }
+  ];
+  const flow = { on:false, speed:1, meshes:[] };
+  const rbcG = new THREE.SphereGeometry(0.075, 14, 10); { const p = rbcG.attributes.position; for (let i=0;i<p.count;i++){ const x=p.getX(i), y=p.getY(i), z=p.getZ(i); const rr = Math.hypot(x,z)/0.075; p.setY(i, y*0.42*(0.55+0.6*rr*rr)); } rbcG.computeVertexNormals(); }
+  const oxyM = new THREE.MeshPhysicalMaterial({ color:0xE0342E, emissive:0x8a1010, emissiveIntensity:0.35, roughness:0.35, clearcoat:0.8 }), deoM = new THREE.MeshPhysicalMaterial({ color:0x4660C8, emissive:0x1a2a70, emissiveIntensity:0.35, roughness:0.35, clearcoat:0.8 });
+  const RR = Kit.rng(21);
+  paths.forEach(p => { const curve = Kit.curve(p.pts); const n = low ? 12 : 22; for (let i=0;i<n;i++){ const m = new THREE.Mesh(rbcG, p.oxy ? oxyM : deoM); m.userData = { t:i/n, curve, spin:new THREE.Vector3(RR()*2-1,RR()*2-1,RR()*2-1).normalize(), off:new THREE.Vector3(RR()-0.5,RR()-0.5,RR()-0.5).multiplyScalar(0.12) }; m.rotation.set(RR()*3,RR()*3,RR()*3); m.visible=false; E.scene.add(m); flow.meshes.push(m); } });
+
+  const beatParts = { atr:['auricula-derecha','auricula-izquierda'], ven:['ventriculo-derecho','ventriculo-izquierdo','tabique'] };
   const model = {
-    anims:[ { id:'impulso', label:'Impulso nervioso: estímulo → percepción → respuesta', get on(){ return imp.on; }, set(on){ imp.on=on; imp.t=0; imp.parts.forEach(p=>p.visible=on); hand.visible=on; stim.visible=on; if (on) E.focus(new THREE.Vector3(0.6,-1.2,0.4), 12); }, needsOpacity:0.45 } ],
+    flow, beat:{ on:false, speed:1, phase:0.6 }, opacity:1,
+    setFlow(on){ flow.on = on; flow.meshes.forEach(m => m.visible = on); },
+    setBeat(on){ this.beat.on = on; if (!on){ [...beatParts.atr, ...beatParts.ven, 'vasos-coronarios'].forEach(id => { const p = E.parts.get(id); p && p.meshes.forEach(m=>m.scale.copy(m.userData.baseScale)); }); valves.forEach(v => { v.open = 0; setLeaves(v, 0); }); } },
+    setLayer(capa, on){ D.structures.filter(s=>s.capa===capa).forEach(s => E.setVisible(s.id, on)); },
+    setOpacity(o){ this.opacity=o; D.structures.forEach(s => { if (s.capa==='camaras' && !s.interno) E.setOpacity(s.id, o); }); E.setOpacity('vasos-coronarios', o<0.6 ? Math.max(o,0.25) : 1); },
+    phaseName(){ const p = this.beat.phase; return p<0.15 ? 'Sístole auricular · las aurículas se contraen; tricúspide y mitral abiertas' : p<0.45 ? 'Sístole ventricular · se cierran tricúspide y mitral ("lub"); se abren pulmonar y aórtica' : 'Diástole · se cierran pulmonar y aórtica ("dub"); el corazón se relaja y se llena'; },
+    phaseText(){ return this.beat.on ? this.phaseName() : ''; },
+    setSpeed(k){ this.beat.speed=k; this.flow.speed=k; },
+    legend:[{color:'var(--deoxy)',txt:'Glóbulos rojos con poco O₂ (lado derecho, arteria pulmonar)'},{color:'var(--oxy)',txt:'Glóbulos rojos cargados de O₂ (lado izquierdo, aorta)'},{color:'#EFE2D2',txt:'Valvas: se abren y cierran con cada fase'}],
+    observa:'el lado derecho y el izquierdo se contraen al mismo tiempo, pero la sangre de cada lado nunca se mezcla. Mira las valvas: cuando los ventrículos se contraen, la tricúspide y la mitral se cierran y la pulmonar y la aórtica se abren.'
+  };
+  model.anims = [
+    { id:'latido', label:'Latido y válvulas (ciclo cardíaco)', get on(){ return model.beat.on; }, set(on){ model.setBeat(on); } },
+    { id:'flujo', label:'Flujo sanguíneo (glóbulos rojos)', get on(){ return model.flow.on; }, set(on){ model.setFlow(on); }, needsOpacity:0.5 }
+  ];
+  const qT = new THREE.Quaternion();
+  function setLeaves(v, open){ v.meshes.forEach(m => { if (!m.userData.leaf) return; m.quaternion.copy(m.userData.q0).multiply(qT.setFromAxisAngle(X, open*(v.semilunar?1.05:1.2))); }); }
+  E.onFrame((t, dt) => {
+    if (!motionOK()) return;
+    if (flow.on) flow.meshes.forEach(m => { const u = m.userData; u.t = (u.t + dt*0.055*flow.speed) % 1; m.position.copy(u.curve.getPointAt(u.t)).add(u.off); m.rotateOnAxis(u.spin, dt*2); });
+    if (model.beat.on){ model.beat.phase = (model.beat.phase + dt*0.9*model.beat.speed) % 1; const p = model.beat.phase;
+      const atr = p<0.15 ? 1-0.08*Math.sin(p/0.15*Math.PI) : 1; const ven = (p>=0.15 && p<0.45) ? 1-0.085*Math.sin((p-0.15)/0.3*Math.PI) : 1;
+      beatParts.atr.forEach(id => E.parts.get(id).meshes.forEach(m => m.scale.copy(m.userData.baseScale).multiplyScalar(atr)));
+      beatParts.ven.forEach(id => E.parts.get(id).meshes.forEach(m => m.scale.copy(m.userData.baseScale).multiplyScalar(ven)));
+      const cp = E.parts.get('vasos-coronarios'); if (cp) cp.meshes.forEach(m => m.scale.setScalar(0.35+0.65*ven));
+      valves.forEach(v => { const target = v.semilunar ? ((p>0.17 && p<0.43) ? 1 : 0) : ((p<0.15 || p>0.47) ? 1 : 0); v.open += (target - v.open)*Math.min(1, dt*14); setLeaves(v, v.open); }); }
+  });
+  return model;
+}
+</script>
+<script>
+/* =====================================================================
+   MODELO: CÉLULA ANIMAL DETALLADA (vista en corte, simplificada)
+   Membrana de doble capa con proteínas, envoltura nuclear con poros,
+   cromatina y nucléolo, mitocondrias abiertas con crestas, cisternas del
+   RER con ribosomas, red del REL, Golgi con vesículas, lisosomas,
+   centríolos 9×3 y citoesqueleto.
+   ===================================================================== */
+function buildCell(E){
+  const low = E.low; const S = Object.fromEntries(BIO.cell.structures.map(s=>[s.id,s]));
+  const add = (id, meshes, lblPos, extra={}) => { const p = E.addPart(id, meshes, Object.assign({ explodeDir: V3(lblPos).normalize() }, extra)); E.addLabel(id, S[id].nombre, lblPos); return p; };
+  const R = Kit.rng(17);
+  const CAM = new THREE.Vector3(0.37,0.32,0.87).normalize();
+  const phiC = Math.atan2(CAM.z, -CAM.x);          // ángulo φ de la esfera que mira a la cámara
+  const cutStart = (len) => phiC + (Math.PI*2 - len)/2;   // la cuña retirada queda centrada hacia la cámara
+  const org = (color, o={}) => Kit.tissue(Object.assign({ color, rough:0.38, coat:0.7, coatRough:0.22 }, o));
+  const xf = (g, pos, quat, scale) => { const m = new THREE.Matrix4().compose(pos, quat || new THREE.Quaternion(), scale || new THREE.Vector3(1,1,1)); g.applyMatrix4(m); return g; };
+  const randDir = () => new THREE.Vector3(R()*2-1, R()*2-1, R()*2-1).normalize();
+  const inCut = (p, c, ang=0.8) => { const d = p.clone().sub(c); d.y *= 0.4; return d.normalize().dot(CAM) > Math.cos(ang); };
+
+  /* --- membrana plasmática: doble capa, corte en cuña, proteínas --- */
+  const MS = [3.55, 2.95, 3.1];
+  const mDisp = d => 0.07*Kit.fbm(d.x*1.6+3, d.y*1.6, d.z*1.6, 3);
+  const shell = (k, cut) => Kit.sculpt({ w: low?64:110, h: low?44:80, phiStart: cut ? cutStart(1.5*Math.PI) : 0, phiLength: cut ? 1.5*Math.PI : Math.PI*2, shape: d => new THREE.Vector3(d.x*MS[0]*k, d.y*MS[1]*k, d.z*MS[2]*k), disp: (p,d) => mDisp(d)*k });
+  const geo = { outCut: shell(1, true), outFull: shell(1, false), inCut: shell(0.975, true), inFull: shell(0.975, false) };
+  const mOut = Kit.tissue({ tex:'membrane', rep:[8,5], bump:0.03, color:0x8FD0DA, transparent:true, opacity:0.42, rough:0.25, coat:0.9, coatRough:0.15, side:THREE.DoubleSide, depthWrite:false });
+  const mIn = Kit.tissue({ color:0xC7ECEF, transparent:true, opacity:0.3, rough:0.3, coat:0.6, side:THREE.DoubleSide, depthWrite:false });
+  const outer = new THREE.Mesh(geo.outCut, mOut), inner = new THREE.Mesh(geo.inCut, mIn); outer.renderOrder = 2; inner.renderOrder = 1;
+  // borde del corte: franja que muestra el grosor de la bicapa
+  const rimGeo = (() => { const P = [], I = []; const edges = [cutStart(1.5*Math.PI), cutStart(1.5*Math.PI)+1.5*Math.PI]; let base = 0;
+    edges.forEach(phi => { const N = 40; for (let i=0;i<=N;i++){ const th = i/N*Math.PI; const d = new THREE.Vector3(-Math.cos(phi)*Math.sin(th), Math.cos(th), Math.sin(phi)*Math.sin(th)); const e = 1 + mDisp(d)/Math.max(0.01, 1); [1,0.975].forEach(k => { const dd = mDisp(d)*k; P.push(d.x*(MS[0]*k)+d.x*dd, d.y*(MS[1]*k)+d.y*dd, d.z*(MS[2]*k)+d.z*dd); }); }
+      for (let i=0;i<N;i++){ const a = base+i*2; I.push(a, a+1, a+2, a+1, a+3, a+2); } base += (N+1)*2; });
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(P,3)); g.setIndex(I); g.computeVertexNormals(); return g; })();
+  const rim = new THREE.Mesh(rimGeo, Kit.tissue({ color:0x4FAFBF, rough:0.4, coat:0.5, side:THREE.DoubleSide }));
+  // proteínas de membrana (mosaico fluido)
+  const protG = THREE.CapsuleGeometry ? new THREE.CapsuleGeometry(0.04, 0.08, 4, 8) : new THREE.CylinderGeometry(0.042, 0.042, 0.13, 10);
+  const nProt = low ? 70 : 150; const prot = new THREE.InstancedMesh(protG, org(0x8C7CC4), nProt); const prot2 = new THREE.InstancedMesh(new THREE.SphereGeometry(0.05, 10, 8), org(0xD6B06A), Math.floor(nProt*0.6));
+  const dm = new THREE.Object3D(); let pi = 0, pj = 0;
+  for (let i=0;i<nProt*2 && (pi<nProt || pj<prot2.count);i++){ const d = randDir(); const p = new THREE.Vector3(d.x*MS[0], d.y*MS[1], d.z*MS[2]).addScaledVector(d, mDisp(d)); if (inCut(p, new THREE.Vector3(), 0.78)) continue; dm.position.copy(p); dm.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), d); dm.updateMatrix(); if (i%3 && pi<nProt) prot.setMatrixAt(pi++, dm.matrix); else if (pj<prot2.count) prot2.setMatrixAt(pj++, dm.matrix); }
+  prot.count = pi; prot2.count = pj;
+  add('membrana', [outer, inner, rim, prot, prot2], [2.7,2.7,1.0], { explodeDir:new THREE.Vector3(0,0,0), passThrough:true });
+
+  /* --- citoplasma: citoesqueleto (microtúbulos desde el centrosoma) y gránulos --- */
+  const CS = new THREE.Vector3(-0.35,1.3,0.75);
+  const mts = []; for (let i=0;i<(low?26:48);i++){ const d = randDir(); const end = new THREE.Vector3(d.x*MS[0]*0.9, d.y*MS[1]*0.9, d.z*MS[2]*0.9); const mid = CS.clone().lerp(end, 0.5).add(randDir().multiplyScalar(0.35)); mts.push(Kit.taper([CS.clone().addScaledVector(d,0.2), mid, end], 0.012, 0.01, { seg:16, rad:4 })); }
+  const cyto = new THREE.Mesh(Kit.merge(mts), new THREE.MeshStandardMaterial({ color:0x8FD8B0, transparent:true, opacity:0.55, roughness:0.5, depthWrite:false }));
+  const gr = new THREE.BufferGeometry(); const gn = low?160:360; const ga = new Float32Array(gn*3); for (let i=0;i<gn;i++){ const d = randDir(), r = 0.35+R()*0.55; ga[i*3]=d.x*MS[0]*r; ga[i*3+1]=d.y*MS[1]*r; ga[i*3+2]=d.z*MS[2]*r; } gr.setAttribute('position', new THREE.BufferAttribute(ga,3));
+  const gran = new THREE.Points(gr, new THREE.PointsMaterial({ color:0x9CCFD6, size:0.045, transparent:true, opacity:0.6, depthWrite:false }));
+  add('citoplasma', [cyto, gran], [-3.0,-1.2,1.7], { pickable:false, explodeDir:new THREE.Vector3(0,0,0) });
+
+  /* --- núcleo: doble envoltura con poros, cromatina --- */
+  const NC = new THREE.Vector3(0.3,0.2,0), NR = 1.1;
+  const nShell = (k, cut) => { const g = Kit.sculpt({ w: low?48:80, h: low?34:60, phiStart: cut ? cutStart(1.5*Math.PI) : 0, phiLength: cut ? 1.5*Math.PI : Math.PI*2, radii:[NR*k, NR*0.95*k, NR*k], disp:(p,d) => 0.03*Kit.fbm(d.x*2+9, d.y*2, d.z*2, 2) }); g.translate(NC.x,NC.y,NC.z); return g; };
+  const ngeo = { outCut:nShell(1,true), outFull:nShell(1,false), inCut:nShell(0.94,true), inFull:nShell(0.94,false) };
+  const nOut = new THREE.Mesh(ngeo.outCut, Kit.tissue({ tex:'membrane', rep:[4,3], bump:0.015, color:0x7E66CC, rough:0.35, coat:0.7, side:THREE.DoubleSide }));
+  const nIn = new THREE.Mesh(ngeo.inCut, Kit.tissue({ color:0x5E4AA6, rough:0.5, coat:0.3, side:THREE.BackSide }));
+  const poreN = low?50:110; const pores = new THREE.InstancedMesh(new THREE.TorusGeometry(0.05, 0.018, 6, 14), org(0xC9B8F2), poreN); let pc = 0;
+  for (let i=0;i<poreN*3 && pc<poreN;i++){ const d = randDir(); if (d.dot(CAM) > 0.55) continue; dm.position.copy(NC).add(new THREE.Vector3(d.x*NR*1.005, d.y*NR*0.95*1.005, d.z*NR*1.005)); dm.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1), d); dm.updateMatrix(); pores.setMatrixAt(pc++, dm.matrix); } pores.count = pc;
+  const chrom = []; for (let i=0;i<(low?10:18);i++){ let p = NC.clone().add(randDir().multiplyScalar(R()*0.6)); const pts = [p.clone()]; for (let j=0;j<7;j++){ p = p.clone().add(randDir().multiplyScalar(0.28)); if (p.distanceTo(NC) > 0.9) p.sub(NC).multiplyScalar(0.8).add(NC); pts.push(p); } chrom.push(Kit.taper(pts, 0.035, 0.03, { seg:30, rad:5, bumpy:0.4, bf:20, seed:i })); }
+  const chromM = new THREE.Mesh(Kit.merge(chrom), org(0x4B3490, { rough:0.5, coat:0.3 }));
+  add('nucleo', [nOut, nIn, pores, chromM], [0.1,1.75,0.6]);
+  const nuc = new THREE.Mesh(Kit.sculpt({ radii:[0.36,0.33,0.35], w:40, h:30, disp:(p)=>0.04*Kit.n3(p.x*9,p.y*9,p.z*9) }), Kit.tissue({ tex:'granular', rep:[3,2], bump:0.02, color:0x3A2478, rough:0.55, coat:0.3 }));
+  nuc.position.copy(NC).add(new THREE.Vector3(0.28,0.12,0.38));
+  add('nucleolo', [nuc], [1.55,0.85,1.2], { interno:true });
+
+  /* --- retículo endoplasmático rugoso: cisternas + ribosomas --- */
+  const rerM = Kit.tissue({ color:0x7FA7CF, rough:0.35, coat:0.7, side:THREE.DoubleSide, transparent:true, opacity:0.92 });
+  const sheets = [], riboPts = [];
+  [[1.35,4.3,1.9,0.34],[1.5,4.0,2.1,0.4],[1.66,4.5,1.8,0.3],[1.82,4.1,2.0,0.42],[1.98,4.4,1.7,0.36]].forEach(([r,ps,pl,ts],k) => {
+    const g = new THREE.SphereGeometry(r, low?30:54, low?10:18, ps, pl, ts*Math.PI, 0.46*Math.PI); const p = g.attributes.position; const v = new THREE.Vector3();
+    for (let i=0;i<p.count;i++){ v.fromBufferAttribute(p,i); const n = v.clone().normalize(); v.addScaledVector(n, 0.06*Math.sin(v.x*5+k)+0.05*Math.sin(v.y*6+v.z*4)); p.setXYZ(i,v.x,v.y,v.z); } g.computeVertexNormals(); g.translate(NC.x,NC.y,NC.z); sheets.push(g);
+    for (let i=0;i<(low?60:130);i++){ const vi = Math.floor(R()*p.count); riboPts.push(new THREE.Vector3(p.getX(vi)+NC.x, p.getY(vi)+NC.y, p.getZ(vi)+NC.z).add(randDir().multiplyScalar(0.045))); } });
+  const rerMesh = new THREE.Mesh(Kit.merge(sheets), rerM);
+  const rrib = new THREE.InstancedMesh(new THREE.SphereGeometry(0.028, 6, 5), org(0x2F2A44, { rough:0.6, coat:0.2 }), riboPts.length); riboPts.forEach((p,i) => { dm.position.copy(p); dm.quaternion.identity(); dm.updateMatrix(); rrib.setMatrixAt(i, dm.matrix); });
+  add('rer', [rerMesh, rrib], [-1.2,-1.75,1.6]);
+
+  /* --- retículo endoplasmático liso: red tubular --- */
+  const relC = new THREE.Vector3(2.05,0.35,0.55); const rel = []; for (let i=0;i<(low?9:16);i++){ const pts = []; let p = relC.clone().add(randDir().multiplyScalar(0.55)); for (let j=0;j<5;j++){ pts.push(p.clone()); p = p.clone().add(randDir().multiplyScalar(0.32)); if (p.distanceTo(relC) > 0.85) p.sub(relC).multiplyScalar(0.7).add(relC); } rel.push(Kit.taper(pts, 0.05, 0.045, { seg:24, rad:7 })); }
+  add('rel', [new THREE.Mesh(Kit.merge(rel), org(0xA9CBE6))], [3.0,1.2,1.0]);
+
+  /* --- aparato de Golgi: cisternas curvas con bordes dilatados y vesículas --- */
+  const GC = new THREE.Vector3(-1.2,-0.55,1.45); const gAxis = NC.clone().sub(GC).normalize(); const gq = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), gAxis.clone().negate());
+  const gg = [], vesG = [];
+  for (let i=0;i<5;i++){ const rr = 0.66 - i*0.07, SR = 0.95; const cap = new THREE.SphereGeometry(SR, low?28:44, 8, 0, Math.PI*2, 0, Math.asin(Math.min(0.99,rr/SR))); cap.translate(0,-SR,0); cap.scale(1.45,1,0.75); const off = new THREE.Vector3(0, i*0.15, 0); xf(cap, GC.clone().add(off.clone().applyQuaternion(gq)), gq); gg.push(cap);
+    const ring = new THREE.TorusGeometry(rr, 0.028, 8, 40); ring.rotateX(Math.PI/2); ring.translate(0, -SR + Math.sqrt(SR*SR-rr*rr), 0); ring.scale(1.45,1,0.75); xf(ring, GC.clone().add(off.clone().applyQuaternion(gq)), gq); gg.push(ring); }
+  for (let i=0;i<14;i++){ const d = randDir(); const p = GC.clone().add(gAxis.clone().multiplyScalar(-0.7 - R()*0.35)).add(d.multiplyScalar(0.25+R()*0.35)); const s = new THREE.SphereGeometry(0.06+R()*0.04, 12, 10); s.translate(p.x,p.y,p.z); vesG.push(s); }
+  add('golgi', [new THREE.Mesh(Kit.merge(gg), org(0xE0AC45, { side:THREE.DoubleSide })), new THREE.Mesh(Kit.merge(vesG), org(0xF0C66A, { transparent:true, opacity:0.85 }))], [-1.85,-1.05,2.55]);
+
+  /* --- mitocondrias abiertas: doble membrana y crestas --- */
+  const mitoOut = [], mitoIn = [];
+  const capsule = (L, r, n) => { const pts = []; for (let i=0;i<=n;i++){ const a = -Math.PI/2 + i/n*Math.PI; pts.push(new THREE.Vector2(r*Math.cos(a), (L/2)*Math.sin(a) + (a<0?0:0))); } return pts; };
+  [[-1.95,0.95,0.55],[1.95,-0.95,0.45],[-0.9,-1.95,-0.35],[1.4,1.65,-0.8],[-2.15,-0.55,-1.05],[0.9,-2.1,0.9]].forEach((c,k) => {
+    const Z = CAM.clone().add(randDir().multiplyScalar(0.35)).normalize(); const Y = new THREE.Vector3().crossVectors(Z, randDir()).normalize(); const X = new THREE.Vector3().crossVectors(Y, Z); const q = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(X, Y, Z));
+    const L = 1.25 + R()*0.35, r = 0.3; const pos = V3(c);
+    const o = new THREE.LatheGeometry(capsule(L, r, 16), low?20:32, 0.28*Math.PI, 1.44*Math.PI); xf(o, pos, q); mitoOut.push(o);
+    const inn = new THREE.LatheGeometry(capsule(L*0.94, r*0.86, 16), low?20:32, 0.3*Math.PI, 1.4*Math.PI); xf(inn, pos, q); mitoIn.push(inn);
+    const nC = 6; for (let j=0;j<nC;j++){ const y = -L*0.36 + j/(nC-1)*L*0.72; const w = r*0.82*Math.sqrt(1 - Math.pow(y/(L*0.5),2)); const pl = new THREE.PlaneGeometry(w*1.6, 0.3*r*2, 10, 3); const pp = pl.attributes.position; for (let i=0;i<pp.count;i++){ pp.setZ(i, 0.03*Math.sin(pp.getX(i)*28)); } pl.computeVertexNormals(); pl.rotateX(Math.PI/2); pl.translate((j%2 ? 1 : -1)*w*0.25, y, -0.02); xf(pl, pos, q); mitoIn.push(pl); } });
+  add('mitocondria', [new THREE.Mesh(Kit.merge(mitoOut), org(0xE0784A, { side:THREE.DoubleSide })), new THREE.Mesh(Kit.merge(mitoIn), org(0xF4A77A, { side:THREE.DoubleSide }))], [-2.75,1.55,1.1]);
+
+  /* --- lisosomas: membrana + contenido denso --- */
+  const lisO = [], lisI = []; [[1.25,-1.95,1.15],[-2.0,1.95,-0.4],[2.35,0.9,-0.95],[-0.4,2.25,-1.1],[1.9,-0.2,1.9]].forEach(p => { const a = new THREE.SphereGeometry(0.22,18,14); a.translate(...p); lisO.push(a); const b = Kit.sculpt({ radii:[0.16,0.16,0.16], w:20, h:14, disp:(q)=>0.03*Kit.n3(q.x*20,q.y*20,q.z*20) }); b.translate(...p); lisI.push(b); });
+  add('lisosomas', [new THREE.Mesh(Kit.merge(lisO), org(0xD27AA6, { transparent:true, opacity:0.55, depthWrite:false })), new THREE.Mesh(Kit.merge(lisI), org(0x8E2E62))], [2.1,-2.6,1.6]);
+
+  /* --- ribosomas libres y polirribosomas --- */
+  const fr = []; for (let i=0;i<(low?140:320);i++){ const d = randDir(), r = 0.45+R()*0.45; const p = new THREE.Vector3(d.x*MS[0]*r, d.y*MS[1]*r, d.z*MS[2]*r); if (p.distanceTo(NC) < 1.35) continue; fr.push(p); }
+  for (let k=0;k<(low?6:14);k++){ let p = fr[Math.floor(R()*fr.length)].clone(); const dir = randDir(); for (let j=0;j<6;j++){ p = p.clone().addScaledVector(dir.clone().add(randDir().multiplyScalar(0.4)).normalize(), 0.07); fr.push(p); } }
+  const frib = new THREE.InstancedMesh(new THREE.SphereGeometry(0.03, 6, 5), org(0x2F2A44, { rough:0.6, coat:0.2 }), fr.length); fr.forEach((p,i) => { dm.position.copy(p); dm.updateMatrix(); frib.setMatrixAt(i, dm.matrix); });
+  add('ribosomas', [frib], [2.6,-1.95,-0.6], { pickable:false, explodeDir:new THREE.Vector3(0,0,0) });
+
+  /* --- centríolos: 9 tripletes de microtúbulos, perpendiculares --- */
+  const rods = []; const centriole = (pos, axisQ) => { for (let k=0;k<9;k++){ const a = k/9*Math.PI*2; for (let t=0;t<3;t++){ const rr = 0.1 + t*0.028; const aa = a + t*0.16; const c = new THREE.CylinderGeometry(0.014, 0.014, 0.42, 6); c.translate(Math.cos(aa)*rr, 0, Math.sin(aa)*rr); xf(c, pos, axisQ); rods.push(c); } } };
+  centriole(CS.clone(), new THREE.Quaternion()); centriole(CS.clone().add(new THREE.Vector3(0.3,-0.2,0)), new THREE.Quaternion().setFromEuler(new THREE.Euler(0,0,Math.PI/2)));
+  const pcm = new THREE.Mesh(new THREE.SphereGeometry(0.42, 20, 16), new THREE.MeshStandardMaterial({ color:0x8FA8C6, transparent:true, opacity:0.18, depthWrite:false })); pcm.position.copy(CS).add(new THREE.Vector3(0.15,-0.1,0));
+  add('centriolos', [new THREE.Mesh(Kit.merge(rods), org(0x4E6F92)), pcm], [-0.9,2.25,1.5]);
+
+  /* "Ver en acción": partículas que viajan entre organelos */
+  const anim = { active:null, parts:[], t:0 };
+  const pgeo = new THREE.SphereGeometry(0.06,10,8);
+  const routes = {
+    mitocondria:{ from:[-1.95,0.95,0.55], to:[[-0.5,2.4,0.4],[-2.6,-0.5,1.6],[-1.0,0.3,2.3]], color:0xFFC24A, txt:'ATP saliendo de la mitocondria hacia el citoplasma' },
+    nucleo:{ from:[0.3,0.2,0], to:[[2.4,-1.9,-0.9],[1.9,-1.4,1.6],[-2.0,-1.2,1.0]], color:0xB8A8FF, txt:'ARN mensajero saliendo por los poros nucleares hacia los ribosomas' },
+    nucleolo:{ from:[0.58,0.32,0.38], to:[[2.4,-1.9,-0.9],[-2.2,-1.5,0.8]], color:0x8E78E0, txt:'Subunidades ribosómicas saliendo del núcleo' },
+    rer:{ from:[-0.9,-0.6,0.9], to:[[-1.2,-0.55,1.45]], color:0x9CC4EA, txt:'Vesículas con proteínas viajando del retículo al Golgi' },
+    rel:{ from:[2.05,0.35,0.55], to:[[0.2,3.0,0.9],[3.0,-1.4,1.2]], color:0xBFDDF2, txt:'Lípidos nuevos incorporándose a las membranas' },
+    golgi:{ from:[-1.2,-0.55,1.45], to:[[-2.0,-1.4,2.5],[-0.2,-2.3,2.1]], color:0xFFD27A, txt:'Vesículas de secreción viajando hacia la membrana (exocitosis)' },
+    lisosomas:{ from:[1.25,-1.95,1.15], to:[[1.7,-2.6,1.8]], color:0xF08CC0, txt:'Lisosoma fusionándose con una vesícula para digerir su contenido' },
+    ribosomas:{ from:[2.4,-1.9,-0.9], to:[[2.6,-1.2,-1.6],[1.6,-2.4,-1.2]], color:0x6A6488, txt:'Proteínas recién sintetizadas liberadas al citosol' },
+    membrana:{ from:[0.6,3.6,0.9], to:[[0.3,2.1,0.6]], color:0x7FE0EC, txt:'Moléculas cruzando la membrana por difusión y por proteínas de transporte' },
+    citoplasma:{ from:[-2.2,-2.2,1.0], to:[[-1.95,0.95,0.55]], color:0xB5E3E8, txt:'Piruvato (de la glucólisis) entrando a la mitocondria' },
+    centriolos:{ from:[-0.2,1.2,0.75], to:[[-3.0,1.2,0.8],[2.6,1.2,0.8]], color:0x7FA0C8, txt:'Microtúbulos del huso mitótico extendiéndose hacia los polos' }
+  };
+  let cut = true;
+  const model = {
+    action(id){ this.stop(); const r = routes[id]; if (!r) return null; anim.active = r; const m = new THREE.MeshBasicMaterial({ color:r.color, toneMapped:false }); r.to.forEach(to => { for (let i=0;i<7;i++){ const p = new THREE.Mesh(pgeo, m); p.userData = { from:V3(r.from), to:V3(to), off:i/7 }; E.scene.add(p); anim.parts.push(p); } }); return r.txt; },
+    stop(){ anim.parts.forEach(p=>E.scene.remove(p)); anim.parts=[]; anim.active=null; },
+    get cutaway(){ return cut; },
+    setCutaway(on){ cut = on; outer.geometry = on ? geo.outCut : geo.outFull; inner.geometry = on ? geo.inCut : geo.inFull; rim.visible = on && E.parts.get('membrana').visible; nOut.geometry = on ? ngeo.outCut : ngeo.outFull; nIn.geometry = on ? ngeo.inCut : ngeo.inFull; rim.userData.hiddenByCut = !on; }
+  };
+  E.onFrame((t,dt) => { if (!anim.active || !motionOK()) return; anim.t += dt*0.35; anim.parts.forEach(p => { const k = (anim.t + p.userData.off) % 1; p.position.lerpVectors(p.userData.from, p.userData.to, k); p.scale.setScalar(0.6+0.8*Math.sin(k*Math.PI)); }); });
+  return model;
+}
+</script>
+<script>
+/* =====================================================================
+   MODELOS DETALLADOS: CEREBRO · PULMONES (procedimentales, simplificados)
+   Contrato: build(E) → { anims, setSpeed, phaseText, legend, observa, [colorModes] }
+   ===================================================================== */
+const smooth01 = v => v<0?0:v>1?1:v*v*(3-2*v);
+const lin = v => Math.pow(Math.max(0,v), 2.2);
+const gauss = (d,w) => Math.exp(-(d*d)/(w*w));
+
+/* ============================== CEREBRO ============================== */
+function buildBrain(E){
+  const low = E.low; const D = BIO.brain; const S = Object.fromEntries(D.structures.map(s=>[s.id,s]));
+  const add = (id, meshes, extra={}) => { const s=S[id]; const p = E.addPart(id, meshes, Object.assign({ capa:s.capa, interno:s.interno, explodeDir:V3(s.pos).sub(new THREE.Vector3(-0.3,-0.3,0)).normalize() }, extra)); E.addLabel(id, s.nombre, s.lbl); return p; };
+  const LOBE = { 'lobulo-frontal':[0.86,0.52,0.47], 'lobulo-parietal':[0.86,0.68,0.40], 'lobulo-temporal':[0.52,0.66,0.80], 'lobulo-occipital':[0.58,0.74,0.52] };
+  const GYR = [0.88,0.64,0.58], SUL = [0.40,0.17,0.17];
+  const yS = x => -0.35 + (1.2 - x)*0.33, xC = y => -0.1 + (1.65 - y)*0.36, xO = y => -1.6 + 0.22*(y - 0.3);
+  const lobeOf = (x,y) => (y < yS(x) && x > -1.55 && x < 1.45) ? 'lobulo-temporal' : x > xC(y) ? 'lobulo-frontal' : x < xO(y) ? 'lobulo-occipital' : 'lobulo-parietal';
+  const hemis = {}; const natural = {}, coded = {};
+  [1,-1].forEach(sg => {
+    const cz = sg*0.2; const info = [];
+    const g = Kit.sculpt({ w: low?120:200, h: low?90:150,
+      shape: d => { const lat = d.z*sg; let x = 2.45*d.x, y = d.y>0 ? 1.62*d.y : 1.08*d.y; let z = lat>0 ? 1.5*d.z : 0.14*d.z; z *= 0.86 + 0.16*smooth01((0.7 - d.x)/1.2);
+        if (d.y<0.15 && lat>-0.2) y -= 0.55*gauss(d.x-0.12,0.42)*smooth01((0.15-d.y)/0.5)*smooth01((lat+0.2)/0.5);
+        if (d.x>0.35 && d.y<0) y += 0.3*smooth01((d.x-0.35)/0.45)*(-d.y);
+        if (d.x<-0.45 && d.y<0) y += 0.22*smooth01((-d.x-0.45)/0.4)*(-d.y);
+        return new THREE.Vector3(x, y+0.35, z+cz); },
+      disp: (p,d) => { const lat = d.z*sg, med = lat<0.1 ? 0.55 : 1; const n = Kit.n3(p.x*1.25+sg*3, p.y*1.25, p.z*1.25) + 0.45*Kit.n3(p.x*2.6+7, p.y*2.6, p.z*2.6);
+        const sul = gauss(n, 0.1); const yy = p.y-0.35; let b = 0;
+        if (p.x>-1.5 && p.x<1.35) b = Math.max(b, 1.9*gauss(yy - yS(p.x), 0.07)*(lat>-0.1?1:0.3));
+        if (yy > yS(p.x)) b = Math.max(b, 1.1*gauss(p.x - xC(yy), 0.055));
+        b = Math.max(b, 0.8*gauss(p.x - xO(yy), 0.06));
+        const dz = med*(-0.11*sul + 0.03*(1-sul)) - 0.1*b; info.push(Math.min(1, Math.pow(sul*med + b, 0.8))); return dz; },
+      store: (p,d) => lobeOf(p.x, p.y-0.35) });
+    const t = info; const nat = new Float32Array(g.attributes.position.count*3), cod = new Float32Array(nat.length);
+    for (let i=0;i<g.attributes.position.count;i++){ const k = t[i], L = LOBE[g.userData.extra[i]]; const sh = 1 - 0.55*k; for (let c=0;c<3;c++){ nat[i*3+c] = lin(GYR[c]+(SUL[c]-GYR[c])*k); cod[i*3+c] = lin(L[c]*sh); } }
+    g.setAttribute('color', new THREE.BufferAttribute(nat.slice(),3)); g.userData.nat = nat; g.userData.cod = cod;
+    hemis[sg] = Kit.split(g, i => g.userData.extra[i]);
+    // copias de color por región
+    Object.entries(hemis[sg]).forEach(([id, sub]) => { sub.userData = { nat: sub.attributes.color.array.slice() }; });
+    // recalcular codificado por región: color del lóbulo * sombreado
+    Object.entries(hemis[sg]).forEach(([id, sub]) => { const a = sub.userData.nat, L = LOBE[id]; const c = new Float32Array(a.length); for (let i=0;i<a.length;i+=3){ const k = (GYR[0]-Math.pow(a[i],1/2.2))/(GYR[0]-SUL[0]); const sh = 1-0.55*Math.max(0,Math.min(1,k)); c[i]=lin(L[0]*sh); c[i+1]=lin(L[1]*sh); c[i+2]=lin(L[2]*sh); } sub.userData.cod = c; });
+  });
+  const cortexMat = () => Kit.tissue({ vc:true, rough:0.52, coat:0.45, coatRough:0.35, tex:'tissue', rep:[6,6], bump:0.01, env:0.8 });
+  const lobeMeshes = {};
+  Object.keys(LOBE).forEach(id => { const m = cortexMat(); lobeMeshes[id] = [1,-1].filter(sg => hemis[sg][id]).map(sg => new THREE.Mesh(hemis[sg][id], m)); add(id, lobeMeshes[id]); });
+
+  /* cerebelo con folias */
+  const cbMat = Kit.tissue({ vc:true, rough:0.5, coat:0.35, coatRough:0.4 });
+  const cb = [1,-1].map(sg => { const g = Kit.sculpt({ w: low?72:120, h: low?54:90, shape: d => new THREE.Vector3(1.0*d.x, 0.6*d.y*(d.y>0?1:1.1), 0.82*d.z + (d.z*sg<0 ? 0.35*d.z : 0)),
+      disp: (p) => { const a = Math.atan2(p.y+0.1, p.x+0.25); const f = Math.sin(a*30 + 1.8*Kit.n3(p.x*2,p.y*2,p.z*2)); return 0.03*f; },
+      color: (p,d,dz,o) => { const k = Math.max(0,Math.min(1,0.5 - dz/0.06)); o[0]=lin(0.86-0.42*k); o[1]=lin(0.62-0.42*k); o[2]=lin(0.57-0.38*k); } });
+    const m = new THREE.Mesh(g, cbMat); m.position.set(-1.55,-1.12,sg*0.6); return m; });
+  add('cerebelo', cb);
+  const stemMat = Kit.tissue({ color:0xE4C3AE, rough:0.48, coat:0.4, tex:'tissue', rep:[2,6], bump:0.008 });
+  add('tronco', [new THREE.Mesh(Kit.taper([[-0.1,-0.15,0],[-0.3,-0.9,0],[-0.5,-1.75,0],[-0.6,-2.35,0]], 0, 0, { rfn:u => 0.3 + 0.17*gauss(u-0.45,0.16) - 0.06*u }), stemMat)]);
+  const cord = [new THREE.Mesh(Kit.taper([[-0.6,-2.3,0],[-0.66,-3.2,0],[-0.72,-4.15,0]], 0.23, 0.18), stemMat)];
+  [-2.65,-3.05,-3.45,-3.85].forEach((y,i) => [1,-1].forEach(sg => { const x = -0.64 - 0.02*i; cord.push(new THREE.Mesh(Kit.taper([[x,y,sg*0.15],[x+0.05,y-0.12,sg*0.5],[x+0.12,y-0.35,sg*0.95]], 0.045, 0.03, { seg:12, rad:6 }), stemMat)); }));
+  add('medula', cord);
+
+  /* estructuras profundas */
+  const cc = new THREE.Mesh(Kit.taper([[1.1,0.3,0],[0.75,0.72,0],[0,0.88,0],[-0.8,0.7,0],[-1.12,0.38,0]], 0, 0, { rfn:u => 0.1 + 0.08*gauss(u,0.15) + 0.1*gauss(u-1,0.14) }), Kit.tissue({ color:0xF3EBDD, rough:0.4, coat:0.45 })); cc.scale.set(1,1,2.6);
+  add('cuerpo-calloso', [cc]);
+  const deep = (c, r, col, rot) => { const m = new THREE.Mesh(Kit.sculpt({ radii:r, w:40, h:30, disp:(p)=>0.012*Kit.n3(p.x*6,p.y*6,p.z*6) }), Kit.tissue({ color:col, rough:0.42, coat:0.5 })); m.position.set(...c); if (rot) m.rotation.set(...rot); return m; };
+  add('talamo', [deep([-0.1,0.05,0.3],[0.5,0.3,0.25],0x9B6FB5), deep([-0.1,0.05,-0.3],[0.5,0.3,0.25],0x9B6FB5)]);
+  add('hipotalamo', [deep([0.3,-0.36,0],[0.3,0.19,0.28],0xE0A040)]);
+  add('hipofisis', [deep([0.46,-1.0,0],[0.2,0.16,0.2],0xE8B890), deep([0.3,-1.0,0],[0.12,0.12,0.14],0xD8A07A), new THREE.Mesh(Kit.taper([[0.3,-0.5,0],[0.36,-0.72,0],[0.4,-0.9,0]], 0.06, 0.045, { seg:12, rad:8 }), Kit.tissue({ color:0xE0B08A, rough:0.45 }))]);
+  const hipM = Kit.tissue({ color:0x5F9DB0, rough:0.4, coat:0.5 });
+  add('hipocampo', [1,-1].map(sg => new THREE.Mesh(Kit.taper([[-0.95,-0.2,sg*0.72],[-0.55,-0.5,sg*0.84],[0.05,-0.62,sg*0.9],[0.5,-0.55,sg*0.86],[0.62,-0.42,sg*0.8]], 0, 0, { rfn:u => 0.07 + 0.1*u*u }), hipM)));
+
+  /* impulso nervioso */
+  const route = Kit.curve([[3.0,-4.3,1.8],[1.3,-4.0,0.9],[-0.66,-3.6,0.1],[-0.5,-1.8,0.05],[-0.2,-0.3,0.1],[-0.1,0.1,0.35],[-0.3,1.45,1.0],[0.35,1.55,1.0],[1.0,1.3,1.1],[0.3,0.2,0.3],[-0.4,-1.6,0.05],[-0.66,-3.5,0.1],[1.0,-4.1,1.0],[3.0,-4.5,2.1]]);
+  const imp = { on:false, t:0, speed:1, parts:[] }; const pm = new THREE.MeshBasicMaterial({ color:0xFFE38A, toneMapped:false }); const pg = new THREE.SphereGeometry(0.075,10,8);
+  for (let i=0;i<10;i++){ const m = new THREE.Mesh(pg, pm); m.visible=false; m.userData.off = -i*0.01; m.scale.setScalar(1-i*0.07); E.scene.add(m); imp.parts.push(m); }
+  const handG = Kit.sculpt({ radii:[0.42,0.14,0.3], w:32, h:24 }); const hand = new THREE.Mesh(handG, Kit.tissue({ color:0xE2B597, rough:0.55, coat:0.2 })); hand.position.set(3.2,-4.45,1.95); hand.visible=false; E.scene.add(hand);
+  const stim = new THREE.Mesh(new THREE.SphereGeometry(0.16,16,12), new THREE.MeshBasicMaterial({ color:0xFF6A3D, toneMapped:false })); stim.position.set(3.45,-4.2,2.2); stim.visible=false; E.scene.add(stim);
+  const pulse = { ids:[], t:0 };
+  let mode = 'natural';
+  const model = {
+    anims:[ { id:'impulso', label:'Impulso nervioso: estímulo → percepción → respuesta', get on(){ return imp.on; }, set(on){ imp.on=on; imp.t=0; imp.parts.forEach(p=>p.visible=on); hand.visible=on; stim.visible=on; if (on) E.focus(new THREE.Vector3(0.6,-1.2,0.5), 13); }, needsOpacity:0.45, focus:true } ],
     setSpeed(k){ imp.speed=k; },
     phaseText(){ if (!imp.on) return ''; const t = imp.t; return t<0.16 ? 'Receptor de la piel → médula espinal (neurona sensitiva)' : t<0.3 ? 'Vía ascendente: tronco encefálico → tálamo' : t<0.46 ? 'Corteza somatosensorial (parietal): percibes el estímulo' : t<0.6 ? 'Corteza motora (frontal): decides la respuesta' : t<0.85 ? 'Vía descendente: tronco → médula (neurona motora)' : 'Músculo: retiras la mano'; },
-    legend:[{color:'#F2C94C',txt:'Impulso nervioso (potenciales de acción)'},{color:'#E05030',txt:'Estímulo (calor) en la mano'}],
-    observa:'el reflejo medular retira la mano antes de que la señal llegue a la corteza; la percepción consciente del dolor llega después. Nota que la vía se cruza: la mano derecha se procesa en el hemisferio izquierdo.',
-    highlight(ids){ pulse.ids = ids; pulse.t = 0; }
+    legend:[{color:'#FFE38A',txt:'Impulso nervioso (potenciales de acción)'},{color:'#FF6A3D',txt:'Estímulo (calor) en la mano'}],
+    observa:'el reflejo medular retira la mano antes de que la señal llegue a la corteza; la percepción consciente del dolor llega después. La vía se cruza: la mano derecha se procesa en el hemisferio izquierdo.',
+    highlight(ids){ pulse.ids = ids; pulse.t = 0; },
+    colorModes:[{id:'natural',n:'Color natural'},{id:'lobulos',n:'Color por lóbulos'}],
+    get colorMode(){ return mode; },
+    setColorMode(m){ mode = m; Object.values(lobeMeshes).flat().forEach(me => { const a = me.geometry.attributes.color; a.array.set(m==='lobulos' ? me.geometry.userData.cod : me.geometry.userData.nat); a.needsUpdate = true; }); }
   };
   E.onFrame((t,dt) => {
-    if (imp.on && motionOK()){ imp.t = (imp.t + dt*0.09*imp.speed) % 1; imp.parts.forEach(p => { const k = ((imp.t + p.userData.off) % 1 + 1) % 1; p.position.copy(route.getPointAt(k)); }); }
-    if (pulse.ids.length){ pulse.t += dt; const k = 0.5+0.5*Math.sin(pulse.t*5); E.parts.forEach(p => { const hot = pulse.ids.includes(p.id); p.meshes.forEach(m => { if (!m.material.emissive) return; if (hot){ m.material.emissive.set(0xffffff); m.material.emissiveIntensity = 0.15+0.35*k; } }); }); if (pulse.t>4){ pulse.ids=[]; E.refreshEmissive(); } }
+    if (imp.on && motionOK()){ imp.t = (imp.t + dt*0.085*imp.speed) % 1; imp.parts.forEach(p => { const k = ((imp.t + p.userData.off) % 1 + 1) % 1; p.position.copy(route.getPointAt(k)); }); stim.scale.setScalar(1+0.25*Math.sin(t*8)); }
+    if (pulse.ids.length){ pulse.t += dt; const k = 0.5+0.5*Math.sin(pulse.t*5); E.parts.forEach(p => { if (!pulse.ids.includes(p.id)) return; p.meshes.forEach(m => { if (!m.material || !m.material.emissive) return; m.material.emissive.set(0xffd27a); m.material.emissiveIntensity = 0.12+0.3*k; }); }); if (pulse.t>4){ pulse.ids=[]; E.refreshEmissive(); } }
   });
   return model;
 }
 
+/* ============================== PULMONES ============================== */
 function buildLungs(E){
-  const low = E.low; const S = Object.fromEntries(BIO.lungs.structures.map(s=>[s.id,s]));
-  const add = (id, meshes, extra={}) => { const s=S[id]; const p = E.addPart(id, meshes, Object.assign({ capa:s.capa, explodeDir:V3(s.pos).normalize() }, extra)); E.addLabel(id, s.nombre, s.lbl); return p; };
-  const lar = new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.36,0.7,20), mat(S.laringe.color,{roughness:0.5})); lar.position.set(0,4.0,0);
-  add('laringe',[lar]);
-  const tr = [tube([[0,3.65,0],[0,2.6,0],[0,1.6,0]],0.3,S.traquea.color,low)]; for (let y=3.4;y>1.7;y-=0.32){ const r = new THREE.Mesh(new THREE.TorusGeometry(0.32,0.05,8,24), mat(0xD2BEA6)); r.position.set(0,y,0); r.rotation.x=Math.PI/2; tr.push(r); }
-  add('traquea',tr);
-  add('bronquios',[tube([[0,1.6,0],[-0.6,1.15,0.05],[-1.25,0.6,0.1]],0.2,S.bronquios.color,low), tube([[0,1.6,0],[0.65,1.0,0.05],[1.35,0.4,0.1]],0.18,S.bronquios.color,low)]);
-  const br = [[[-1.25,0.6,0.1],[-1.9,1.3,0.15],[-2.3,1.9,0.2]],[[-1.25,0.6,0.1],[-2.1,0.4,0.2],[-2.7,0.1,0.3]],[[-1.25,0.6,0.1],[-1.7,-0.5,0.2],[-2.35,-1.45,0.5]],[[-1.25,0.6,0.1],[-1.4,-0.6,-0.2],[-1.5,-1.9,-0.3]],[[1.35,0.4,0.1],[1.9,1.1,0.15],[2.2,1.7,0.2]],[[1.35,0.4,0.1],[2.1,0.0,0.2],[2.6,-0.4,0.3]],[[1.35,0.4,0.1],[1.6,-0.7,0.1],[1.9,-1.8,0.3]],[[1.35,0.4,0.1],[1.2,-0.7,-0.2],[1.1,-1.9,-0.3]]].map(p=>tube(p,0.07,S.bronquiolos.color,low));
-  add('bronquiolos',br);
-  const alv = []; const ac = [-2.35,-1.45,0.5]; for (let i=0;i<14;i++){ const a = i/14*Math.PI*2, r = i<7?0.22:0.4; const m = new THREE.Mesh(new THREE.SphereGeometry(0.15,14,10), mat(S.alveolos.color,{roughness:0.4})); m.position.set(ac[0]+Math.cos(a)*r, ac[1]+Math.sin(a)*r*0.8, ac[2]+(i%3-1)*0.16); alv.push(m); }
-  add('alveolos',alv,{ explodeDir:new THREE.Vector3(-1,-0.6,0.5).normalize() });
-  const cap = [tube([[-2.95,-0.95,0.9],[-2.6,-1.5,1.0],[-2.1,-1.9,0.95]],0.05,0x3E63B8,low), tube([[-2.1,-1.9,0.95],[-1.9,-1.35,1.05],[-2.2,-0.9,1.0]],0.05,0xD64545,low), tube([[-2.7,-1.95,0.35],[-2.35,-2.05,0.75],[-1.95,-1.95,0.4]],0.05,0xD64545,low)];
-  add('capilares',cap,{ explodeDir:new THREE.Vector3(-1,-0.8,0.8).normalize() });
-  const lungMesh = (pos, scale, seed) => { const m = new THREE.Mesh(new THREE.SphereGeometry(1, low?32:56, low?24:40), mat(S['pulmon-derecho'].color,{roughness:0.6})); m.scale.set(...scale); m.position.set(...pos); return m; };
-  const rl = [lungMesh([-1.7,0.4,0],[1.25,1.7,1.25]), lungMesh([-1.75,-1.2,0.05],[1.3,1.3,1.3])];
-  const ll = [lungMesh([1.65,0.3,0],[1.1,1.65,1.15]), lungMesh([1.7,-1.25,0.05],[1.15,1.25,1.2])];
-  add('pulmon-derecho',rl); add('pulmon-izquierdo',ll);
-  const pl = [[-1.72,-0.35,0.02,1.45,2.55,1.45],[1.68,-0.45,0.02,1.3,2.45,1.35]].map(([x,y,z,sx,sy,sz]) => { const m = new THREE.Mesh(new THREE.SphereGeometry(1,32,24), new THREE.MeshPhysicalMaterial({ color:0x9FC5DC, transparent:true, opacity:0.14, roughness:0.15, depthWrite:false, side:THREE.DoubleSide })); m.scale.set(sx,sy,sz); m.position.set(x,y,z); return m; });
-  add('pleura',pl,{ passThrough:true, explodeDir:new THREE.Vector3(0,0,0) });
-  const dia = new THREE.Mesh(new THREE.SphereGeometry(2.6, 40, 20, 0, Math.PI*2, 0, Math.PI/2), mat(S.diafragma.color,{roughness:0.55, side:THREE.DoubleSide})); dia.scale.set(1.35,0.4,0.85); dia.position.set(0,-3.15,0);
-  add('diafragma',[dia]);
-  /* Aire: partículas por la vía aérea */
-  const airPaths = [[[0,4.6,0],[0,3.6,0],[0,1.6,0],[-0.6,1.15,0.05],[-1.25,0.6,0.1],[-1.7,-0.5,0.2],[-2.35,-1.45,0.5]],[[0,4.6,0],[0,3.6,0],[0,1.6,0],[0.65,1.0,0.05],[1.35,0.4,0.1],[1.9,1.1,0.15],[2.2,1.7,0.2]],[[0,4.6,0],[0,3.6,0],[0,1.6,0],[-0.6,1.15,0.05],[-1.25,0.6,0.1],[-1.9,1.3,0.15],[-2.3,1.9,0.2]],[[0,4.6,0],[0,3.6,0],[0,1.6,0],[0.65,1.0,0.05],[1.35,0.4,0.1],[1.6,-0.7,0.1],[1.9,-1.8,0.3]]].map(curveOf);
-  const air = { on:false, phase:0, speed:1, parts:[] }; const inMat = new THREE.MeshStandardMaterial({ color:0x5FB8C4, emissive:0x5FB8C4, emissiveIntensity:0.5 }), outMat = new THREE.MeshStandardMaterial({ color:0x9AA6B2, emissive:0x9AA6B2, emissiveIntensity:0.3 }); const pg = new THREE.SphereGeometry(0.06,8,6);
-  airPaths.forEach(c => { for (let i=0;i<7;i++){ const m = new THREE.Mesh(pg, inMat); m.userData = { curve:c, t:i/7 }; m.visible=false; E.scene.add(m); air.parts.push(m); } });
-  /* Intercambio gaseoso en alvéolos */
-  const gx = { on:false, t:0, parts:[] }; const o2m = new THREE.MeshStandardMaterial({ color:0xD64545, emissive:0xD64545, emissiveIntensity:0.6 }), co2m = new THREE.MeshStandardMaterial({ color:0x3E63B8, emissive:0x3E63B8, emissiveIntensity:0.6 });
-  for (let i=0;i<10;i++){ const o = new THREE.Mesh(new THREE.SphereGeometry(0.045,8,6), o2m); o.userData={ from:V3([ac[0]+(Math.random()-0.5)*0.5, ac[1]+(Math.random()-0.5)*0.4, ac[2]+(Math.random()-0.5)*0.3]), to:V3([-2.6,-1.5,1.0]), off:i/10, kind:'o2' }; o.visible=false; E.scene.add(o); gx.parts.push(o);
-    const c = new THREE.Mesh(new THREE.SphereGeometry(0.045,8,6), co2m); c.userData={ from:V3([-2.35,-2.05,0.75]), to:V3([ac[0]+(Math.random()-0.5)*0.5, ac[1]+(Math.random()-0.5)*0.4, ac[2]+(Math.random()-0.5)*0.3]), off:i/10, kind:'co2' }; c.visible=false; E.scene.add(c); gx.parts.push(c); }
-  const lungBase = [...rl, ...ll].map(m => m.userData.baseScale.clone());
+  const low = E.low; const D = BIO.lungs; const S = Object.fromEntries(D.structures.map(s=>[s.id,s]));
+  const add = (id, meshes, extra={}) => { const s=S[id]; const p = E.addPart(id, meshes, Object.assign({ capa:s.capa, explodeDir:V3(s.pos).sub(new THREE.Vector3(0,0.3,0)).normalize() }, extra)); E.addLabel(id, s.nombre, s.lbl); return p; };
+  const R = Kit.rng(5);
+  const cart = () => Kit.tissue({ tex:'cartilage', rep:[3,1], bump:0.01, coat:0.55, coatRough:0.3, rough:0.4 });
+
+  /* --- laringe --- */
+  const lm = cart();
+  const thy = new THREE.Mesh(new THREE.CylinderGeometry(0.46, 0.38, 0.72, 28, 6, true, -0.66*Math.PI, 1.32*Math.PI), lm); { const p = thy.geometry.attributes.position; for (let i=0;i<p.count;i++){ const x=p.getX(i), z=p.getZ(i), y=p.getY(i); if (z>0) p.setZ(i, z + 0.12*Math.exp(-x*x/0.02)*(0.6+y)); } thy.geometry.computeVertexNormals(); } thy.material.side = THREE.DoubleSide; thy.position.set(0,4.0,0.05);
+  const cri = new THREE.Mesh(new THREE.TorusGeometry(0.33, 0.08, 10, 32), lm); cri.rotation.x = Math.PI/2; cri.position.set(0,3.55,0);
+  const epi = new THREE.Mesh(Kit.sculpt({ radii:[0.24,0.36,0.05], w:28, h:20 }), cart()); epi.position.set(0,4.45,-0.2); epi.rotation.x = -0.35;
+  const hyo = new THREE.Mesh(Kit.taper([[-0.5,4.58,-0.25],[-0.38,4.62,0.28],[0,4.62,0.44],[0.38,4.62,0.28],[0.5,4.58,-0.25]], 0.05, 0.05, { seg:30, rad:8 }), Kit.tissue({ color:0xEDE4D2, rough:0.35, coat:0.4 }));
+  add('laringe', [thy, cri, epi, hyo]);
+
+  /* --- tráquea con anillos en C --- */
+  const ringGeos = []; const ringArc = 1.62*Math.PI;
+  const cRing = (pos, dir, r) => { const g = new THREE.TorusGeometry(r, 0.052, 8, 26, ringArc); g.rotateX(Math.PI/2); const gc = new THREE.Vector3(Math.cos(ringArc+ (2*Math.PI-ringArc)/2), 0, Math.sin(ringArc+(2*Math.PI-ringArc)/2)); const phi = Math.atan2(0,-1) - Math.atan2(gc.x, gc.z); g.rotateY(phi); const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), dir.clone().normalize()); g.applyMatrix4(new THREE.Matrix4().makeRotationFromQuaternion(q)); g.translate(pos.x,pos.y,pos.z); ringGeos.push(g); };
+  for (let y=3.35; y>1.75; y-=0.2) cRing(new THREE.Vector3(0,y,0), new THREE.Vector3(0,1,0), 0.31);
+  const trM = new THREE.Mesh(Kit.merge(ringGeos.splice(0)), cart());
+  const memb = new THREE.Mesh(Kit.taper([[0,3.48,0],[0,2.5,0],[0,1.62,0]], 0.29, 0.29), Kit.tissue({ color:0xD9A79C, rough:0.5, coat:0.4, tex:'tissue', rep:[3,1], bump:0.006 }));
+  add('traquea', [trM, memb]);
+
+  /* --- pulmones: forma real, cisuras, lóbulos --- */
+  const lungs = {}; const C = { R:new THREE.Vector3(-1.75,-0.25,0.05), L:new THREE.Vector3(1.75,-0.3,0.05) };
+  const yO = Z => -0.35 - 0.72*Z;
+  const lungMesh = (side) => { const s = side==='R' ? -1 : 1; const info = [];
+    const g = Kit.sculpt({ w: low?72:128, h: low?56:100,
+      shape: d => { const dl = d.x*s; const k = d.y>0 ? 1 - 0.45*Math.pow(d.y,1.3) : 1; let X = (dl>0 ? 1.2 : 0.8)*dl*k, Z = (d.z>0 ? 1.22 : 1.42)*d.z*k; let y = d.y>0 ? 2.25*d.y : 2.3*d.y;
+        if (d.y<-0.15) y += 1.15*Math.exp(-((X+0.05)*(X+0.05)/0.45 + Z*Z/0.7))*smooth01((-d.y-0.15)/0.5);
+        if (dl<0) X += 0.22*Math.exp(-((y-0.15)*(y-0.15)/0.35 + Z*Z/0.22));
+        if (s>0 && dl<0 && y<0.7) X += 0.5*Math.exp(-((y+0.55)*(y+0.55)/0.55 + (Z-0.65)*(Z-0.65)/0.45));
+        if (s<0 && dl<0 && y<0.4) X += 0.18*Math.exp(-((y+0.7)*(y+0.7)/0.5 + (Z-0.5)*(Z-0.5)/0.5));
+        return new THREE.Vector3(s*X, y, Z); },
+      disp: (p) => { let b = 0.9*gauss(p.y - yO(p.z), 0.06); if (s<0 && p.y > yO(p.z)) b = Math.max(b, 0.8*gauss(p.y-0.35, 0.05)*smooth01((p.z+0.6)/0.4)); info.push(b); return 0.018*Kit.fbm(p.x*2.2+s, p.y*2.2, p.z*2.2, 3) - 0.1*b; },
+      store: (p) => p.y < yO(p.z) ? 'inf' : (s<0 && p.y < 0.35 ? 'med' : 'sup') });
+    return { g, parts: Kit.split(g, i => g.userData.extra[i]) }; };
+  const lungMat = (tint) => Kit.tissue({ tex:'lung', rep:[4,3], bump:0.022, coat:0.7, coatRough:0.3, rough:0.5, color:tint });
+  ['R','L'].forEach(side => { const { g, parts } = lungMesh(side); const m = lungMat(side==='R' ? 0xffffff : 0xfff4f2); lungs[side] = { g, meshes: Object.values(parts).map(pg => { const me = new THREE.Mesh(pg, m); me.position.copy(C[side]); return me; }) }; });
+  add('pulmon-derecho', lungs.R.meshes); add('pulmon-izquierdo', lungs.L.meshes);
+  const plM = () => new THREE.MeshPhysicalMaterial({ color:0xA9D2E6, transparent:true, opacity:0.08, roughness:0.12, clearcoat:1, depthWrite:false, side:THREE.DoubleSide });
+  const pleura = ['R','L'].map(side => { const me = new THREE.Mesh(lungs[side].g, plM()); me.position.copy(C[side]); me.scale.setScalar(1.045); return me; });
+  add('pleura', pleura, { passThrough:true, explodeDir:new THREE.Vector3(0,0,0) });
+
+  /* --- árbol bronquial ramificado --- */
+  const inside = (p, side) => { const c = C[side]; const dx = (p.x-c.x)/1.05, dy = (p.y-c.y)/(p.y>c.y?2.0:1.7), dz = (p.z-c.z)/1.15; return dx*dx+dy*dy+dz*dz < 0.82; };
+  const bigGeos = [], smallGeos = [], jointGeos = [], airPaths = [], vesselA = [], vesselV = [];
+  const tubeSeg = (a, b, r0, r1, list, bend) => { const mid = a.clone().lerp(b, 0.5).add(bend || new THREE.Vector3()); list.push(Kit.taper([a, mid, b], r0, r1, { seg: 10, rad: low?6:8 })); const j = new THREE.SphereGeometry(r1*1.02, 8, 6); j.translate(b.x,b.y,b.z); jointGeos.push(j); };
+  const maxGen = low ? 3 : 4;
+  const branch = (side, start, dir, len, r, gen, path) => {
+    let end = start.clone().addScaledVector(dir, len); let tries = 0; while (!inside(end, side) && tries < 6){ dir.lerp(C[side].clone().sub(start).normalize(), 0.35).normalize(); len *= 0.8; end = start.clone().addScaledVector(dir, len); tries++; }
+    tubeSeg(start, end, r, r*0.86, gen<=0 ? bigGeos : smallGeos, new THREE.Vector3((R()-0.5)*0.06,(R()-0.5)*0.06,(R()-0.5)*0.06));
+    if (gen <= 1){ const perp = new THREE.Vector3().crossVectors(dir, new THREE.Vector3(0,0,1)).normalize().multiplyScalar(r*1.6 + 0.03); vesselA.push(Kit.taper([start.clone().add(perp), end.clone().add(perp)], r*0.95, r*0.8, { seg:8, rad:6 })); }
+    const p2 = path.concat([end]);
+    if (gen >= maxGen){ airPaths.push(p2); return; }
+    for (let k=0;k<2;k++){ const axis = new THREE.Vector3(R()-0.5,R()-0.5,R()-0.5).cross(dir).normalize(); const nd = dir.clone().applyAxisAngle(axis, (k? -1:1)*(0.45+R()*0.3)).normalize(); branch(side, end, nd, len*0.74, r*0.7, gen+1, p2); }
+  };
+  const carina = new THREE.Vector3(0,1.6,0);
+  const mainR = new THREE.Vector3(-0.85,1.02,0), mainL = new THREE.Vector3(1.0,0.82,0);
+  const bronchi = [];
+  bronchi.push(Kit.taper([carina, carina.clone().lerp(mainR,0.5).add(new THREE.Vector3(0,0.05,0)), mainR], 0.2, 0.17), Kit.taper([carina, carina.clone().lerp(mainL,0.5).add(new THREE.Vector3(0,0.08,0)), mainL], 0.19, 0.16));
+  for (let t=0.25;t<0.9;t+=0.3){ cRing(carina.clone().lerp(mainR,t), mainR.clone().sub(carina), 0.2); cRing(carina.clone().lerp(mainL,t), mainL.clone().sub(carina), 0.19); }
+  const lobar = { R:[[-1.8,1.35,0.0],[-1.9,-0.35,0.75],[-1.85,-1.05,-0.45]], L:[[1.8,1.05,0.1],[1.75,-0.3,0.75],[1.8,-1.1,-0.45]] };
+  ['R','L'].forEach(side => { const from = side==='R' ? mainR : mainL; lobar[side].forEach(tp => { const to = V3(tp); const dir = to.clone().sub(from).normalize(); const len = from.distanceTo(to)*0.62; const end = from.clone().addScaledVector(dir, len); bronchi.push(Kit.taper([from, end], 0.12, 0.105, { seg:8, rad:10 })); const j = new THREE.SphereGeometry(0.11, 10, 8); j.translate(end.x,end.y,end.z); bronchi.push(j);
+    const perp = new THREE.Vector3().crossVectors(dir, new THREE.Vector3(0,0,1)).normalize().multiplyScalar(0.2); vesselA.push(Kit.taper([from.clone().add(perp), end.clone().add(perp)], 0.1, 0.09, { seg:8, rad:8 }));
+    branch(side, end, dir.clone(), len*0.72, 0.085, 0, [carina, from, end]); }); });
+  const bM = new THREE.Mesh(Kit.merge([...bronchi, ...bigGeos, ...ringGeos]), cart());
+  add('bronquios', [bM]);
+  const bl = new THREE.Mesh(Kit.merge([...smallGeos, ...jointGeos]), Kit.tissue({ color:0xEBCFBF, rough:0.42, coat:0.5 }));
+  add('bronquiolos', [bl]);
+
+  /* --- vasos pulmonares --- */
+  const vA = [...vesselA]; vA.push(Kit.taper([[0,1.5,0.45],[-0.45,1.35,0.45],[-0.9,1.15,0.35]], 0.17, 0.15), Kit.taper([[0,1.5,0.45],[0.5,1.4,0.45],[1.0,1.2,0.35]], 0.17, 0.15), Kit.taper([[0,1.2,0.6],[0,1.5,0.45]], 0.2, 0.18));
+  const vV = []; [[-1,0.55,-0.3,[-1.9,0.6,-0.5]],[-1,0.15,-0.3,[-1.85,-0.9,-0.6]],[1,0.5,-0.3,[1.85,0.4,-0.5]],[1,0.1,-0.3,[1.8,-0.95,-0.6]]].forEach(([s,y,z,to]) => { vV.push(Kit.taper([[s*0.45,y,z],[s*0.95,y-0.05,z-0.15],to], 0.13, 0.08)); });
+  add('vasos-pulmonares', [new THREE.Mesh(Kit.merge(vA), Kit.tissue({ tex:'vein', rep:[4,1], bump:0.006, coat:0.7, rough:0.35 })), new THREE.Mesh(Kit.merge(vV), Kit.tissue({ tex:'artery', rep:[4,1], bump:0.006, coat:0.7, rough:0.35 }))]);
+
+  /* --- ácino ampliado: alvéolos + red capilar (lupa) --- */
+  const AC = V3(S.alveolos.pos);
+  const loupe = new THREE.Mesh(new THREE.TorusGeometry(0.95, 0.025, 8, 64), new THREE.MeshBasicMaterial({ color:0x3FA7BD, toneMapped:false })); loupe.position.copy(AC); loupe.lookAt(AC.clone().add(new THREE.Vector3(0.3,0.1,1)));
+  const leaderTo = new THREE.Vector3(-2.55,-1.15,0.55); const ldir = leaderTo.clone().sub(AC).normalize(); const lstart = AC.clone().addScaledVector(ldir, 0.95);
+  const leader = new THREE.Mesh(Kit.taper([lstart, leaderTo], 0.012, 0.012, { seg:4, rad:6 }), loupe.material);
+  E.scene.add(loupe, leader);
+  const alvM = Kit.tissue({ color:0xF4BDB3, rough:0.4, coat:0.75, coatRough:0.2, tex:'tissue', rep:[1,1], bump:0.004 });
+  const alvGeos = [], capGeos = []; const tb = [AC.clone().add(new THREE.Vector3(0.75,0.55,-0.1)), AC.clone().add(new THREE.Vector3(0.25,0.2,0))];
+  const sacs = [new THREE.Vector3(-0.25,0.2,0.05), new THREE.Vector3(0.05,-0.3,0.1), new THREE.Vector3(-0.35,-0.25,-0.1)];
+  const bro = [Kit.taper([tb[0], tb[1]], 0.07, 0.055)]; sacs.forEach(sc => bro.push(Kit.taper([tb[1], AC.clone().add(sc)], 0.05, 0.04, { seg:8, rad:8 })));
+  const alvCenters = [];
+  sacs.forEach((sc, si) => { const cc = AC.clone().add(sc); for (let i=0;i<9;i++){ const dir = new THREE.Vector3(R()-0.5,R()-0.5,R()-0.5).normalize(); const r = 0.12 + R()*0.04; const c = cc.clone().addScaledVector(dir, 0.16); alvCenters.push(c); const g = new THREE.SphereGeometry(r, 18, 14); g.translate(c.x,c.y,c.z); alvGeos.push(g);
+      for (let k=0;k<3;k++){ const ax = new THREE.Vector3(R()-0.5,R()-0.5,R()-0.5).normalize(); const u = new THREE.Vector3().crossVectors(ax, new THREE.Vector3(0,1,0.3)).normalize(); const v = new THREE.Vector3().crossVectors(ax, u); const a0 = R()*6, pts = []; for (let j=0;j<=10;j++){ const a = a0 + j/10*3.6; pts.push(c.clone().addScaledVector(u, Math.cos(a)*(r+0.012)).addScaledVector(v, Math.sin(a)*(r+0.012))); }
+        const cg = Kit.taper(pts, 0.011, 0.011, { seg:16, rad:5 }); const col = new Float32Array(cg.attributes.position.count*3); for (let q=0;q<cg.attributes.position.count;q++){ const x = cg.attributes.position.getX(q); const t = smooth01((x - (AC.x-0.6))/1.0); col[q*3] = lin(0.27+0.6*t); col[q*3+1] = lin(0.36-0.16*t); col[q*3+2] = lin(0.78-0.6*t); } cg.setAttribute('color', new THREE.BufferAttribute(col,3)); capGeos.push(cg); } } });
+  add('alveolos', [new THREE.Mesh(Kit.merge(alvGeos), alvM), new THREE.Mesh(Kit.merge(bro), Kit.tissue({ color:0xEBCFBF, rough:0.42, coat:0.5 }))], { explodeDir:new THREE.Vector3(-1,-0.4,0.6).normalize() });
+  const capA = Kit.taper([AC.clone().add(new THREE.Vector3(-0.8,0.6,0.2)), AC.clone().add(new THREE.Vector3(-0.45,0.25,0.15))], 0.045, 0.035); const capVn = Kit.taper([AC.clone().add(new THREE.Vector3(0.35,-0.45,0.15)), AC.clone().add(new THREE.Vector3(0.75,-0.75,0.2))], 0.035, 0.045);
+  [capA].forEach(g => { const c = new Float32Array(g.attributes.position.count*3); for (let i=0;i<c.length;i+=3){ c[i]=0.27; c[i+1]=0.36; c[i+2]=0.78; } g.setAttribute('color', new THREE.BufferAttribute(c,3)); });
+  [capVn].forEach(g => { const c = new Float32Array(g.attributes.position.count*3); for (let i=0;i<c.length;i+=3){ c[i]=0.87; c[i+1]=0.2; c[i+2]=0.18; } g.setAttribute('color', new THREE.BufferAttribute(c,3)); });
+  add('capilares', [new THREE.Mesh(Kit.merge([...capGeos, capA, capVn]), Kit.tissue({ vc:true, rough:0.35, coat:0.7 }))], { explodeDir:new THREE.Vector3(-1,-0.6,0.8).normalize() });
+
+  /* --- diafragma: dos cúpulas, centro tendinoso, fibras radiales --- */
+  const dg = new THREE.RingGeometry(0.001, 2.7, low?60:96, low?20:32); dg.rotateX(-Math.PI/2); { const p = dg.attributes.position; for (let i=0;i<p.count;i++){ const x=p.getX(i), z=p.getZ(i)*0.7; const r = Math.hypot(x, p.getZ(i))/2.7; const h = -2.5 + 1.1*Math.exp(-((x+1.75)*(x+1.75)/1.2 + z*z/1.6)) + 1.0*Math.exp(-((x-1.65)*(x-1.65)/1.2 + z*z/1.6)) + 0.45*Math.exp(-(x*x/0.8 + z*z/1.2)) - 0.12*Math.pow(r,4); p.setXYZ(i, x, h, z); } dg.computeVertexNormals(); }
+  const dia = new THREE.Mesh(dg, Kit.tissue({ tex:'diaphragm', bump:0.012, coat:0.5, rough:0.5, side:THREE.DoubleSide }));
+  add('diafragma', [dia]);
+  /* --- aire y gases --- */
+  const curves = airPaths.filter((_,i) => i % Math.max(1, Math.floor(airPaths.length/10)) === 0).map(p => Kit.curve([new THREE.Vector3(0,4.7,0.05), new THREE.Vector3(0,3.6,0), ...p]));
+  const air = { on:false, phase:0, speed:1, parts:[] }; const inMat = new THREE.MeshBasicMaterial({ color:0x7FD6E4, toneMapped:false }), outMat = new THREE.MeshBasicMaterial({ color:0xA7B0BA, toneMapped:false }); const pg = new THREE.SphereGeometry(0.05,8,6);
+  curves.forEach(c => { for (let i=0;i<6;i++){ const m = new THREE.Mesh(pg, inMat); m.userData = { curve:c, t:i/6 }; m.visible=false; E.scene.add(m); air.parts.push(m); } });
+  const gx = { on:false, t:0, parts:[] }; const o2m = new THREE.MeshBasicMaterial({ color:0xFF5A4E, toneMapped:false }), co2m = new THREE.MeshBasicMaterial({ color:0x6F8CFF, toneMapped:false });
+  for (let i=0;i<14;i++){ const c = alvCenters[Math.floor(R()*alvCenters.length)]; const o = new THREE.Mesh(new THREE.SphereGeometry(0.03,8,6), o2m); const out = c.clone().add(c.clone().sub(AC).normalize().multiplyScalar(0.16)); o.userData = { from:c.clone(), to:out, off:i/14 }; o.visible=false; E.scene.add(o); gx.parts.push(o);
+    const c2 = alvCenters[Math.floor(R()*alvCenters.length)]; const q = new THREE.Mesh(new THREE.SphereGeometry(0.03,8,6), co2m); q.userData = { from:c2.clone().add(c2.clone().sub(AC).normalize().multiplyScalar(0.16)), to:c2.clone(), off:i/14 }; q.visible=false; E.scene.add(q); gx.parts.push(q); }
+  const lungMeshes = [...lungs.R.meshes, ...lungs.L.meshes, ...pleura]; const base = lungMeshes.map(m => m.userData.baseScale ? m.userData.baseScale.clone() : m.scale.clone());
   const model = {
     anims:[
-      { id:'respiracion', label:'Respiración (diafragma y volumen pulmonar)', get on(){ return air.on; }, set(on){ air.on=on; air.parts.forEach(p=>p.visible=on); if (!on){ [...rl,...ll].forEach((m,i)=>m.scale.copy(m.userData.baseScale)); dia.position.y=-3.15; dia.scale.y=0.4; } }, needsOpacity:0.5 },
-      { id:'intercambio', label:'Intercambio gaseoso en los alvéolos', get on(){ return gx.on; }, set(on){ gx.on=on; gx.parts.forEach(p=>p.visible=on); if (on) E.focus(V3(ac), 3.2); }, needsOpacity:0.3 }
+      { id:'respiracion', label:'Respiración (diafragma y volumen pulmonar)', get on(){ return air.on; }, set(on){ air.on=on; air.parts.forEach(p=>p.visible=on); if (!on){ lungMeshes.forEach((m,i)=>m.scale.copy(m.userData.baseScale || base[i])); dia.position.y=0; dia.scale.y=1; } }, needsOpacity:0.5 },
+      { id:'intercambio', label:'Intercambio gaseoso en los alvéolos (lupa)', get on(){ return gx.on; }, set(on){ gx.on=on; gx.parts.forEach(p=>p.visible=on); if (on) E.focus(AC, 4); }, focus:true }
     ],
     setSpeed(k){ air.speed=k; },
-    phaseText(){ if (gx.on && !air.on) return 'O₂: alvéolo → sangre · CO₂: sangre → alvéolo (difusión)'; if (!air.on) return ''; const p = air.phase; return p<0.4 ? 'Inspiración · el diafragma se contrae y baja, el tórax se expande, la presión cae y el aire entra' : 'Espiración · el diafragma se relaja y sube, el volumen disminuye y el aire sale'; },
-    legend:[{color:'#5FB8C4',txt:'Aire inspirado (rico en O₂)'},{color:'#9AA6B2',txt:'Aire espirado (más CO₂)'},{color:'var(--oxy)',txt:'O₂ pasando a la sangre'},{color:'var(--deoxy)',txt:'CO₂ saliendo de la sangre'}],
-    observa:'los pulmones no se mueven solos: siguen al diafragma y a las costillas gracias a la pleura. En reposo la espiración es pasiva; al toser o cantar intervienen los músculos abdominales.'
+    phaseText(){ if (gx.on && !air.on) return 'O₂: alvéolo → sangre · CO₂: sangre → alvéolo (difusión) · la sangre pasa de azul a roja en la red capilar'; if (!air.on) return ''; const p = air.phase; return p<0.4 ? 'Inspiración · el diafragma se contrae y baja, el tórax se expande, la presión cae y el aire entra' : 'Espiración · el diafragma se relaja y sube, el volumen disminuye y el aire sale'; },
+    legend:[{color:'#7FD6E4',txt:'Aire inspirado (rico en O₂)'},{color:'#A7B0BA',txt:'Aire espirado (más CO₂)'},{color:'var(--oxy)',txt:'O₂ pasando a la sangre'},{color:'var(--deoxy)',txt:'CO₂ saliendo de la sangre'}],
+    observa:'los pulmones no se mueven solos: siguen al diafragma y a las costillas gracias a la pleura. En la lupa, observa cómo los capilares cambian de azul (sangre pobre en O₂) a rojo (sangre oxigenada) al rodear los alvéolos.'
   };
   E.onFrame((t,dt) => {
     if (!motionOK()) return;
-    if (air.on){ air.phase = (air.phase + dt*0.22*air.speed) % 1; const p = air.phase; const f = p<0.4 ? (1-Math.cos(Math.PI*p/0.4))/2 : (1+Math.cos(Math.PI*(p-0.4)/0.6))/2; const insp = p<0.4;
-      [...rl,...ll].forEach((m,i)=>m.scale.copy(lungBase[i]).multiplyScalar(1+0.09*f)); dia.position.y = -3.15 - 0.45*f; dia.scale.y = 0.4 - 0.18*f;
-      const dir = insp ? 1 : -1; air.parts.forEach(m => { m.userData.t = ((m.userData.t + dir*dt*0.35*air.speed) % 1 + 1) % 1; m.position.copy(m.userData.curve.getPointAt(m.userData.t)); m.material = insp ? inMat : outMat; }); }
-    if (gx.on){ gx.t += dt*0.4; gx.parts.forEach(p => { const k = (gx.t + p.userData.off) % 1; p.position.lerpVectors(p.userData.from, p.userData.to, k); }); }
+    if (air.on){ air.phase = (air.phase + dt*0.2*air.speed) % 1; const p = air.phase; const f = p<0.4 ? (1-Math.cos(Math.PI*p/0.4))/2 : (1+Math.cos(Math.PI*(p-0.4)/0.6))/2; const insp = p<0.4;
+      lungMeshes.forEach((m,i) => { const b = m.userData.baseScale || base[i]; m.scale.set(b.x*(1+0.06*f), b.y*(1+0.08*f), b.z*(1+0.06*f)); }); dia.position.y = -0.4*f; dia.scale.y = 1 - 0.12*f;
+      const dir = insp ? 1 : -1; air.parts.forEach(m => { m.userData.t = ((m.userData.t + dir*dt*0.3*air.speed) % 1 + 1) % 1; m.position.copy(m.userData.curve.getPointAt(m.userData.t)); m.material = insp ? inMat : outMat; }); }
+    if (gx.on){ gx.t += dt*0.35; gx.parts.forEach(p => { const k = (gx.t + p.userData.off) % 1; p.position.lerpVectors(p.userData.from, p.userData.to, k); p.scale.setScalar(0.6+0.6*Math.sin(k*Math.PI)); }); }
   });
   return model;
 }
@@ -1535,7 +1968,7 @@ route('/', (view, q) => {
   view.append(h('p',{class:'small muted',style:'margin-top:26px;max-width:70ch'},'Prototipo MVP. Los modelos 3D son representaciones simplificadas con fines educativos, creadas para este proyecto y sustituibles por modelos anatómicos definitivos. Los datos de estudiantes son ficticios.'));
   // hero 3D
   let E=null;
-  if (webglOK){ try { E = new Engine3D($('#hero-3d'), { interactive:true, autoRotate:true, radius:12.5, phi:1.35, theta:0.5, target:[0,0.5,0], aria:'Corazón 3D decorativo en rotación' }); const m = buildHeart(E); m.setFlow(true); m.setBeat(true); m.setOpacity(0.55); E.setLabels(false); } catch(e){ console.warn(e); } }
+  if (webglOK){ try { E = new Engine3D($('#hero-3d'), { interactive:true, autoRotate:true, radius:11.5, phi:1.38, theta:0.45, target:[0.2,0.5,0], dark:true, exposure:1.1, aria:'Corazón 3D decorativo en rotación' }); const m = buildHeart(E); m.setBeat(true); E.setLabels(false); } catch(e){ console.warn(e); } }
   else $('#hero-3d').append(h('div',{class:'ph',style:'margin:24px'},'Tu navegador no admite WebGL: el modelo 3D se sustituye por esquemas 2D en toda la plataforma.'));
   return { unmount(){ E && E.dispose(); } };
 });
@@ -1626,7 +2059,7 @@ function organView(view, q, D, build){
   view.append(h('div',{class:'viewer'}, stage, panel));
   let E=null, M=null, mode='libre', guideIdx=0, guideDone=false, selected=null, hidden=new Set(), tab='explorar', opacity=D.opacityDefault ?? 1;
   const modeSeg = h('div',{class:'segmented',role:'tablist'}, h('button',{role:'tab','aria-selected':'true',onclick:()=>setMode('libre')},'Exploración libre'), h('button',{role:'tab','aria-selected':'false',onclick:()=>setMode('guiada')},'Exploración guiada'));
-  if (webglOK){ try { E = new Engine3D(stage, { radius:D.radius, phi:D.phi, theta:D.theta, target:D.target, minR:2.5, maxR:22, onSelect:(id,src)=>{ if (id) select(id, src); } }); M = build(E); } catch(e){ console.warn(e); E=null; } }
+  if (webglOK){ try { E = new Engine3D(stage, { radius:D.radius, phi:D.phi, theta:D.theta, target:D.target, minR:2.5, maxR:22, floor:D.floor, floorSize:D.floorSize, onSelect:(id,src)=>{ if (id) select(id, src); } }); M = build(E); } catch(e){ console.warn(e); E=null; } }
   const chrome = stageChrome(stage, E, { left:modeSeg, model:D.id, captureTxt:()=>`Captura · ${D.nombre}${selected?` · ${S[selected].nombre}`:''}` });
   if (E && M) E.onFrame(()=>{ const t = M.phaseText ? M.phaseText() : ''; if (chrome.phase.textContent!==t) chrome.phase.textContent=t; chrome.phase.style.display = t ? '' : 'none'; });
   if (!E){ if (D.id==='corazon') stage.append(heart2D((id)=>select(id,'esquema'))); stage.append(h('div',{class:'notice info',style:'position:absolute;left:12px;right:12px;top:56px'},'WebGL no disponible: usa la lista de estructuras para explorar el contenido.')); }
@@ -1665,6 +2098,7 @@ function organView(view, q, D, build){
   function layersBox(){
     const box = h('div',{class:'stack'});
     const lay = h('div',{class:'layers'}); D.capas.forEach(c => { const on = D.structures.filter(s=>s.capa===c.id).some(s=>!hidden.has(s.id)); lay.append(h('label',{class:'toggle'}, h('input',{type:'checkbox',checked:on,onchange:e=>{ if(!E) return; setLayer(c.id, e.target.checked); D.structures.filter(s=>s.capa===c.id).forEach(s=> e.target.checked?hidden.delete(s.id):hidden.add(s.id)); const inner = D.structures.some(s=>s.capa===c.id && s.interno); if (inner && e.target.checked && opacity>0.6){ applyOpacity(0.35); op.value=35; opOut.value='35 %'; toast('Se activó la transparencia para ver las estructuras internas.'); } }}), c.n)); });
+    if (M && M.colorModes){ const cm = h('div',{class:'segmented',role:'tablist',style:'align-self:flex-start'}); M.colorModes.forEach(c => cm.append(h('button',{role:'tab','aria-selected':M.colorMode===c.id,onclick:()=>{ M.setColorMode(c.id); $$('button',cm).forEach(b=>b.setAttribute('aria-selected', b.textContent===c.n)); Store.log('modo_color',{modelo:D.id,modo:c.id}); }},c.n))); box.append(h('span',{class:'eyebrow'},'Color'), cm); }
     box.append(h('span',{class:'eyebrow'},'Capas visibles'), lay);
     const op = h('input',{type:'range',min:10,max:100,value:Math.round(opacity*100),id:'op-range'}); const opOut = h('output',{},op.value+' %'); op.addEventListener('input',()=>{ opOut.value=op.value+' %'; applyOpacity(op.value/100); });
     const ex = h('input',{type:'range',min:0,max:100,value:0,id:'ex-range'}); const exOut = h('output',{},'0 %'); ex.addEventListener('input',()=>{ exOut.value=ex.value+' %'; E && E.setExplode(ex.value/100); });
@@ -1739,7 +2173,7 @@ route('/explorar/celula', (view, q) => {
   const stage = h('div',{class:'stage'}), panel = h('div',{class:'panel'});
   view.append(h('div',{class:'viewer'}, stage, panel));
   let E=null, M=null, selected=null, tab='explorar', actionTxt='';
-  if (webglOK){ try { E = new Engine3D(stage, { radius:10.5, phi:1.25, theta:0.4, minR:3, maxR:18, onSelect:(id,src)=>{ if(id) select(id,src); } }); M = buildCell(E); } catch(e){ console.warn(e); E=null; } }
+  if (webglOK){ try { E = new Engine3D(stage, { radius:11.2, phi:1.25, theta:0.4, minR:3, maxR:20, floor:-3.35, floorSize:9, onSelect:(id,src)=>{ if(id) select(id,src); } }); M = buildCell(E); } catch(e){ console.warn(e); E=null; } }
   stageChrome(stage, E, { left:h('span',{class:'pill cell'},'Célula animal'), model:'celula-animal', captureTxt:()=>`Captura de la célula animal 3D${selected?` · ${S[selected].nombre}`:''}` });
   if (!E) stage.append(h('div',{class:'ph',style:'margin:60px 24px'},'WebGL no disponible. Usa la lista de componentes para explorar la célula.'));
   const tabs = h('div',{class:'tabs',role:'tablist'}); const tabBody = h('div',{class:'stack'});
@@ -1768,8 +2202,9 @@ route('/explorar/celula', (view, q) => {
   }
   function layersBox(){
     const box = h('div',{class:'stack'});
-    const op = h('input',{type:'range',min:0,max:60,value:22,id:'memb-op'}); const opOut = h('output',{},'22 %'); op.addEventListener('input',()=>{ opOut.value=op.value+' %'; E && E.setOpacity('membrana', op.value/100); });
+    const mo = E && E.parts.get('membrana') ? Math.round((E.parts.get('membrana').opacity ?? 1)*100) : 100; const op = h('input',{type:'range',min:0,max:100,value:mo,id:'memb-op'}); const opOut = h('output',{},mo+' %'); op.addEventListener('input',()=>{ opOut.value=op.value+' %'; E && E.setOpacity('membrana', op.value/100); });
     const ex = h('input',{type:'range',min:0,max:100,value:0,id:'cell-ex'}); const exOut = h('output',{},'0 %'); ex.addEventListener('input',()=>{ exOut.value=ex.value+' %'; E && E.setExplode(ex.value/100); });
+    if (M && M.setCutaway){ const cutIn = h('input',{type:'checkbox',checked:M.cutaway}); cutIn.addEventListener('change',()=>{ M.setCutaway(cutIn.checked); Store.log('vista_corte',{modelo:'celula-animal',activa:cutIn.checked}); }); box.append(h('label',{class:'toggle'},cutIn,'Vista en corte (se retira una cuña para ver el interior)')); }
     box.append(h('div',{class:'slider'}, h('label',{for:'memb-op'},'Opacidad de la membrana'), opOut, op), h('div',{class:'slider'}, h('label',{for:'cell-ex'},'Separar organelos'), exOut, ex));
     const lay = h('div',{class:'layers'}); D.structures.forEach(s => lay.append(h('label',{class:'toggle'}, h('input',{type:'checkbox',checked:E?E.parts.get(s.id).visible:true,onchange:e=>E&&E.setVisible(s.id,e.target.checked)}), s.nombre)));
     box.append(h('span',{class:'eyebrow'},'Componentes visibles'), lay, h('button',{class:'btn sm',onclick:()=>{ D.structures.forEach(s=>E&&E.setVisible(s.id,true)); renderTab(); }},'Mostrar todo'));
@@ -1857,18 +2292,26 @@ route('/mision/globulo-rojo', (view) => {
     else ready();
     body.append(next);
   }
-  function alveoloSVG(){ return `<svg viewBox="0 0 420 240" role="img" aria-label="Alvéolo y capilar pulmonar">
-    <defs><clipPath id="cap"><rect x="0" y="150" width="420" height="60"/></clipPath></defs>
-    <circle cx="210" cy="80" r="70" fill="var(--bg-3)" stroke="var(--line-2)" stroke-width="2"/>
-    <text x="210" y="60" text-anchor="middle" font-size="12" fill="var(--ink-2)" font-weight="600">Alvéolo (aire)</text>
-    <text x="210" y="80" text-anchor="middle" font-size="11" fill="var(--ink-3)">O₂ alto · CO₂ bajo</text>
-    <text x="210" y="98" text-anchor="middle" font-size="10" fill="var(--ink-3)">pared de 1 célula</text>
-    <rect x="0" y="150" width="420" height="60" rx="30" fill="var(--anat-soft)" stroke="var(--line-2)"/>
-    <text x="14" y="200" font-size="11" fill="var(--ink-3)">capilar →</text>
-    <g id="mo2" style="opacity:0"><text x="150" y="130" font-size="12" fill="var(--oxy)" font-weight="700">O₂ ↓</text><text x="172" y="130" font-size="12" fill="var(--oxy)" font-weight="700">O₂ ↓</text><text x="194" y="130" font-size="12" fill="var(--oxy)" font-weight="700">O₂ ↓</text></g>
-    <g id="mco2" style="opacity:0"><text x="230" y="130" font-size="12" fill="var(--deoxy)" font-weight="700">CO₂ ↑</text><text x="262" y="130" font-size="12" fill="var(--deoxy)" font-weight="700">CO₂ ↑</text></g>
-    <circle id="rbc-svg" cx="210" cy="180" r="20" fill="var(--deoxy)" stroke="var(--ink)" stroke-width="2" style="transition:fill .6s"/>
-    <text x="210" y="228" text-anchor="middle" font-size="11" fill="var(--ink-3)">glóbulo rojo</text>
+  function alveoloSVG(){ const arrows = (id, xs, col, up, label) => `<g id="${id}" style="opacity:0;transition:opacity .5s">${xs.map(x => `<g><path d="M${x} ${up?150:122} L${x} ${up?120:152}" stroke="${col}" stroke-width="2.2" stroke-linecap="round"/><path d="M${x-5} ${up?127:145} L${x} ${up?119:153} L${x+5} ${up?127:145}" fill="none" stroke="${col}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${x}" cy="${up?160:112}" r="8.5" fill="${col}"/><text x="${x}" y="${up?163.5:115.5}" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">${label}</text></g>`).join('')}</g>`;
+    return `<svg viewBox="0 0 420 250" role="img" aria-label="Alvéolo y capilar pulmonar: intercambio gaseoso">
+    <defs>
+      <radialGradient id="alvG" cx="42%" cy="36%" r="70%"><stop offset="0" stop-color="#FDEDEA"/><stop offset=".65" stop-color="#F4C1B8"/><stop offset="1" stop-color="#DC948A"/></radialGradient>
+      <linearGradient id="capG" x1="0" x2="1"><stop offset="0" stop-color="var(--deoxy)"/><stop offset=".5" stop-color="#9A5A9E"/><stop offset="1" stop-color="var(--oxy)"/></linearGradient>
+      <radialGradient id="rbcHi" cx="40%" cy="35%" r="60%"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient>
+    </defs>
+    <path d="M194 0 C196 18 198 26 201 40 L221 40 C224 26 226 18 228 0 Z" fill="#EAD7C5" stroke="#C7B09A" stroke-width="1.2"/>
+    <g stroke="#C4786E" stroke-width="1.4"><circle cx="152" cy="96" r="44" fill="url(#alvG)"/><circle cx="270" cy="96" r="44" fill="url(#alvG)"/><circle cx="211" cy="84" r="54" fill="url(#alvG)"/></g>
+    <g fill="none" stroke="url(#capG)" stroke-width="2.2" opacity=".75"><path d="M112 88 C118 58 146 48 170 56"/><path d="M162 50 C184 34 238 34 258 50"/><path d="M252 56 C276 48 304 58 310 88"/><path d="M118 118 C132 132 150 136 170 134"/><path d="M254 134 C276 136 294 130 306 116"/></g>
+    <text x="211" y="76" text-anchor="middle" font-size="12.5" font-weight="700" fill="#6B2E28">Alvéolo (aire)</text>
+    <text x="211" y="92" text-anchor="middle" font-size="10.5" fill="#8A4A42">O₂ alto · CO₂ bajo</text>
+    <text x="100" y="30" font-size="10" fill="var(--ink-3)">bronquiolo</text><path d="M148 27 L192 20" stroke="var(--ink-3)" stroke-width="1" stroke-dasharray="2 2"/>
+    <rect x="8" y="164" width="404" height="52" rx="26" fill="url(#capG)" fill-opacity=".2" stroke="url(#capG)" stroke-width="2.5"/>
+    <text x="22" y="232" font-size="10" fill="var(--ink-3)">desde la arteria pulmonar →</text><text x="398" y="232" text-anchor="end" font-size="10" fill="var(--ink-3)">→ hacia las venas pulmonares</text>
+    <path d="M330 142 L330 162" stroke="var(--ink-3)" stroke-dasharray="2 2"/><text x="334" y="152" font-size="9.5" fill="var(--ink-3)">barrera de 0,5 µm</text>
+    <g opacity=".5"><g fill="var(--deoxy)"><ellipse cx="62" cy="190" rx="17" ry="10.5"/><ellipse cx="112" cy="192" rx="17" ry="10.5"/></g><g fill="var(--oxy)"><ellipse cx="308" cy="190" rx="17" ry="10.5"/><ellipse cx="358" cy="192" rx="17" ry="10.5"/></g></g>
+    <g id="rbc-svg" fill="var(--deoxy)" style="transition:fill .8s"><ellipse cx="210" cy="190" rx="25" ry="15.5" stroke="#00000033" stroke-width="1.5"/><ellipse cx="210" cy="190" rx="11" ry="6.5" fill="#000" fill-opacity=".18"/><ellipse cx="210" cy="190" rx="25" ry="15.5" fill="url(#rbcHi)"/></g>
+    ${arrows('mo2',[172,196],'var(--oxy)',false,'O₂')}${arrows('mco2',[228,252],'var(--deoxy)',true,'CO₂')}
+    <text x="210" y="246" text-anchor="middle" font-size="10.5" fill="var(--ink-3)">glóbulo rojo · hemoglobina</text>
   </svg>`; }
   function lungPanel(){
     let o2=false, co2=false, predicted=false;
@@ -1887,13 +2330,21 @@ route('/mision/globulo-rojo', (view) => {
   }
   function tissuePanel(deliver){
     const wrap = h('div',{class:'stack'});
-    wrap.append(h('div',{html:`<svg viewBox="0 0 420 220" role="img" aria-label="Capilar y célula muscular">
-      <rect x="0" y="20" width="420" height="56" rx="28" fill="var(--anat-soft)" stroke="var(--line-2)"/><text x="14" y="55" font-size="11" fill="var(--ink-3)">capilar →</text>
-      <circle id="rbc-t" cx="210" cy="48" r="20" fill="${deliver?'var(--oxy)':'var(--deoxy)'}" stroke="var(--ink)" stroke-width="2" style="transition:fill .6s"/>
-      <rect x="60" y="110" width="300" height="90" rx="14" fill="var(--bg-3)" stroke="var(--line-2)"/><text x="210" y="135" text-anchor="middle" font-size="12" font-weight="600" fill="var(--ink-2)">Célula muscular</text>
-      <ellipse cx="150" cy="168" rx="26" ry="12" fill="#E07A4F"/><ellipse cx="270" cy="168" rx="26" ry="12" fill="#E07A4F"/><text x="210" y="172" text-anchor="middle" font-size="10" fill="var(--ink-3)">mitocondrias</text>
-      <g id="t-o2" style="opacity:${deliver?0:1}"><text x="170" y="98" font-size="12" fill="var(--oxy)" font-weight="700">O₂ ↓</text></g>
-      <g id="t-co2" style="opacity:${deliver?0:1}"><text x="235" y="98" font-size="12" fill="var(--deoxy)" font-weight="700">CO₂ ↑</text></g></svg>`}));
+    const mito = (x,y,rot) => `<g transform="translate(${x} ${y}) rotate(${rot})"><ellipse rx="30" ry="13" fill="#E88A5C" stroke="#B85A34" stroke-width="1.3"/><path d="M-22 0 q4 -9 8 0 t8 0 t8 0 t8 0 t8 0" fill="none" stroke="#FBD2B8" stroke-width="1.6"/><ellipse rx="30" ry="13" fill="none" stroke="#F7B08A" stroke-width=".8" transform="scale(.86)"/></g>`;
+    wrap.append(h('div',{html:`<svg viewBox="0 0 420 240" role="img" aria-label="Capilar y fibra muscular">
+      <defs><linearGradient id="capT" x1="0" x2="1"><stop offset="0" stop-color="var(--oxy)"/><stop offset=".5" stop-color="#9A5A9E"/><stop offset="1" stop-color="var(--deoxy)"/></linearGradient>
+        <pattern id="sarc" width="14" height="10" patternUnits="userSpaceOnUse"><rect width="14" height="10" fill="#C9605A"/><rect width="5" height="10" fill="#A84440"/><rect x="9" width="1.2" height="10" fill="#7E2C2A"/></pattern>
+        <radialGradient id="rbcHi2" cx="40%" cy="35%" r="60%"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>
+      <rect x="8" y="16" width="404" height="56" rx="28" fill="url(#capT)" fill-opacity=".2" stroke="url(#capT)" stroke-width="2.5"/><text x="22" y="12" font-size="10" fill="var(--ink-3)">capilar → sangre llega oxigenada y sale con CO₂</text>
+      <g opacity=".5"><ellipse cx="70" cy="44" rx="17" ry="10.5" fill="var(--oxy)"/><ellipse cx="350" cy="44" rx="17" ry="10.5" fill="var(--deoxy)"/></g>
+      <g id="rbc-t" fill="${deliver?'var(--oxy)':'var(--deoxy)'}" style="transition:fill .8s"><ellipse cx="210" cy="44" rx="25" ry="15.5" stroke="#00000033" stroke-width="1.5"/><ellipse cx="210" cy="44" rx="11" ry="6.5" fill="#000" fill-opacity=".18"/><ellipse cx="210" cy="44" rx="25" ry="15.5" fill="url(#rbcHi2)"/></g>
+      <rect x="34" y="112" width="352" height="104" rx="22" fill="url(#sarc)" stroke="#7E2C2A" stroke-width="1.5"/><rect x="34" y="112" width="352" height="104" rx="22" fill="#fff" fill-opacity=".12"/>
+      <ellipse cx="70" cy="122" rx="20" ry="7" fill="#6A58C7" stroke="#4B3D9C"/><ellipse cx="344" cy="206" rx="20" ry="7" fill="#6A58C7" stroke="#4B3D9C"/>
+      ${mito(130,160,-8)}${mito(212,178,6)}${mito(292,156,-4)}
+      <rect x="112" y="190" width="200" height="20" rx="6" fill="var(--bg-2)" fill-opacity=".88"/><text x="212" y="204" text-anchor="middle" font-size="10" font-weight="600" fill="var(--ink-2)">glucosa + O₂ → CO₂ + H₂O + ATP</text>
+      <text x="44" y="232" font-size="10" fill="var(--ink-3)">fibra muscular (célula) · núcleos · mitocondrias</text>
+      <g id="t-o2" style="opacity:${deliver?0:1};transition:opacity .5s"><path d="M180 74 L180 106" stroke="var(--oxy)" stroke-width="2.2" stroke-linecap="round"/><path d="M175 99 L180 107 L185 99" fill="none" stroke="var(--oxy)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="166" cy="90" r="8.5" fill="var(--oxy)"/><text x="166" y="93.5" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">O₂</text></g>
+      <g id="t-co2" style="opacity:${deliver?0:1};transition:opacity .5s"><path d="M244 106 L244 74" stroke="var(--deoxy)" stroke-width="2.2" stroke-linecap="round"/><path d="M239 81 L244 73 L249 81" fill="none" stroke="var(--deoxy)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="260" cy="90" r="9" fill="var(--deoxy)"/><text x="260" y="93" text-anchor="middle" font-size="7.5" font-weight="700" fill="#fff">CO₂</text></g></svg>`}));
     if (!deliver){ wrap.append(h('div',{class:'notice'},'Las mitocondrias de la célula muscular consumen O₂ y producen CO₂ y ATP (respiración celular). El glóbulo rojo entrega O₂ y recoge CO₂.')); return wrap; }
     let a=false,b=false;
     const b1 = h('button',{class:'gas-btn',onclick:()=>{ a=true; b1.classList.add('done'); $('#t-o2',wrap).style.opacity=1; done(); }},'Entregar O₂ → célula');
@@ -1989,10 +2440,13 @@ route('/simuladores/circulacion', (view) => {
     ctx.beginPath(); ctx.ellipse(cx,cy,rx,ry,0,-Math.PI/2,Math.PI/2); ctx.strokeStyle=oxy; ctx.globalAlpha=.25; ctx.lineWidth=10; ctx.stroke(); ctx.beginPath(); ctx.ellipse(cx,cy,rx,ry,0,Math.PI/2,Math.PI*1.5); ctx.strokeStyle=deoxy; ctx.stroke(); ctx.globalAlpha=1;
     // pulmones (arriba) y tejidos (abajo), corazón centro
     const breath = 1 + 0.08*Math.sin((now-t0)/1000*r.fc/60*Math.PI*2*(state.fr/r.fc)); const beat = 1 + 0.1*Math.max(0,Math.sin((now-t0)/1000*r.fc/60*Math.PI*2));
-    ctx.fillStyle=bg3; ctx.beginPath(); ctx.ellipse(cx-22,cy-ry,26*breath,20*breath,0,0,Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.ellipse(cx+22,cy-ry,26*breath,20*breath,0,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle=cssVar('--anat'); ctx.beginPath(); ctx.arc(cx,cy,26*(motionOK()?beat:1),0,Math.PI*2); ctx.fill();
-    ctx.fillStyle=bg3; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(cx-60,cy+ry-18,120,36,10) : ctx.rect(cx-60,cy+ry-18,120,36); ctx.fill();
-    ctx.fillStyle=ink; ctx.font='600 12px "IBM Plex Sans", sans-serif'; ctx.textAlign='center'; ctx.fillText('Pulmones · '+state.fr+' resp/min', cx, cy-ry-32); ctx.fillText('Tejidos · demanda '+Math.round(r.vo2)+' mL O₂/min', cx, cy+ry+38); ctx.fillText(r.fc+' lpm', cx, cy+4); ctx.fillStyle=ink3; ctx.font='11px "IBM Plex Mono", monospace'; ctx.fillText('gasto cardíaco '+r.gc.toFixed(1)+' L/min', cx, cy+48);
+    const lung = (x, y, k, s) => { ctx.save(); ctx.translate(x, y); ctx.scale(s*k, k); const g = ctx.createLinearGradient(0,-24,0,24); g.addColorStop(0,'#F6C7BF'); g.addColorStop(1,'#D98C84'); ctx.fillStyle = g; ctx.strokeStyle = '#B8665E'; ctx.lineWidth = 1.2/k;
+      ctx.beginPath(); ctx.moveTo(4,-26); ctx.bezierCurveTo(18,-24,30,0,30,16); ctx.bezierCurveTo(30,24,22,26,10,22); ctx.bezierCurveTo(4,20,2,12,4,4); ctx.bezierCurveTo(6,-8,0,-16,4,-26); ctx.fill(); ctx.stroke(); ctx.strokeStyle='#C9786F'; ctx.beginPath(); ctx.moveTo(8,-6); ctx.bezierCurveTo(16,-2,22,6,28,4); ctx.stroke(); ctx.restore(); };
+    const bk = motionOK() ? breath : 1; ctx.strokeStyle='#D8C6B2'; ctx.lineWidth=4; ctx.beginPath(); ctx.moveTo(cx,cy-ry-26); ctx.lineTo(cx,cy-ry-6); ctx.moveTo(cx,cy-ry-10); ctx.lineTo(cx-8,cy-ry-2); ctx.moveTo(cx,cy-ry-10); ctx.lineTo(cx+8,cy-ry-2); ctx.stroke();
+    lung(cx-6, cy-ry+6, bk, -1); lung(cx+6, cy-ry+6, bk, 1);
+    { const hk = 26*(motionOK()?beat:1)/26; ctx.save(); ctx.translate(cx, cy-2); ctx.scale(hk, hk); const hg = ctx.createRadialGradient(-6,-8,2,0,0,30); hg.addColorStop(0,'#E4665C'); hg.addColorStop(1,'#9A2E28'); ctx.fillStyle = hg; ctx.beginPath(); ctx.moveTo(0,24); ctx.bezierCurveTo(-30,6,-30,-20,-14,-22); ctx.bezierCurveTo(-6,-24,-1,-18,0,-12); ctx.bezierCurveTo(1,-18,6,-24,14,-22); ctx.bezierCurveTo(30,-20,30,6,0,24); ctx.fill(); ctx.strokeStyle='#E9C27A'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(3,-11); ctx.bezierCurveTo(6,0,4,10,2,20); ctx.stroke(); ctx.restore(); }
+    { const tx = cx-62, ty = cy+ry-18; ctx.save(); ctx.beginPath(); ctx.roundRect ? ctx.roundRect(tx,ty,124,36,10) : ctx.rect(tx,ty,124,36); ctx.clip(); ctx.fillStyle='#C9605A'; ctx.fillRect(tx,ty,124,36); ctx.fillStyle='#A84440'; for (let i=0;i<124;i+=9) ctx.fillRect(tx+i,ty,3.5,36); ctx.fillStyle='rgba(255,255,255,.14)'; ctx.fillRect(tx,ty,124,36); ctx.fillStyle='#E88A5C'; [[22,12],[62,24],[100,13]].forEach(([mx,my]) => { ctx.beginPath(); ctx.ellipse(tx+mx,ty+my,11,5,0,0,Math.PI*2); ctx.fill(); }); ctx.restore(); }
+    ctx.fillStyle=ink; ctx.font='600 12px "IBM Plex Sans", sans-serif'; ctx.textAlign='center'; ctx.fillText('Pulmones · '+state.fr+' resp/min', cx, cy-ry-32); ctx.fillText('Tejidos · demanda '+Math.round(r.vo2)+' mL O₂/min', cx, cy+ry+38); ctx.fillStyle='#fff'; ctx.font='700 11px "IBM Plex Sans", sans-serif'; ctx.fillText(r.fc+' lpm', cx, cy+2); ctx.fillStyle=ink; ctx.font='600 12px "IBM Plex Sans", sans-serif'; ctx.fillStyle=ink3; ctx.font='11px "IBM Plex Mono", monospace'; ctx.fillText('gasto cardíaco '+r.gc.toFixed(1)+' L/min', cx, cy+48);
     ctx.textAlign='left'; ctx.fillText('sat. '+r.sat+' %', cx+rx+14, cy-ry*0.5); ctx.textAlign='right'; ctx.fillText('O₂ entregado', cx-rx-14, cy+ry*0.5);
     // partículas
     const speed = motionOK() ? r.gc/5*0.08 : 0; parts.forEach(p => { p.t = (p.t + speed*dt) % 1; const q = loopPath(p.t); const inOxy = (p.t<0.5); const deliver = r.ratio<1 && p.t>0.5 && Math.random()<0.5; ctx.fillStyle = inOxy ? oxy : deoxy; ctx.globalAlpha = inOxy ? (0.5+0.5*Math.min(1,r.ratio)) : 0.85; ctx.beginPath(); ctx.arc(q.x/dpr*dpr, q.y, 5, 0, Math.PI*2); ctx.fill(); }); ctx.globalAlpha=1;
