@@ -98,8 +98,8 @@ input,select,textarea{font:inherit;color:inherit}
 .logo-mark svg{width:22px;height:22px}
 .logo b{font-family:var(--font-d);font-weight:800;font-size:1.05rem;letter-spacing:-.01em;display:block;line-height:1.1}
 .logo .sub{font-size:.68rem;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
-.nav-group{font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);padding:12px 10px 4px;font-family:var(--font-d)}
-.nav a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;color:var(--ink-2);text-decoration:none!important;font-weight:500;font-size:.92rem}
+.nav-group{font-size:.66rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);padding:10px 10px 3px;line-height:1.3;font-family:var(--font-d)}
+.nav a{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;color:var(--ink-2);text-decoration:none!important;font-weight:500;font-size:.9rem;line-height:1.25}
 .nav a:hover{background:var(--bg-3);color:var(--ink)}
 .nav a[aria-current="page"]{background:var(--accent-soft);color:var(--ink);font-weight:600}
 .nav a .ico{width:18px;height:18px;flex:none;display:inline-grid;place-items:center;color:var(--ink-3)}
@@ -357,6 +357,118 @@ table.data tr:last-child td{border-bottom:0}
 .entry img{max-width:240px;border-radius:8px;border:1px solid var(--line);margin-top:6px}
 .entry pre{font-family:var(--font-m);font-size:.78rem;white-space:pre-wrap;margin:6px 0 0;background:var(--bg-3);padding:8px;border-radius:8px}
 
+/* ============ ÁREAS DE CCNN · TRANSVERSAL ============ */
+.navdot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--ink-3);flex:none;box-shadow:0 0 0 3px color-mix(in srgb,currentColor 0%,transparent)}
+.navdot.anat{background:var(--anat)} .navdot.cell{background:var(--cell)} .navdot.gen{background:var(--gen)} .navdot.eco{background:var(--eco)} .navdot.lab{background:var(--lab)} .navdot.mis{background:var(--mis)}
+.nav a[aria-current="page"] .navdot{box-shadow:0 0 0 3px var(--bg-2),0 0 0 5px currentColor}
+.areas-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:16px}
+.area-tile{padding:20px 18px 18px;gap:9px;overflow:hidden}
+.area-tile::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:var(--accent)}
+.area-tile.anat::before{background:var(--anat)} .area-tile.cell::before{background:var(--cell)} .area-tile.gen::before{background:var(--gen)} .area-tile.eco::before{background:var(--eco)}
+.area-tile h3{font-size:1.12rem}
+.transv{display:grid;grid-template-columns:230px 1fr;gap:18px;align-items:center;padding:16px 18px;border:1px dashed var(--line-2);border-radius:var(--r-l);background:color-mix(in srgb,var(--mis-soft) 35%,var(--bg-2));margin-bottom:36px}
+.transv-head{display:flex;flex-direction:column;gap:4px}
+.transv-head b{font-family:var(--font-d);font-size:1.05rem}
+.transv-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.transv-item{display:flex;gap:10px;align-items:flex-start;padding:10px;border-radius:12px;background:var(--bg-2);border:1px solid var(--line);text-decoration:none!important;color:var(--ink);transition:transform .15s,box-shadow .15s}
+.transv-item:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.transv-item .ico{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;flex:none;font-size:1.05rem}
+.transv-item b{display:block;font-size:.9rem}
+.transv-item .d{display:block;font-size:.74rem;color:var(--ink-3);line-height:1.35;margin:2px 0 6px}
+.transv-item .dots{display:flex;gap:4px}
+.transv-item .dots .navdot{width:8px;height:8px}
+.tile.res{padding-top:16px}
+.tile.res .tipo{font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:-4px}
+.tile.res.planned{background:color-mix(in srgb,var(--bg-2) 70%,var(--bg-3))}
+.tile.res.planned h3,.tile.res.planned>p{opacity:.8}
+.res-reto{display:flex;flex-direction:column;gap:3px;padding:9px 11px;border-radius:10px;background:var(--bg-3);font-size:.8rem;color:var(--ink-2);line-height:1.4}
+.res-reto b{font-size:.72rem;letter-spacing:.04em;color:var(--ink)}
+.tile.anat .res-reto{background:var(--anat-soft)} .tile.cell .res-reto{background:var(--cell-soft)} .tile.gen .res-reto{background:var(--gen-soft)} .tile.eco .res-reto{background:var(--eco-soft)} .tile.lab .res-reto{background:var(--lab-soft)} .tile.mis .res-reto{background:var(--mis-soft)}
+.tile.planned .res-reto{background:var(--bg-3)}
+.area-tags{display:flex;flex-wrap:wrap;gap:5px}
+.area-tags .pill{font-size:.66rem;padding:2px 7px}
+.area-sec-head{display:flex;align-items:center;gap:10px;margin:6px 0 12px;flex-wrap:wrap}
+.area-sec-head h3{font-size:1.08rem}
+.secn{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-family:var(--font-d);font-weight:800;font-size:.9rem;color:#fff;background:var(--accent);flex:none}
+.secn.anat{background:var(--anat)} .secn.cell{background:var(--cell)} .secn.gen{background:var(--gen)} .secn.eco{background:var(--eco)}
+.guide-q{display:flex;flex-direction:column;gap:6px;padding:16px 20px;border-radius:var(--r-l);border-left:5px solid var(--accent);background:var(--bg-2);border-top:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:14px}
+.guide-q b{font-family:var(--font-d);font-size:1.15rem;line-height:1.35}
+.guide-q.anat{border-left-color:var(--anat)} .guide-q.cell{border-left-color:var(--cell)} .guide-q.gen{border-left-color:var(--gen)} .guide-q.eco{border-left-color:var(--eco)}
+.unit-chips{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-bottom:26px}
+.curr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.curr-area{display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:14px;border:1px solid var(--line);background:color-mix(in srgb,var(--bg-2) 60%,var(--bg))}
+.curr-area.transversal{grid-column:1/-1;border-style:dashed}
+.curr-head{display:flex;align-items:center;gap:9px;text-decoration:none!important;color:var(--ink);padding:2px 4px}
+.curr-head b{font-family:var(--font-d)}
+.curr-area .unit{padding:9px 12px}
+.curr-area.anat .progress>i{background:var(--anat)} .curr-area.cell .progress>i{background:var(--cell)} .curr-area.gen .progress>i{background:var(--gen)} .curr-area.eco .progress>i{background:var(--eco)}
+
+/* ============ PROGRESIÓN: primero se explora, después se explica ============ */
+.prog{margin:12px 0 38px;padding:20px 20px 18px;border-radius:var(--r-l);border:1px solid var(--line);background:var(--bg-2)}
+.prog-phases{display:grid;grid-template-columns:4fr 3fr;gap:8px;margin-bottom:10px}
+.prog-phases span{font-family:var(--font-d);font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:5px 12px;border-radius:8px;text-align:center}
+.prog-phases .ph1{background:var(--cell-soft);color:var(--cell)}
+.prog-phases .ph2{background:var(--gen-soft);color:var(--gen)}
+.prog-rail{position:relative;--dot:38px}
+.prog-rail::before,.prog-fill{content:"";position:absolute;top:calc(var(--dot)/2 - 2px);left:calc(100%/14);right:calc(100%/14);height:4px;border-radius:4px;background:var(--bg-3)}
+.prog-fill{--f:0;right:auto;width:calc((100% - 100%/7) * var(--f));background:linear-gradient(90deg,var(--cell),var(--accent) 50%,var(--gen));transition:width .5s ease}
+.prog-track{position:relative;list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.prog-step{width:100%;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;background:none;border:0;padding:0 2px 6px;cursor:pointer;color:var(--ink);font:inherit;border-radius:10px}
+.prog-step .dot{width:var(--dot);height:var(--dot);border-radius:50%;display:grid;place-items:center;font-family:var(--font-d);font-weight:800;font-size:.95rem;background:var(--bg-2);border:2px solid var(--line-2);color:var(--ink-3);transition:all .25s}
+.prog-step b{font-family:var(--font-d);font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;margin-top:4px}
+.prog-step .s{font-size:.72rem;color:var(--ink-3);line-height:1.3;max-width:15ch}
+.prog-step.past .dot{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.prog-step.on .dot{background:var(--accent);border-color:var(--accent);color:#fff;transform:scale(1.14);box-shadow:0 0 0 6px color-mix(in srgb,var(--accent) 18%,transparent)}
+.prog-step.on b{color:var(--accent)}
+.prog-step:hover .dot{border-color:var(--accent)}
+.prog-step:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.prog-detail{display:flex;gap:16px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;margin-top:14px;padding:14px 16px;border-radius:14px;background:var(--bg-3)}
+.prog-detail h3{font-size:1.15rem}
+.prog-detail p{font-size:.9rem;color:var(--ink-2);max-width:70ch}
+
+/* ============ RETO DEL RECURSO ============ */
+.reto{border:1px solid color-mix(in srgb,var(--accent) 35%,var(--line));background:linear-gradient(180deg,color-mix(in srgb,var(--accent-soft) 55%,var(--bg-2)),var(--bg-2));border-radius:var(--r-l);margin-bottom:14px;overflow:hidden}
+.reto.done{border-color:color-mix(in srgb,var(--ok) 40%,var(--line));background:linear-gradient(180deg,color-mix(in srgb,var(--ok) 10%,var(--bg-2)),var(--bg-2))}
+.reto-head{width:100%;display:flex;align-items:center;gap:10px;padding:11px 16px;background:none;border:0;font:inherit;color:var(--ink);cursor:pointer;text-align:left}
+.reto-ico{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--bg-2);border:1px solid var(--line);flex:none}
+.reto-t{flex:1;font-size:.92rem}
+.reto-caret{color:var(--ink-3);font-size:.78rem;font-weight:600;white-space:nowrap}
+.reto-t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.reto-p{color:var(--ink-2);margin-left:10px;padding-left:10px;border-left:1px solid var(--line-2)}
+.reto.closed .reto-head{padding-block:9px}
+.reto-body{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:0;border-top:1px solid var(--line)}
+.reto.static .reto-body{border-top:0}
+.reto-col{display:flex;flex-direction:column;gap:7px;padding:11px 16px;font-size:.86rem}
+.reto-col+.reto-col{border-left:1px solid var(--line)}
+.reto-col p{color:var(--ink-2)}
+.checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.checks li{display:flex;align-items:center;gap:8px}
+.ck{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--line-2);display:grid;place-items:center;font-size:.72rem;font-weight:800;flex:none;background:var(--bg-2);color:#fff}
+.checks li.ok .ck{background:var(--ok);border-color:var(--ok)}
+.checks li.ok .linklike{color:var(--ink-3);text-decoration:line-through}
+.dotck{width:8px;height:8px;border-radius:50%;border:0;background:var(--accent);margin:0 6px}
+.checks.plain li{align-items:flex-start;color:var(--ink-2)}
+.checks.plain .dotck{margin-top:7px}
+.linklike{background:none;border:0;padding:0;font:inherit;color:var(--accent-2);text-decoration:underline;text-underline-offset:3px;cursor:pointer;text-align:left}
+.linklike:hover{color:var(--accent)}
+.seq{margin:0;padding-left:20px;font-size:.84rem;color:var(--ink-2);display:flex;flex-direction:column;gap:3px}
+
+/* ============ VISTA EN DETALLE · MARCADORES DE PARTES ============ */
+.markers{position:absolute;inset:0;pointer-events:none;z-index:2}
+.mk{position:absolute;transform:translate(-50%,-50%);width:26px;height:26px;border-radius:50%;border:2px solid #fff;background:var(--ink);color:#fff;font-family:var(--font-d);font-weight:800;font-size:.78rem;display:grid;place-items:center;cursor:pointer;pointer-events:auto;box-shadow:0 2px 8px rgba(0,0,0,.35);transition:transform .15s,background .15s}
+.mk:hover{transform:translate(-50%,-50%) scale(1.15);background:var(--accent)}
+.mk.on{background:var(--accent);transform:translate(-50%,-50%) scale(1.25);animation:mkpulse 1.6s ease-in-out infinite}
+@keyframes mkpulse{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 55%,transparent),0 2px 8px rgba(0,0,0,.35)}50%{box-shadow:0 0 0 9px transparent,0 2px 8px rgba(0,0,0,.35)}}
+.detail-bar{position:absolute;top:58px;left:50%;transform:translateX(-50%);z-index:4;display:flex;align-items:center;gap:10px;padding:6px 6px 6px 14px;border-radius:999px;background:var(--ink);color:var(--bg);font-size:.84rem;box-shadow:var(--shadow-lg);white-space:nowrap;max-width:calc(100% - 24px)}
+.detail-bar b{color:var(--bg)}
+.detail-bar .btn{background:var(--bg-2);color:var(--ink);border-color:transparent}
+.parts{gap:6px}
+.part{display:flex;align-items:flex-start;gap:10px;width:100%;text-align:left;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg-2);font:inherit;color:var(--ink);cursor:pointer}
+.part:hover{border-color:var(--accent)}
+.part.on{border-color:var(--accent);background:var(--accent-soft)}
+.pn{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--ink);color:var(--bg);font-family:var(--font-d);font-weight:800;font-size:.74rem;flex:none;margin-top:1px}
+.part.on .pn{background:var(--accent);color:#fff}
+
 /* ============ RESPONSIVE ============ */
 @media (max-width:1100px){
   .access{grid-template-columns:repeat(3,1fr)}
@@ -366,6 +478,11 @@ table.data tr:last-child td{border-bottom:0}
   .loop{grid-template-columns:repeat(4,1fr)}
   .loop div:not(:last-child)::after{display:none}
   .readouts{grid-template-columns:repeat(2,1fr)}
+  .areas-grid{grid-template-columns:repeat(2,1fr)}
+  .transv{grid-template-columns:1fr}
+  .transv-grid{grid-template-columns:repeat(2,1fr)}
+  .reto-body{grid-template-columns:1fr 1fr}
+  .reto-body .reto-col:last-child{grid-column:1/-1;border-left:0;border-top:1px solid var(--line)}
 }
 @media (max-width:860px){
   #app{grid-template-columns:1fr}
@@ -387,16 +504,36 @@ table.data tr:last-child td{border-bottom:0}
   .access{grid-template-columns:repeat(2,1fr)}
   .stage{min-height:400px}
   .userchip .n,.userchip .c{display:none}
+  .curr{grid-template-columns:1fr}
+  .reto-body{grid-template-columns:1fr}
+  .reto-col+.reto-col{border-left:0;border-top:1px solid var(--line)}
+  .reto-t{white-space:normal}
+  .reto-p{display:block;margin:4px 0 0;padding:0;border:0;font-size:.84rem}
+  .prog-phases{display:none}
+  .prog-rail::before,.prog-fill{display:none}
+  .prog-track{grid-template-columns:1fr;gap:0}
+  .prog-track li{position:relative}
+  .prog-track li:not(:last-child)::after{content:"";position:absolute;left:18px;top:38px;bottom:-2px;width:3px;background:var(--bg-3)}
+  .prog-step{flex-direction:row;text-align:left;gap:12px;padding:4px 4px 10px}
+  .prog-step .dot{width:34px;height:34px;flex:none}
+  .prog-step b{margin:0;min-width:92px}
+  .prog-step .s{max-width:none}
+  .prog-step.on .dot{transform:none}
+  .detail-bar{top:auto;bottom:52px}
 }
 @media (max-width:480px){
   .loop{grid-template-columns:repeat(2,1fr)}
   .readouts{grid-template-columns:1fr 1fr}
   .g4{grid-template-columns:1fr 1fr}
   .bar{grid-template-columns:100px 1fr 40px}
+  .areas-grid{grid-template-columns:1fr}
+  .transv-grid{grid-template-columns:1fr}
+  .g4{grid-template-columns:1fr}
 }
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
-  .tile,.progress>i,.toast{transition:none}
+  .tile,.progress>i,.toast,.prog-fill,.prog-step .dot,.transv-item{transition:none}
+  .mk.on{animation:none}
 }
 </style>
 <div id="app">
@@ -408,7 +545,7 @@ table.data tr:last-child td{border-bottom:0}
       <span><b>ANAI BioLab</b><span class="sub">Laboratorio virtual</span></span>
     </a>
     <nav class="nav" id="nav-main"></nav>
-    <div class="sidebar-foot">Prototipo MVP · ANAI Online<br><span class="mono">v0.1 · Biología BGU</span></div>
+    <div class="sidebar-foot">Prototipo MVP · ANAI Online<br><span class="mono">v0.4 · Ciencias Naturales · Biología BGU</span></div>
   </aside>
   <div class="main">
     <header class="topbar">
@@ -723,7 +860,7 @@ BIO.brain = {
   id:"cerebro", nombre:"Cerebro humano", unidad:6, dominio:"anat", eyebrow:"Atlas 3D · Unidad 6 · Sistema nervioso", em:"🧠",
   intro:"Explora la corteza, el cerebelo, el tronco y las estructuras profundas. Activa el impulso nervioso para ver el camino de un estímulo hasta la respuesta.",
   nota:"Modelo tridimensional simplificado con fines educativos. Los lóbulos se representan como regiones coloreadas; los surcos son esquemáticos.",
-  focusR:6, radius:12, target:[0,-0.6,0], phi:1.42, theta:0.3, floor:-4.3, floorSize:8,
+  focusR:9, radius:12, target:[0,-0.6,0], phi:1.42, theta:0.3, floor:-4.3, floorSize:8,
   capas:[{id:"corteza",n:"Corteza (lóbulos)"},{id:"cerebelo-tronco",n:"Cerebelo, tronco y médula"},{id:"profundas",n:"Estructuras profundas"}],
   opacityCapas:["corteza","cerebelo-tronco"], opacityLabel:"Transparencia de la corteza",
   activity:"explorar-cerebro", guidedActivity:"guiada-cerebro", badge:"neuroexplorador", seenThreshold:7,
@@ -817,7 +954,7 @@ BIO.lungs = {
   id:"pulmones", nombre:"Pulmones y vía aérea", unidad:6, dominio:"anat", eyebrow:"Atlas 3D · Unidad 6 · Sistema respiratorio", em:"🫁",
   intro:"Sigue el aire desde la laringe hasta los alvéolos, activa la respiración para ver cómo trabaja el diafragma y observa el intercambio gaseoso con los capilares.",
   nota:"Modelo tridimensional simplificado con fines educativos. El árbol bronquial se representa con pocas generaciones de ramas; los alvéolos se muestran en una lupa, muy ampliados.",
-  focusR:6, radius:15, target:[-0.35,0.6,0], phi:1.45, theta:0.22, floor:-3.35, floorSize:9,
+  focusR:10.5, radius:15, target:[-0.35,0.6,0], phi:1.45, theta:0.22, floor:-3.35, floorSize:9,
   capas:[{id:"via-aerea",n:"Vía aérea"},{id:"pulmones",n:"Pulmones y pleura"},{id:"vasos",n:"Vasos pulmonares"},{id:"intercambio",n:"Alvéolos y capilares (lupa)"},{id:"musculos",n:"Diafragma"}],
   opacityCapas:["pulmones"], opacityLabel:"Transparencia de los pulmones", opacityDefault:0.78,
   activity:"explorar-pulmones", guidedActivity:"guiada-pulmones", badge:"anatomista", seenThreshold:6,
@@ -900,7 +1037,7 @@ BIO.lungs = {
   ]
 };
 
-Object.assign(BIO.heart, { eyebrow:"Atlas 3D · Unidad 6 · Anatomía y fisiología", em:"🫀", intro:"Rota, acerca, transparenta y separa. Selecciona cualquier estructura para conocer qué es, qué hace y con qué se relaciona.", focusR:7, radius:11.5, target:[0.2,0.5,0], phi:1.33, theta:0.35, floor:-2.95, floorSize:7, opacityCapas:["camaras"], opacityLabel:"Transparencia de las cámaras", activity:"explorar-corazon", guidedActivity:"guiada-corazon", badge:"anatomista", seenThreshold:8, related:[{t:"Misión relacionada",href:"#/mision/globulo-rojo"},{t:"Evaluación",href:"#/evaluacion/corazon"}] });
+Object.assign(BIO.heart, { eyebrow:"Atlas 3D · Unidad 6 · Anatomía y fisiología", em:"🫀", intro:"Rota, acerca, transparenta y separa. Selecciona cualquier estructura para conocer qué es, qué hace y con qué se relaciona.", focusR:9, radius:11.5, target:[0.2,0.5,0], phi:1.33, theta:0.35, floor:-2.95, floorSize:7, opacityCapas:["camaras"], opacityLabel:"Transparencia de las cámaras", activity:"explorar-corazon", guidedActivity:"guiada-corazon", badge:"anatomista", seenThreshold:8, related:[{t:"Misión relacionada",href:"#/mision/globulo-rojo"},{t:"Evaluación",href:"#/evaluacion/corazon"}] });
 BIO.organs = { corazon: BIO.heart, cerebro: BIO.brain, pulmones: BIO.lungs };
 Object.assign(BIO.activities, {
   "explorar-cerebro":{t:"Explorar el cerebro", unidad:6, peso:15, xp:60},
@@ -920,6 +1057,160 @@ BIO.plannedOrgans = [
   {id:"muscular", em:"💪", t:"Sistema muscular", d:"Fibras, sarcómeros y contracción."},
   {id:"nervioso", em:"⚡", t:"Sistema nervioso completo", d:"Encéfalo, médula, nervios periféricos y sinapsis."}
 ];
+</script>
+<script>
+/* =====================================================================
+   ÁREAS DE CIENCIAS NATURALES · RECURSOS · RETOS · PARTES EN DETALLE
+   ===================================================================== */
+BIO.areas = [
+  { id:'celular', n:'Mundo celular', dom:'cell', em:'🔬', unidades:[1,2,3],
+    d:'La célula como unidad de la vida: organelos, metabolismo, transporte y división celular.',
+    pregunta:'¿Cómo logra una célula mantenerse viva, obtener energía y fabricar lo que necesita?' },
+  { id:'cuerpo', n:'Cuerpo humano y salud', dom:'anat', em:'🫀', unidades:[6],
+    d:'Anatomía y fisiología de los sistemas del cuerpo humano, su interconexión y la salud.',
+    pregunta:'¿Cómo trabajan juntos los órganos y sistemas para mantener el equilibrio del cuerpo?' },
+  { id:'genetica', n:'Genética y evolución', dom:'gen', em:'🧬', unidades:[4,5,9],
+    d:'ADN, herencia, mutaciones, evolución de las especies y biotecnología.',
+    pregunta:'¿Cómo se transmite la información de la vida y cómo cambian las especies con el tiempo?' },
+  { id:'biodiversidad', n:'Biodiversidad y ecosistemas', dom:'eco', em:'🌎', unidades:[7,8],
+    d:'Ecosistemas, redes tróficas, ciclos de la materia y la biodiversidad del Ecuador.',
+    pregunta:'¿Qué mantiene en equilibrio a un ecosistema y qué ocurre cuando lo alteramos?' }
+];
+BIO.transversalUnits = [10];
+BIO.areaOfUnit = u => (BIO.areas.find(a => a.unidades.includes(u)) || {}).id || 'transversal';
+
+/* Registro de recursos: cada recurso pertenece a una o varias áreas; laboratorios, simuladores y misiones son transversales */
+BIO.resources = [
+  { id:'celula', tipo:'Modelo 3D', t:'Célula animal en corte', d:'Organelos detallados, vista en corte y "ver en acción".', href:'#/explorar/celula', areas:['celular'], em:'🔬', ok:true },
+  { id:'celula-vegetal', tipo:'Modelo 3D', t:'Célula vegetal', d:'Cloroplastos, pared celular y vacuola central.', href:'#/explorar/celula', areas:['celular'], em:'🌿', ok:false },
+  { id:'procariota', tipo:'Modelo 3D', t:'Célula procariota', d:'Sin núcleo: nucleoide, plásmidos, flagelo.', href:'#/explorar/celula', areas:['celular','biodiversidad'], em:'🦠', ok:false },
+  { id:'procesos', tipo:'Animación', t:'Procesos celulares', d:'Mitosis, meiosis, respiración celular, transporte y ósmosis.', href:'#/explorar/celula', areas:['celular'], em:'🔁', ok:false },
+  { id:'microscopio', tipo:'Microscopio', t:'Microscopio virtual', d:'4x · 10x · 40x · 100x. Muestras de tejidos, sangre y microorganismos.', href:'#/microscopio', areas:['celular','cuerpo','biodiversidad'], em:'🔎', ok:false },
+  { id:'corazon', tipo:'Modelo 3D', t:'Corazón', d:'Cámaras, válvulas animadas, vasos coronarios y flujo sanguíneo.', href:'#/explorar/corazon', areas:['cuerpo'], em:'🫀', ok:true },
+  { id:'cerebro', tipo:'Modelo 3D', t:'Cerebro', d:'Lóbulos, cerebelo, estructuras profundas e impulso nervioso.', href:'#/explorar/cerebro', areas:['cuerpo'], em:'🧠', ok:true },
+  { id:'pulmones', tipo:'Modelo 3D', t:'Pulmones y vía aérea', d:'Lóbulos, árbol bronquial, diafragma y lupa de alvéolos.', href:'#/explorar/pulmones', areas:['cuerpo'], em:'🫁', ok:true },
+  { id:'adn', tipo:'Modelo 3D', t:'ADN 3D y "Edita el ADN"', d:'Doble hélice, nucleótidos, replicación y mutaciones.', href:'#/explorar/genetica', areas:['genetica'], em:'🧬', ok:false },
+  { id:'cruces', tipo:'Laboratorio', t:'Constructor de cruces', d:'Gametos, cuadro de Punnett y probabilidades. Modo aprender / reto.', href:'#/explorar/genetica', areas:['genetica'], em:'🟪', ok:false },
+  { id:'evolucion', tipo:'Simulador', t:'Selección natural', d:'Cambia el ambiente y observa cómo varía una población en generaciones.', href:'#/explorar/genetica', areas:['genetica','biodiversidad'], em:'🦎', ok:false },
+  { id:'ecosistemas', tipo:'Modelo 3D', t:'Ecosistemas del Ecuador', d:'Amazonía, manglar, páramo y Galápagos con redes tróficas.', href:'#/explorar/ecosistemas', areas:['biodiversidad'], em:'🌳', ok:false },
+  { id:'poblaciones', tipo:'Simulador', t:'Dinámica de poblaciones', d:'Productores, consumidores y depredadores en el tiempo.', href:'#/explorar/ecosistemas', areas:['biodiversidad'], em:'📈', ok:false },
+  { id:'lab-fotosintesis', tipo:'Laboratorio', t:'Fotosíntesis: ¿qué la limita?', d:'Hipótesis, variables, datos y conclusión con Elodea.', href:'#/laboratorio/fotosintesis', areas:['celular','biodiversidad'], em:'🧪', ok:true, transversal:true },
+  { id:'sim-circulacion', tipo:'Simulador', t:'Sistema cardiorrespiratorio', d:'Actividad física, respiración, anemia y altitud.', href:'#/simuladores/circulacion', areas:['cuerpo','celular'], em:'∿', ok:true, transversal:true },
+  { id:'eval-corazon', tipo:'Evaluación', t:'Evaluación: el corazón', d:'Selección visual en 3D, ordenar, relacionar, V/F argumentado.', href:'#/evaluacion/corazon', areas:['cuerpo'], em:'✓', ok:true }
+];
+
+/* Cada recurso declara su propósito (qué debe lograr el estudiante) y, si ya existe, la actividad de reto asociada */
+const RES_RETO = {
+  'celula':['Explica cómo colaboran núcleo, retículo, Golgi y mitocondria para fabricar y exportar una proteína.','reto-celula'],
+  'celula-vegetal':['Descubre qué estructuras permiten a una planta fabricar su alimento y mantenerse erguida.'],
+  'procariota':['Compara una bacteria con tu propia célula: ¿qué le falta y cómo sobrevive sin eso?'],
+  'procesos':['Ordena las etapas de la mitosis y predice qué pasa si un cromosoma no se separa.'],
+  'microscopio':['Identifica el tipo de tejido observando la forma y la organización de sus células.'],
+  'corazon':['Explica cómo el corazón mantiene separadas la circulación pulmonar y la sistémica.','reto-corazon'],
+  'cerebro':['Relaciona cada región del encéfalo con la función que controla y predice los efectos de una lesión.','reto-cerebro'],
+  'pulmones':['Sigue el recorrido del aire y explica dónde y por qué ocurre el intercambio de gases.','reto-pulmones'],
+  'adn':['Cambia una base del ADN y predice si la proteína resultante cambiará.'],
+  'cruces':['Predice la proporción de fenotipos de un cruce y compruébala con el cuadro de Punnett.'],
+  'evolucion':['Cambia el ambiente y explica por qué cambia la frecuencia de un rasgo en la población.'],
+  'ecosistemas':['Retira una especie de la red trófica y predice qué ocurre con las demás.'],
+  'poblaciones':['Encuentra las condiciones que llevan a una población al equilibrio o al colapso.'],
+  'lab-fotosintesis':['Encuentra el factor que limita la fotosíntesis y explica la meseta de la curva.','lab-fotosintesis'],
+  'sim-circulacion':['Con 80 % de actividad física, encuentra la ventilación mínima que cubre la demanda de O₂.','reto-simulador'],
+  'eval-corazon':['Demuestra lo aprendido sobre el corazón: ubica, ordena, relaciona y argumenta.','eval-corazon']
+};
+BIO.resources.forEach(r => { const x = RES_RETO[r.id]; if (x){ r.reto = x[0]; r.act = x[1] || null; } });
+
+/* Misiones: transversales, conectan varias áreas */
+const MIS_AREAS = { 'globulo-rojo':['cuerpo','celular'], 'salva-celula':['celular','cuerpo'], 'ecosistema-riesgo':['biodiversidad','genetica'], 'codigo-genetico':['genetica','cuerpo'], 'diagnostico-celular':['celular','cuerpo'] };
+BIO.missions.forEach(m => { m.areas = MIS_AREAS[m.id] || []; });
+
+/* Actividades de reto */
+Object.assign(BIO.activities, {
+  'reto-corazon':{ t:'Reto: el corazón', unidad:6, peso:5, xp:50 },
+  'reto-cerebro':{ t:'Reto: el cerebro', unidad:6, peso:5, xp:50 },
+  'reto-pulmones':{ t:'Reto: los pulmones', unidad:6, peso:5, xp:50 },
+  'reto-celula':{ t:'Reto: la célula', unidad:2, peso:5, xp:50 },
+  'reto-simulador':{ t:'Reto: el simulador cardiorrespiratorio', unidad:6, peso:5, xp:50 }
+});
+
+/* ---------- Propósito y reto por recurso ---------- */
+BIO.heart.reto = { proposito:'Comprender cómo el corazón mantiene separadas dos circulaciones: la que va a los pulmones y la que va al cuerpo.',
+  observa:[ {id:'ventriculo-derecho', txt:'Ventrículo derecho'}, {id:'ventriculo-izquierdo', txt:'Ventrículo izquierdo'}, {id:'tabique', txt:'Tabique interventricular'} ],
+  pista:'Usa "Ver en detalle" en cada ventrículo y compara el grosor de sus paredes.',
+  pregunta:{ q:'Un bebé nace con un orificio en el tabique interventricular. ¿Qué ocurre con la sangre y por qué?', ops:['Nada: el tabique solo da soporte al corazón','Parte de la sangre oxigenada pasa del ventrículo izquierdo al derecho, porque el izquierdo genera más presión; la sangre se mezcla y el corazón trabaja de más','La sangre desoxigenada pasa directamente a la aorta porque el lado derecho es más fuerte'], ok:1, fb:'El ventrículo izquierdo genera unos 120 mmHg y el derecho unos 25: la sangre fluye de mayor a menor presión. Por eso, cuando el tabique no separa ambos lados, la sangre oxigenada vuelve a los pulmones y el corazón debe bombear más.', wrong:['El tabique es justo lo que impide que se mezclen la sangre oxigenada y la desoxigenada.','Recuerda cuál ventrículo tiene la pared más gruesa y genera más presión.'] } };
+BIO.brain.reto = { proposito:'Relacionar cada región del encéfalo con la función que controla.',
+  observa:[ {id:'lobulo-occipital', txt:'Lóbulo occipital'}, {id:'cerebelo', txt:'Cerebelo'}, {id:'lobulo-frontal', txt:'Lóbulo frontal'} ],
+  pista:'Prueba el panel "¿Qué se activa cuando…?" en la pestaña Animación.',
+  pregunta:{ q:'Tras un golpe en la nuca, una persona ve borroso aunque sus ojos están sanos y camina tambaleándose. ¿Qué dos estructuras podrían estar afectadas?', ops:['Lóbulo frontal y lóbulo temporal','Lóbulo occipital y cerebelo','Tronco encefálico e hipocampo'], ok:1, fb:'Ambas están en la parte posterior: el occipital interpreta la visión y el cerebelo coordina el equilibrio y los movimientos.', wrong:['El frontal planifica y el temporal procesa la audición y la memoria; ninguno explica la visión borrosa ni el tambaleo.','El tronco controla funciones vitales y el hipocampo la memoria; busca las regiones de la visión y del equilibrio.'] } };
+BIO.lungs.reto = { proposito:'Explicar el camino del aire hasta la sangre y qué hace eficiente el intercambio gaseoso.',
+  observa:[ {id:'traquea', txt:'Tráquea'}, {id:'bronquiolos', txt:'Bronquiolos'}, {id:'alveolos', txt:'Alvéolos'}, {id:'diafragma', txt:'Diafragma'} ],
+  pista:'Activa "Intercambio gaseoso" en la pestaña Animación y observa la lupa.',
+  pregunta:{ q:'En el enfisema se destruyen las paredes de muchos alvéolos. ¿Por qué la persona se fatiga aunque respire más rápido?', ops:['Porque entra menos aire por la tráquea','Porque disminuye la superficie de intercambio: aunque llegue aire, pasa menos O₂ a la sangre','Porque el diafragma deja de moverse'], ok:1, fb:'Los alvéolos suman unos 70 m² de superficie. Al destruirse, esa superficie se reduce y el O₂ que difunde a la sangre por minuto disminuye, aunque la persona respire más.', wrong:['La vía aérea sigue abierta; el problema está en el lugar del intercambio.','El diafragma funciona; lo que falla es la superficie donde el O₂ pasa a la sangre.'] } };
+BIO.cell.reto = { proposito:'Entender la célula como una fábrica organizada en la que cada organelo cumple una etapa.',
+  observa:[ {id:'nucleo', txt:'Núcleo'}, {id:'rer', txt:'Retículo rugoso'}, {id:'golgi', txt:'Aparato de Golgi'}, {id:'mitocondria', txt:'Mitocondria'} ],
+  pista:'Usa "Ver en acción" en cada organelo para ver hacia dónde viajan sus productos.',
+  orden:{ q:'Una célula del páncreas fabrica y exporta insulina (una proteína). Ordena el recorrido desde la información hasta la salida:', seq:['Núcleo: el gen se copia en ARN mensajero','Ribosomas del retículo rugoso: se fabrica la proteína','Aparato de Golgi: se modifica y empaqueta','Vesícula de secreción: viaja por el citoplasma','Membrana plasmática: la insulina sale de la célula (exocitosis)'], fb:'Es la vía de secreción: núcleo → RER → Golgi → vesícula → membrana. La mitocondria aporta el ATP que necesita todo el proceso.' } };
+
+/* ---------- Partes en detalle: {n, d, at:[x,y,z], sub?} ---------- */
+const P = (list) => list.map(([n,d,at,sub]) => ({ n, d, at, sub }));
+const PARTES = {
+  corazon:{
+    'ventriculo-izquierdo':P([['Ápex (punta del corazón)','Punto más inferior del corazón; se palpa entre la 5.ª y 6.ª costilla.',[0.92,-2.44,0.44]],['Miocardio grueso','Pared de 10–15 mm: genera la presión para todo el cuerpo.',[1.5,-0.65,-0.33]],['Músculos papilares y cuerdas tendinosas','En el interior: sujetan la válvula mitral para que no se invierta.',[0.75,-0.55,-0.3]],['Tracto de salida aórtico','Por aquí sale la sangre hacia la aorta.',[0.15,0.15,-0.1]]]),
+    'ventriculo-derecho':P([['Cono arterial (infundíbulo)','Porción lisa que conduce la sangre hacia la arteria pulmonar.',[0.1,0.2,1.05],'cono'],['Pared delgada','De 3–5 mm: basta para enviar la sangre a los pulmones, que están muy cerca.',[-0.28,-1.25,1.18]],['Trabéculas carnosas','Relieves musculares de la pared interna.',[-0.4,-0.8,0.5]],['Entrada por la tricúspide','Recibe la sangre de la aurícula derecha.',[-0.85,0.02,0.2]]]),
+    'auricula-derecha':P([['Orejuela derecha','Pequeño saco muscular que aumenta la capacidad de la aurícula.',[-0.55,1.15,0.75],'orejuela'],['Nodo sinoauricular','Marcapasos natural: aquí nace cada latido.',[-1.1,1.4,0.35]],['Desembocadura de las venas cavas','Entrada de la sangre que regresa del cuerpo.',[-1.35,0.15,-0.3]]]),
+    'auricula-izquierda':P([['Orejuela izquierda','Prolongación en forma de oreja junto a la arteria pulmonar.',[1.45,0.95,0.4],'orejuela'],['Desembocadura de las 4 venas pulmonares','Entrada de la sangre oxigenada desde los pulmones.',[0.7,0.9,-1.25]],['Salida hacia la mitral','Paso hacia el ventrículo izquierdo.',[0.62,0.2,-0.35]]]),
+    'aorta':P([['Aorta ascendente','Nace del ventrículo izquierdo; de su base salen las coronarias.',[-0.2,1.4,0.1],'main'],['Cayado aórtico','Arco que se dirige hacia la izquierda y hacia atrás.',[0.2,3.1,-0.45],'main'],['Tronco braquiocefálico','Irriga el brazo derecho y el lado derecho de la cabeza.',[-0.35,3.6,-0.2],'bt'],['Carótida común izquierda','Lleva sangre al lado izquierdo de la cabeza y el cerebro.',[0.36,3.65,-0.47],'cci'],['Subclavia izquierda','Irriga el brazo izquierdo.',[0.82,3.55,-0.8],'sci'],['Aorta descendente','Baja por el tórax y el abdomen repartiendo sangre a los órganos.',[1.0,-0.5,-1.4],'main']]),
+    'arteria-pulmonar':P([['Tronco pulmonar','Sale del ventrículo derecho por delante de la aorta.',[0.42,1.3,0.52],'tronco'],['Arteria pulmonar derecha','Pasa por detrás de la aorta ascendente hacia el pulmón derecho.',[-1.2,1.9,-0.68],'der'],['Arteria pulmonar izquierda','Se dirige al pulmón izquierdo bajo el cayado aórtico.',[1.5,2.05,-0.3],'izq']]),
+    'venas-pulmonares':P([['Venas pulmonares derechas','Superior e inferior: pasan por detrás de la aurícula derecha.',[-1.2,0.85,-1.25],'der'],['Venas pulmonares izquierdas','Superior e inferior: llegan desde el pulmón izquierdo.',[2.0,0.9,-0.9],'izq']]),
+    'vena-cava-superior':P([['Tramo superior','Recoge la sangre de la cabeza, el cuello y los brazos.',[-1.05,3.3,0.0]],['Desembocadura','Entra en la aurícula derecha por arriba, sin válvula.',[-1.15,1.5,0.05]]]),
+    'vena-cava-inferior':P([['Tramo inferior','Recoge la sangre del tronco, el abdomen y las piernas.',[-1.25,-2.2,-0.45]],['Desembocadura','Entra en la aurícula derecha por abajo.',[-1.15,0.2,-0.15]]]),
+    'valvula-tricuspide':P([['Tres valvas','Se abren hacia el ventrículo y se cierran en la sístole.',[-0.85,0.02,0.2],'valvas'],['Anillo fibroso','Soporte que mantiene la forma de la válvula.',[-0.49,0.02,0.2],'anillo'],['Cuerdas tendinosas','Debajo: impiden que las valvas se inviertan.',[-0.8,-0.4,0.3]]]),
+    'valvula-mitral':P([['Dos valvas','Anterior y posterior: única válvula con dos valvas.',[0.62,0.05,-0.35],'valvas'],['Anillo fibroso','Soporta la mayor presión del corazón.',[0.96,0.05,-0.35],'anillo'],['Cuerdas tendinosas','Unen las valvas a los músculos papilares.',[0.65,-0.35,-0.25]]]),
+    'valvula-pulmonar':P([['Tres valvas semilunares','Con forma de media luna; se cierran solas por la presión del vaso.',[0.3,0.62,0.72],'valvas'],['Anillo','Unión entre el ventrículo derecho y el tronco pulmonar.',[0.6,0.6,0.72],'anillo']]),
+    'valvula-aortica':P([['Tres valvas semilunares','Se abren en la sístole ventricular y se cierran en la diástole ("dub").',[0.1,0.38,-0.1],'valvas'],['Anillo','Unión entre el ventrículo izquierdo y la aorta.',[0.4,0.36,-0.1],'anillo'],['Origen de las coronarias','Justo encima de la válvula nacen las arterias coronarias.',[0.1,0.62,0.12]]]),
+    'tabique':P([['Porción muscular','La mayor parte del tabique: gruesa y contráctil.',[0.2,-1.0,0.3]],['Porción membranosa','Zona fina y superior; allí suelen aparecer las comunicaciones interventriculares.',[0.05,0.1,0.1]]]),
+    'vasos-coronarios':P([['Arteria coronaria derecha','Recorre el surco entre aurícula y ventrículo derechos.',[-1.35,0.15,0.85],'art'],['Descendente anterior','Baja entre los dos ventrículos hacia el ápex.',[0.4,-0.6,1.35],'art'],['Arteria circunfleja','Rodea el lado izquierdo por el surco auriculoventricular.',[1.5,0.3,0.4],'art'],['Venas cardíacas','Recogen la sangre usada del miocardio hacia el seno coronario.',[0.62,-0.9,1.3],'ven'],['Grasa epicárdica','Tejido adiposo normal que rodea y protege a los vasos.',[-0.8,0.3,1.05],'grasa']])
+  },
+  cerebro:{
+    'lobulo-frontal':P([['Corteza prefrontal','Planifica, decide y controla los impulsos.',[2.2,0.5,0.9]],['Corteza motora primaria','Envía las órdenes de movimiento voluntario.',[0.35,1.55,1.0]],['Área de Broca','Necesaria para producir el habla.',[1.05,0.15,1.45]]]),
+    'lobulo-parietal':P([['Corteza somatosensorial','Recibe tacto, temperatura, dolor y posición del cuerpo.',[-0.3,1.6,0.95]],['Lobulillo parietal','Integra la información espacial: dónde están las cosas.',[-1.1,1.2,1.2]]]),
+    'lobulo-temporal':P([['Corteza auditiva','Recibe e interpreta los sonidos.',[0.1,0.0,1.55]],['Área de Wernicke','Da significado a las palabras que escuchamos.',[-0.75,0.15,1.45]],['Polo temporal','Extremo anterior: memoria y reconocimiento.',[1.2,-0.5,1.2]]]),
+    'lobulo-occipital':P([['Corteza visual primaria','Recibe la información de la retina.',[-2.4,0.45,0.5]],['Áreas visuales de asociación','Reconocen formas, colores y movimiento.',[-1.9,0.9,1.1]]]),
+    'cerebelo':P([['Hemisferios cerebelosos','Coordinan los movimientos de las extremidades.',[-1.55,-1.1,1.3]],['Vermis','Porción central: equilibrio y postura.',[-2.3,-1.05,0]],['Folias','Láminas que aumentan la superficie de la corteza cerebelosa.',[-1.2,-0.7,1.1]]]),
+    'tronco':P([['Mesencéfalo','Reflejos visuales y auditivos; conecta con el cerebro.',[-0.2,-0.4,0.35]],['Puente (protuberancia)','Relevo entre cerebro y cerebelo; ritmo respiratorio.',[-0.4,-1.2,0.45]],['Bulbo raquídeo','Centros respiratorio y cardiovascular.',[-0.58,-2.0,0.3]]]),
+    'medula':P([['Cordón medular','Conduce las señales entre el encéfalo y el cuerpo.',[-0.66,-3.2,0.2],'cordon'],['Nervios espinales','31 pares salen entre las vértebras hacia todo el cuerpo.',[-0.55,-3.4,0.9],'nervios']]),
+    'cuerpo-calloso':P([['Rodilla (anterior)','Une los lóbulos frontales.',[1.0,0.45,0]],['Tronco','Porción central del haz de fibras.',[0,0.9,0]],['Esplenio (posterior)','Une los lóbulos occipitales y parietales.',[-1.05,0.45,0]]]),
+    'hipofisis':P([['Adenohipófisis (anterior)','Produce hormona del crecimiento, TSH, ACTH, FSH, LH y prolactina.',[0.46,-1.0,0.15],'adeno'],['Neurohipófisis (posterior)','Libera oxitocina y vasopresina fabricadas en el hipotálamo.',[0.3,-1.0,0.12],'neuro'],['Tallo hipofisario','Conecta la hipófisis con el hipotálamo.',[0.35,-0.72,0.05],'tallo']]),
+    'hipocampo':P([['Cabeza (anterior)','Porción más gruesa, junto a la amígdala.',[0.55,-0.5,0.85]],['Cola (posterior)','Se curva hacia arriba y atrás.',[-0.9,-0.22,0.72]]])
+  },
+  pulmones:{
+    'pulmon-derecho':P([['Lóbulo superior','Separado del medio por la cisura horizontal.',[-2.3,1.0,0.6],'sup'],['Lóbulo medio','Solo existe en el pulmón derecho.',[-2.2,-0.55,1.0],'med'],['Lóbulo inferior','El más grande; separado por la cisura oblicua.',[-2.4,-1.2,-0.6],'inf'],['Vértice (ápex)','Asciende por encima de la clavícula.',[-1.6,1.95,0.1]]]),
+    'pulmon-izquierdo':P([['Lóbulo superior','Incluye la língula, equivalente al lóbulo medio.',[2.3,0.9,0.5],'sup'],['Lóbulo inferior','Separado por la cisura oblicua.',[2.4,-1.2,-0.6],'inf'],['Escotadura cardíaca','Hueco que deja espacio para el corazón.',[0.95,-0.6,0.9]]]),
+    'traquea':P([['Anillos de cartílago en C','Mantienen la tráquea siempre abierta.',[0.35,2.6,0.2],'anillos'],['Pared membranosa','Parte posterior sin cartílago, junto al esófago.',[0,2.6,-0.4],'membranosa'],['Carina','Punto donde la tráquea se divide en dos bronquios.',[0,1.55,0.25]]]),
+    'laringe':P([['Cartílago tiroides','Forma la "nuez de Adán"; protege las cuerdas vocales.',[0,4.0,0.6],'tiroides'],['Cartílago cricoides','Anillo completo que une la laringe con la tráquea.',[0.38,3.55,0.1],'cricoides'],['Epiglotis','Tapa que cierra la vía aérea al tragar.',[0,4.55,-0.3],'epiglotis'],['Hueso hioides','Hueso en U del que cuelga la laringe.',[0.45,4.62,0.2],'hioides']]),
+    'bronquios':P([['Bronquio principal derecho','Más corto, ancho y vertical.',[-0.45,1.3,0.12]],['Bronquio principal izquierdo','Más largo y horizontal: pasa bajo el cayado aórtico.',[0.55,1.2,0.12]],['Bronquios lobulares','Uno para cada lóbulo pulmonar.',[-1.4,0.6,0.12]]]),
+    'alveolos':P([['Saco alveolar','Racimo de alvéolos al final del conducto alveolar.',[-4.0,-1.75,1.35],'alveolos'],['Bronquiolo respiratorio','Último tramo de la vía aérea antes de los alvéolos.',[-3.25,-1.55,1.15],'bronquiolo']]),
+    'capilares':P([['Arteriola (sangre pobre en O₂)','Llega desde la arteria pulmonar.',[-4.37,-1.53,1.35]],['Vénula (sangre oxigenada)','Sale hacia las venas pulmonares.',[-3.2,-2.55,1.35]]]),
+    'diafragma':P([['Cúpula derecha','Más alta porque el hígado está debajo.',[-1.75,-1.5,0.3]],['Cúpula izquierda','Algo más baja; debajo están el estómago y el bazo.',[1.65,-1.6,0.3]],['Centro tendinoso','Zona fibrosa central sobre la que se apoya el corazón.',[0,-2.05,0.3]]]),
+    'pleura':P([['Pleura visceral','Recubre la superficie del pulmón.',[-2.95,0.3,0.2]],['Espacio pleural','Capa fina de líquido con presión negativa.',[-3.0,-0.5,0.3]]]),
+    'vasos-pulmonares':P([['Arterias pulmonares (azul)','Acompañan a los bronquios con sangre pobre en O₂.',[-0.6,1.35,0.5],'art'],['Venas pulmonares (rojo)','Salen por la parte inferior del hilio hacia la aurícula izquierda.',[-0.9,0.45,-0.45],'ven']])
+  },
+  'celula-animal':{
+    'nucleo':P([['Envoltura nuclear doble','Dos membranas que separan el ADN del citoplasma.',[0.3,1.3,0.25],'env'],['Poros nucleares','Canales por donde sale el ARN y entran proteínas.',[-0.55,0.75,-0.55],'poros'],['Cromatina','ADN enrollado en proteínas (histonas).',[0.25,0.1,0.45],'crom']]),
+    'mitocondria':P([['Membrana externa','Lisa: envuelve a toda la mitocondria.',[-1.95,1.3,0.7],'ext'],['Crestas','Pliegues de la membrana interna donde se forma el ATP.',[-1.95,0.95,0.8],'int'],['Matriz','Interior donde ocurre el ciclo de Krebs.',[-2.05,0.8,0.55]]]),
+    'golgi':P([['Cara cis','Recibe las vesículas que llegan del retículo.',[-1.0,-0.4,1.2]],['Cisternas','Sacos aplanados donde se modifican las proteínas.',[-1.25,-0.55,1.55],'cist'],['Vesículas','Transportan los productos hacia la membrana o los lisosomas.',[-1.7,-0.95,2.1],'ves']]),
+    'membrana':P([['Bicapa lipídica','Se ve en el borde del corte: dos capas de fosfolípidos.',[1.3,2.2,2.1],'bicapa'],['Proteínas de membrana','Canales, transportadores y receptores.',[-2.6,1.8,-1.0],'prot']]),
+    'rer':P([['Cisternas','Sacos aplanados y conectados con la envoltura nuclear.',[-1.3,0.35,-0.9],'cist'],['Ribosomas adheridos','Le dan el aspecto "rugoso" y fabrican proteínas.',[-1.55,-0.25,-0.45],'ribo']]),
+    'centriolos':P([['Nueve tripletes de microtúbulos','Organización 9×3 típica de los centríolos.',[-0.35,1.3,0.75],'rods'],['Material pericentriolar','Nube de proteínas desde donde crecen los microtúbulos.',[-0.1,1.1,0.95],'pcm']]),
+    'lisosomas':P([['Membrana','Aísla las enzimas digestivas del resto de la célula.',[1.25,-1.73,1.2],'memb'],['Contenido ácido','Unas 50 enzimas que digieren moléculas y organelos viejos.',[1.25,-1.95,1.15],'cont']])
+  }
+};
+Object.entries(PARTES).forEach(([modelo, map]) => { const D = { corazon:BIO.heart, cerebro:BIO.brain, pulmones:BIO.lungs, 'celula-animal':BIO.cell }[modelo]; D.structures.forEach(s => { if (map[s.id]) s.partes = map[s.id]; }); });
+
+/* Eyebrows por área */
+BIO.heart.eyebrow = 'Cuerpo humano y salud · Unidad 6 · Sistema circulatorio';
+BIO.brain.eyebrow = 'Cuerpo humano y salud · Unidad 6 · Sistema nervioso';
+BIO.lungs.eyebrow = 'Cuerpo humano y salud · Unidad 6 · Sistema respiratorio';
 </script>
 <script>
 /* =====================================================================
@@ -1072,17 +1363,27 @@ const NAV = [
   {g:'Estudiante'},
   {href:'#/', t:'Inicio', ico:'⌂'},
   {href:'#/panel', t:'Mi panel', ico:'▦'},
-  {href:'#/explorar', t:'Explorar', ico:'◎'},
-  {href:'#/laboratorio', t:'Laboratorio', ico:'⚗'},
+  {g:'Áreas de Ciencias Naturales'},
+  ...BIO.areas.map(a => ({href:'#/area/'+a.id, t:a.n, dot:a.dom, area:a.id})),
+  {g:'Transversal · conecta las áreas'},
+  {href:'#/misiones', t:'Misiones', ico:'◈'},
+  {href:'#/laboratorio', t:'Laboratorios', ico:'⚗'},
   {href:'#/simuladores', t:'Simuladores', ico:'∿'},
   {href:'#/microscopio', t:'Microscopio', ico:'◉', tag:'pronto'},
-  {href:'#/misiones', t:'Misiones', ico:'◈'},
   {href:'#/evaluacion', t:'Evaluación', ico:'✓'},
+  {g:'Mi espacio'},
   {href:'#/progreso', t:'Mi progreso', ico:'↗'},
   {href:'#/cuaderno', t:'Cuaderno', ico:'✎'},
   {g:'Docente'},
   {href:'#/docente', t:'Panel docente', ico:'▤'}
 ];
+/* Qué rutas pertenecen a cada área (para marcar la navegación) */
+const AREA_PATHS = {
+  cuerpo:['/explorar/corazon','/explorar/cerebro','/explorar/pulmones','/explorar/organo'],
+  celular:['/explorar/celula'],
+  genetica:['/explorar/genetica'],
+  biodiversidad:['/explorar/ecosistemas']
+};
 const ICONS = {
   '⌂':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 3l9 8v10a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/></svg>',
   '▦':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>',
@@ -1098,12 +1399,16 @@ const ICONS = {
 };
 function buildNav(){
   const nav = $('#nav-main'); nav.innerHTML='';
-  NAV.forEach(n => { if (n.g) nav.append(h('div',{class:'nav-group'},n.g)); else nav.append(h('a',{href:n.href}, h('span',{class:'ico',html:ICONS[n.ico]}), n.t, n.tag ? h('span',{class:'tag'},n.tag):null)); });
+  NAV.forEach(n => { if (n.g) nav.append(h('div',{class:'nav-group'},n.g)); else nav.append(h('a',{href:n.href, 'data-area':n.area||null}, n.dot ? h('span',{class:'ico'}, h('span',{class:'navdot '+n.dot})) : h('span',{class:'ico',html:ICONS[n.ico]}), n.t, n.tag ? h('span',{class:'tag'},n.tag):null)); });
   const bn = $('#nav-bottom'); bn.innerHTML='';
-  [['#/','Inicio','⌂'],['#/explorar','Explorar','◎'],['#/misiones','Misiones','◈'],['#/laboratorio','Lab','⚗'],['#/progreso','Progreso','↗']].forEach(([href,t,i]) => bn.append(h('a',{href}, h('span',{class:'ico',html:ICONS[i],style:'width:20px;height:20px;display:inline-block'}), t)));
+  [['#/','Inicio','⌂'],['#/explorar','Áreas','◎'],['#/misiones','Misiones','◈'],['#/laboratorio','Lab','⚗'],['#/progreso','Progreso','↗']].forEach(([href,t,i]) => bn.append(h('a',{href}, h('span',{class:'ico',html:ICONS[i],style:'width:20px;height:20px;display:inline-block'}), t)));
 }
 function updateNav(path){
-  const set = a => { const p = a.getAttribute('href').replace('#',''); const cur = (p==='/' ? path==='/' : path.startsWith(p)); if (cur) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); };
+  const inArea = id => (AREA_PATHS[id]||[]).some(p => path.startsWith(p));
+  const set = a => { const p = a.getAttribute('href').replace('#',''); const ar = a.dataset.area;
+    let cur = (p==='/' ? path==='/' : path.startsWith(p)) || (ar && inArea(ar));
+    if (p==='/explorar' && path.startsWith('/area/')) cur = true;
+    if (cur) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); };
   $$('#nav-main a').forEach(set); $$('#nav-bottom a').forEach(set);
 }
 
@@ -1119,7 +1424,9 @@ function searchIndex(){
   idx.push({k:'Simulador', t:'Sistema cardiorrespiratorio', d:'Frecuencia cardíaca, ventilación, gasto cardíaco y transporte de O₂.', href:'#/simuladores/circulacion', dom:'anat'});
   idx.push({k:'Simulador', t:'Respiración celular', d:'Glucosa + O₂ → ATP. Relación con la mitocondria y el ejercicio.', href:'#/simuladores/circulacion', dom:'cell'});
   idx.push({k:'Evaluación', t:'Evaluación interactiva: el corazón', d:'Selección visual, ordenamiento, verdadero/falso argumentado.', href:'#/evaluacion/corazon', dom:'anat'});
-  BIO.units.forEach(u => idx.push({k:'Unidad', t:`Unidad ${u.n}: ${u.t}`, d:u.d, href:'#/explorar', dom:''}));
+  BIO.areas.forEach(a => idx.push({k:'Área', t:a.n, d:a.d, href:'#/area/'+a.id, dom:a.dom}));
+  BIO.units.forEach(u => { const a = BIO.areas.find(x => x.unidades.includes(u.n)); idx.push({k:'Unidad', t:`Unidad ${u.n}: ${u.t}`, d:(a ? a.n+' · ' : 'Transversal · ')+u.d, href: a ? '#/area/'+a.id : '#/misiones', dom:''}); });
+  BIO.resources.filter(r => !r.ok).forEach(r => idx.push({k:r.tipo, t:r.t+' (en construcción)', d:r.d, href:r.href, dom:''}));
   idx.push({k:'Definición', t:'Intercambio gaseoso', d:'Difusión de O₂ y CO₂ entre alvéolos y capilares.', href:'#/mision/globulo-rojo', dom:'anat'});
   idx.push({k:'Definición', t:'Homeostasis', d:'Mantenimiento del equilibrio interno; los sistemas circulatorio y respiratorio la sostienen.', href:'#/simuladores/circulacion', dom:'anat'});
   idx.push({k:'Definición', t:'Hemoglobina', d:'Proteína de los glóbulos rojos que transporta O₂ (cuatro moléculas por hemoglobina).', href:'#/mision/globulo-rojo', dom:'anat'});
@@ -1278,6 +1585,21 @@ const Kit = (() => {
     const out = {}; for (const [r,list] of Object.entries(buckets)){ const map = new Map(), Pp=[], Nn=[], Cc=[], Uu=[], Ii=[]; for (const vi of list){ let ni = map.get(vi); if (ni===undefined){ ni = map.size; map.set(vi,ni); Pp.push(pos.getX(vi),pos.getY(vi),pos.getZ(vi)); Nn.push(nor.getX(vi),nor.getY(vi),nor.getZ(vi)); if (col) Cc.push(col.getX(vi),col.getY(vi),col.getZ(vi)); if (uv) Uu.push(uv.getX(vi),uv.getY(vi)); } Ii.push(ni); }
       const ng = new THREE.BufferGeometry(); ng.setAttribute('position', new THREE.Float32BufferAttribute(Pp,3)); ng.setAttribute('normal', new THREE.Float32BufferAttribute(Nn,3)); if (col) ng.setAttribute('color', new THREE.Float32BufferAttribute(Cc,3)); if (uv) ng.setAttribute('uv', new THREE.Float32BufferAttribute(Uu,2)); ng.setIndex(Ii); out[r] = ng; }
     return out; }
+  /* Dividir una malla por una superficie implícita (valor con signo por vértice) recortando los triángulos: borde limpio, sin dientes de sierra */
+  function splitPlane(g, sval, negName, posName){ const pos=g.attributes.position, nor=g.attributes.normal, col=g.attributes.color, uv=g.attributes.uv, idx=g.index.array;
+    const S = new Float32Array(pos.count); for (let i=0;i<pos.count;i++) S[i] = sval(i);
+    const out = { [negName]:{P:[],N:[],C:[],U:[]}, [posName]:{P:[],N:[],C:[],U:[]} };
+    const V = i => ({ p:[pos.getX(i),pos.getY(i),pos.getZ(i)], n:[nor.getX(i),nor.getY(i),nor.getZ(i)], c: col?[col.getX(i),col.getY(i),col.getZ(i)]:null, u: uv?[uv.getX(i),uv.getY(i)]:null, s:S[i] });
+    const L = (a,b,t) => { const n = a.n.map((v,k)=>v+(b.n[k]-v)*t), l = Math.hypot(...n)||1; return { p:a.p.map((v,k)=>v+(b.p[k]-v)*t), n:n.map(v=>v/l), c:a.c?a.c.map((v,k)=>v+(b.c[k]-v)*t):null, u:a.u?a.u.map((v,k)=>v+(b.u[k]-v)*t):null, s:0 }; };
+    const push = (side, ...vs) => { const o = out[side]; vs.forEach(a => { o.P.push(...a.p); o.N.push(...a.n); if (a.c) o.C.push(...a.c); if (a.u) o.U.push(...a.u); }); };
+    const side = v => v.s > 0 ? posName : negName;
+    for (let t=0;t<idx.length;t+=3){ const a=V(idx[t]), b=V(idx[t+1]), c=V(idx[t+2]); const A=a.s>0, B=b.s>0, C=c.s>0;
+      if (A===B && B===C){ push(side(a), a,b,c); continue; }
+      const [l,m,n] = (A!==B && A!==C) ? [a,b,c] : (B!==A && B!==C) ? [b,c,a] : [c,a,b];
+      const x = L(l,m, l.s/(l.s-m.s)), y = L(l,n, l.s/(l.s-n.s));
+      push(side(l), l,x,y); push(side(m), x,m,n, x,n,y); }
+    const res = {}; for (const [k,o] of Object.entries(out)){ const ng = new THREE.BufferGeometry(); ng.setAttribute('position', new THREE.Float32BufferAttribute(o.P,3)); ng.setAttribute('normal', new THREE.Float32BufferAttribute(o.N,3)); if (col) ng.setAttribute('color', new THREE.Float32BufferAttribute(o.C,3)); if (uv) ng.setAttribute('uv', new THREE.Float32BufferAttribute(o.U,2)); res[k] = ng; }
+    return res; }
   /* Pegar puntos a una superficie mediante rayos desde fuera */
   function snap(points, meshes, center, lift=0.03){ const ray = new THREE.Raycaster(); meshes.forEach(m=>m.updateMatrixWorld(true)); const out = [];
     for (const q of points){ const p = q.isVector3 ? q.clone() : V3(q); const dir = p.clone().sub(center).normalize(); ray.set(center.clone().addScaledVector(dir, 12), dir.clone().negate()); const hit = ray.intersectObjects(meshes, false)[0]; if (hit){ const nrm = hit.face ? hit.face.normal.clone().transformDirection(hit.object.matrixWorld) : dir; out.push(hit.point.clone().addScaledVector(nrm, lift)); } }
@@ -1294,7 +1616,7 @@ const Kit = (() => {
   function contactShadow(size, y, opacity=0.35){ const c = document.createElement('canvas'); c.width=c.height=128; const x = c.getContext('2d'); const gr = x.createRadialGradient(64,64,4,64,64,64); gr.addColorStop(0,'rgba(10,20,35,1)'); gr.addColorStop(0.45,'rgba(10,20,35,0.45)'); gr.addColorStop(1,'rgba(10,20,35,0)'); x.fillStyle=gr; x.fillRect(0,0,128,128);
     const t = new THREE.CanvasTexture(c); const m = new THREE.Mesh(new THREE.PlaneGeometry(size,size), new THREE.MeshBasicMaterial({ map:t, transparent:true, opacity, depthWrite:false, toneMapped:false })); m.rotation.x = -Math.PI/2; m.position.y = y; m.renderOrder = -1; return m; }
 
-  return { rng, n3, fbm, TEX, tissue, sculpt, taper, cap, merge, split, snap, densify, curve, studio, contactShadow, weldNormals };
+  return { rng, n3, fbm, TEX, tissue, sculpt, taper, cap, merge, split, splitPlane, snap, densify, curve, studio, contactShadow, weldNormals };
 })();
 </script>
 <script>
@@ -1329,7 +1651,8 @@ class Engine3D {
   resize(){ const w = this.container.clientWidth||1, hgt = this.container.clientHeight||1; this.renderer.setSize(w,hgt,false); this.camera.aspect = w/hgt; this.camera.updateProjectionMatrix(); }
   bindInput(){
     const c = this.canvas; let down=false, moved=0, lx=0, ly=0, pinch=0;
-    c.addEventListener('pointerdown', e => { down=true; moved=0; lx=e.clientX; ly=e.clientY; c.setPointerCapture(e.pointerId); });
+    c.addEventListener('pointerdown', e => { down=true; moved=0; lx=e.clientX; ly=e.clientY; this.spin=false; c.setPointerCapture(e.pointerId); });
+    c.addEventListener('dblclick', e => { const id = this.pick(e); if (id && this.opts.onDetail) this.opts.onDetail(id); });
     c.addEventListener('pointermove', e => {
       if (down){ const dx=e.clientX-lx, dy=e.clientY-ly; lx=e.clientX; ly=e.clientY; moved += Math.abs(dx)+Math.abs(dy);
         if (e.shiftKey || e.buttons===4 || e.buttons===2){ this.pan(dx,dy); } else { this.goal.theta -= dx*0.008; this.goal.phi = clamp(this.goal.phi - dy*0.008, 0.15, Math.PI-0.15); } }
@@ -1353,22 +1676,44 @@ class Engine3D {
   addPart(id, meshes, info={}){ meshes.forEach(m => { m.userData.id = id; m.userData.base = m.position.clone(); m.userData.baseScale = m.scale.clone(); if (m.material){ m.userData.bo = m.material.opacity; m.userData.bt = m.material.transparent; m.userData.bd = m.material.depthWrite; } this.scene.add(m); }); const p = Object.assign({ id, meshes, visible:true, opacity:1 }, info); this.parts.set(id, p); return p; }
   addLabel(id, text, pos){ const el = h('button',{class:'lbl',type:'button',onclick:()=>this.opts.onSelect && this.opts.onSelect(id,'etiqueta')}, text); this.labelsEl.append(el); this.labels.set(id, { el, pos: new THREE.Vector3(...pos) }); }
   setLabels(on){ this.labelsEl.style.display = on ? '' : 'none'; this._labelsOn = on; }
-  select(id){ this.selected = id; this.refreshEmissive(); this.labels.forEach((l,k)=>l.el.classList.toggle('sel', k===id)); }
-  refreshEmissive(){ this.parts.forEach(p => p.meshes.forEach(m => { if (!m.material || !m.material.emissive) return; const sel = p.id===this.selected, hov = p.id===this.hovered; m.material.emissive.set(sel||hov ? 0xffffff : 0x000000); m.material.emissiveIntensity = sel ? 0.22 : hov ? 0.1 : 0; })); }
+  select(id){ this.selected = id; this.refreshEmissive(); this.labels.forEach((l,k)=>l.el.classList.toggle('sel', k===id)); this.spotlight(id); this.outline(id); }
+  /* ---- selección notoria: contorno luminoso pulsante + atenuación del resto ---- */
+  outline(id, sub){ (this.outlines||[]).forEach(o => this.scene.remove(o.m)); this.outlines = []; if (this._om){ this._om.dispose(); this._om = null; } (this._sided||[]).forEach(mt => { mt.side = THREE.FrontSide; mt.needsUpdate = true; }); this._sided = []; const p = id && this.parts.get(id); if (!p || p.passThrough) return;
+    const box = new THREE.Box3(); p.meshes.forEach(m => { if (m.geometry && !m.isInstancedMesh){ if (!m.geometry.boundingBox) m.geometry.computeBoundingBox(); m.updateMatrixWorld(); box.union(m.geometry.boundingBox.clone().applyMatrix4(m.matrixWorld)); } });
+    const size = box.isEmpty() ? 1 : box.getSize(new THREE.Vector3()).length(); const thick = clamp(size*0.012, 0.012, 0.045);
+    const om = this._om = new THREE.MeshBasicMaterial({ color:0x3FE0F0, side:THREE.BackSide, transparent:true, opacity:0.85, depthWrite:false, toneMapped:false });
+    om.onBeforeCompile = sh => { sh.uniforms.thick = { value:thick }; sh.vertexShader = 'uniform float thick;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n\ttransformed += normalize(normal) * thick;'); };
+    p.meshes.forEach(src => { if (!src.isMesh || src.isInstancedMesh || !src.geometry || !src.geometry.attributes.normal) return; if (sub && src.userData.sub !== sub) return; if (src.material && src.material.opacity < 0.3 && !sub) return; const mt = src.material; if (mt && mt.side === THREE.FrontSide && !src.userData.bt){ mt.side = THREE.DoubleSide; mt.needsUpdate = true; this._sided.push(mt); } /* mallas abiertas (cortes): el interior tapa el contorno */ const m = new THREE.Mesh(src.geometry, om); m.matrixAutoUpdate = false; m.renderOrder = 3; this.scene.add(m); this.outlines.push({ m, src }); }); }
+  spotlight(id){ this.parts.forEach(p => p.meshes.forEach(m => { const mat = m.material; if (!mat || !mat.color) return; if (!mat.userData.c0) mat.userData.c0 = mat.color.clone(); mat.color.copy(mat.userData.c0); if (id && p.id !== id && !p.passThrough && !this.detail) mat.color.multiplyScalar(0.55); })); }
+  /* ---- vista en detalle: aislar, ampliar, girar, marcadores numerados ---- */
+  fitPoints(pts, k=2.4){ const b = new THREE.Box3(); pts.forEach(q => b.expandByPoint(V3(q))); this.goalTarget.copy(b.getCenter(new THREE.Vector3())); this.goal.r = clamp(Math.max(b.getSize(new THREE.Vector3()).length()*k, 2.2), this.opts.minR, this.opts.maxR); }
+  partSize(id){ const p = this.parts.get(id); if (!p) return 0; const box = new THREE.Box3(); p.meshes.forEach(m => { if (!m.geometry || m.isPoints) return; if (!m.geometry.boundingBox) m.geometry.computeBoundingBox(); m.updateMatrixWorld(); box.union(m.geometry.boundingBox.clone().applyMatrix4(m.matrixWorld)); }); return box.isEmpty() ? 0 : box.getSize(new THREE.Vector3()).length(); }
+  fit(id, k=1.5){ const p = this.parts.get(id); if (!p) return; const box = new THREE.Box3(); p.meshes.forEach(m => { if (!m.geometry || m.isInstancedMesh || m.isPoints) return; if (!m.geometry.boundingBox) m.geometry.computeBoundingBox(); m.updateMatrixWorld(); box.union(m.geometry.boundingBox.clone().applyMatrix4(m.matrixWorld)); }); if (box.isEmpty()) return; this.goalTarget.copy(box.getCenter(new THREE.Vector3())); this.goal.r = clamp(box.getSize(new THREE.Vector3()).length()*k, this.opts.minR, this.opts.maxR); }
+  enterDetail(id, pts){ if (this.detail) this.exitDetail(); this.detail = id; this._sv = { minR:this.opts.minR, labels:this._labelsOn!==false, r:this.goal.r, t:this.goalTarget.clone() }; this.opts.minR = 0.7;
+    this.parts.forEach(p => { p._go = p.opacity ?? 1; if (p.id !== id) this.setOpacity(p.id, Math.min(p._go, 0.07)); }); this.spotlight(id); this.setLabels(false); this.fitDetail(id, pts); this.spin = true; }
+  /* si la estructura tiene varias copias repartidas (p. ej. mitocondrias), se amplía la zona donde están sus partes numeradas */
+  fitDetail(id, pts){ if (pts && pts.length > 1){ const b = new THREE.Box3(); pts.forEach(q => b.expandByPoint(V3(q))); const ps = b.getSize(new THREE.Vector3()).length(); if (ps < 0.45*this.partSize(id)) return this.fitPoints(pts); } this.fit(id); }
+  exitDetail(){ if (!this.detail) return; this.parts.forEach(p => { if (p._go !== undefined){ this.setOpacity(p.id, p._go); delete p._go; } }); this.detail = null; this.opts.minR = this._sv.minR; this.setLabels(this._sv.labels); this.goal.r = this._sv.r; this.goalTarget.copy(this._sv.t); this.clearMarkers(); this.spin = false; this.spotlight(this.selected); }
+  setMarkers(list, onClick){ this.clearMarkers(); if (!this.markersEl){ this.markersEl = h('div',{class:'markers'}); this.container.append(this.markersEl); } this.markers = list.map((mk,i) => { const el = h('button',{class:'mk',type:'button',title:mk.n,'aria-label':`${i+1}. ${mk.n}`,onclick:()=>onClick && onClick(i)}, String(i+1)); this.markersEl.append(el); return { el, pos:V3(mk.at) }; }); }
+  clearMarkers(){ (this.markers||[]).forEach(m => m.el.remove()); this.markers = []; }
+  highlightMarker(i){ (this.markers||[]).forEach((m,j) => m.el.classList.toggle('on', i===j)); }
+  refreshEmissive(){ this.parts.forEach(p => p.meshes.forEach(m => { if (!m.material || !m.material.emissive) return; const sel = p.id===this.selected, hov = p.id===this.hovered; m.material.emissive.set(sel||hov ? 0xffffff : 0x000000); m.material.emissiveIntensity = sel ? 0.13 : hov ? 0.08 : 0; })); }
   setVisible(id, v){ const p = this.parts.get(id); if (!p) return; p.visible = v; p.meshes.forEach(m => m.visible = v); const l = this.labels.get(id); if (l) l.el.style.display = v ? '' : 'none'; }
   setOpacity(id, o){ const p = this.parts.get(id); if (!p) return; p.opacity = o; p.meshes.forEach(m => { if (!m.material || m.userData.keepOpacity) return; const bo = m.userData.bo ?? 1; m.material.opacity = bo*o; m.material.transparent = !!m.userData.bt || o<0.99; m.material.depthWrite = o>=0.99 ? (m.userData.bd ?? true) : false; }); }
   setExplode(f){ this.parts.forEach(p => { if (!p.explodeDir) return; p.meshes.forEach(m => { m.position.copy(m.userData.base).addScaledVector(p.explodeDir, f*1.5); }); const l = this.labels.get(p.id); if (l) l.pos.copy(l.base||(l.base=l.pos.clone())).addScaledVector(p.explodeDir, f*1.5); }); }
   onFrame(fn){ this.frameCbs.push(fn); }
-  updateLabels(){ if (this._labelsOn===false) return; const W = this.container.clientWidth, H = this.container.clientHeight; const cam = this.camera.position.clone().sub(this.target).normalize(); const v = new THREE.Vector3();
+  updateLabels(){ this.updateMarkers(); if (this._labelsOn===false) return; const W = this.container.clientWidth, H = this.container.clientHeight; const cam = this.camera.position.clone().sub(this.target).normalize(); const v = new THREE.Vector3();
     this.labels.forEach((l,id) => { const p = this.parts.get(id); if (p && !p.visible){ l.el.style.display='none'; return; } v.copy(l.pos).project(this.camera); const dir = l.pos.clone().sub(this.target).normalize(); const front = dir.dot(cam) > -0.35; if (v.z>1 || !front){ l.el.style.display='none'; return; } l.el.style.display=''; l.el.style.left = ((v.x+1)/2*W)+'px'; l.el.style.top = ((1-v.y)/2*H)+'px'; }); }
+  updateMarkers(){ if (!this.markers || !this.markers.length) return; const W = this.container.clientWidth, H = this.container.clientHeight, v = new THREE.Vector3(); this.markers.forEach(m => { v.copy(m.pos).project(this.camera); if (v.z>1){ m.el.style.display='none'; return; } m.el.style.display=''; m.el.style.left = ((v.x+1)/2*W)+'px'; m.el.style.top = ((1-v.y)/2*H)+'px'; }); }
   loop(){
     this.raf = requestAnimationFrame(this.loop);
     if (!this.active || document.hidden) return;
     const dt = Math.min(this.clock.getDelta(), 0.05); const t = this.clock.elapsedTime;
-    if (this.opts.autoRotate && motionOK()) this.goal.theta += dt*0.25;
+    if ((this.opts.autoRotate || this.spin) && motionOK()) this.goal.theta += dt*(this.spin ? 0.16 : 0.25);
     const k = 1 - Math.pow(0.001, dt); this.sph.r += (this.goal.r-this.sph.r)*k; this.sph.phi += (this.goal.phi-this.sph.phi)*k; this.sph.theta += (this.goal.theta-this.sph.theta)*k; this.target.lerp(this.goalTarget, k);
     const {r,phi,theta} = this.sph; this.camera.position.set(this.target.x + r*Math.sin(phi)*Math.sin(theta), this.target.y + r*Math.cos(phi), this.target.z + r*Math.sin(phi)*Math.cos(theta)); this.camera.lookAt(this.target);
     for (const fn of this.frameCbs) fn(t, dt);
+    if (this.outlines && this.outlines.length){ if (this._om) this._om.opacity = motionOK() ? 0.5 + 0.4*Math.sin(t*4.2) : 0.8; this.outlines.forEach(o => { o.src.updateMatrixWorld(); o.m.matrix.copy(o.src.matrixWorld); o.m.matrixWorldNeedsUpdate = true; o.m.visible = o.src.visible; }); }
     this.renderer.render(this.scene, this.camera); this.updateLabels();
   }
   capture(){ this.renderer.render(this.scene, this.camera); const src = this.canvas; const out = document.createElement('canvas'); const w = 480, hh = Math.round(480*src.height/src.width); out.width=w; out.height=hh; const ctx = out.getContext('2d'); ctx.fillStyle = cssVar('--bg-2'); ctx.fillRect(0,0,w,hh); ctx.drawImage(src,0,0,w,hh); return out.toDataURL('image/jpeg', 0.72); }
@@ -1428,8 +1773,8 @@ function buildHeart(E){
   const VR = [1.45,1.72,1.22], VC = [0.25,-0.9,0.05], VROT = [-0.25,0,0.4];
   const sIV = (x,y,z) => 0.75*z - 0.62*x + 0.38*y;   // coordenadas normalizadas; >0.05 → ventrículo derecho
   const vg = Kit.sculpt({ shape: d => { const p = d.clone(); if (d.y<0){ const k = 1 - 0.6*Math.pow(-d.y,1.6); p.x*=k; p.z*=k; } if (d.y>0) p.y*=0.72; if (d.z<0) p.z*=0.85; return p.multiply(V3(VR)); },
-    disp: (p,d) => { const n = d; const sv = sIV(n.x, n.y, n.z) - 0.05; return 0.028*Kit.fbm(p.x*2+1, p.y*2, p.z*2, 3) - 0.07*Math.exp(-Math.pow(sv/0.06,2)); }, store: (p,d) => sIV(d.x,d.y,d.z) > 0.05 ? 'rv' : 'lv' });
-  const vParts = Kit.split(vg, i => vg.userData.extra[i]);
+    disp: (p,d) => { const n = d; const sv = sIV(n.x, n.y, n.z) - 0.05; return 0.028*Kit.fbm(p.x*2+1, p.y*2, p.z*2, 3) - 0.07*Math.exp(-Math.pow(sv/0.06,2)); }, store: (p,d) => sIV(d.x,d.y,d.z) - 0.05 });
+  const vParts = Kit.splitPlane(vg, i => vg.userData.extra[i], 'lv', 'rv');
   const lv = new THREE.Mesh(vParts.lv, muscle(0xffffff)), rv = new THREE.Mesh(vParts.rv, muscle(0xfff2ef));
   [lv, rv].forEach(m => { m.position.set(...VC); m.rotation.set(...VROT); });
   const conus = chamber({ r:[0.4,0.66,0.38], c:[0.04,0.12,0.66], rot:[-0.15,0,-0.5], amp:0.025, f:2.4, seed:5, mat:rv.material });
@@ -1437,6 +1782,8 @@ function buildHeart(E){
   const raA = chamber({ r:[0.62,0.26,0.3], c:[-0.6,1.05,0.5], rot:[0.3,-0.75,0.5], amp:0.035, f:5, seed:9, mat:ra.material });
   const la = chamber({ r:[0.86,0.62,0.7], c:[0.7,0.8,-0.65], amp:0.04, f:3.0, seed:11, mat:muscle(0xf6e2e4,'atrium') });
   const laA = chamber({ r:[0.56,0.22,0.28], c:[1.25,0.85,0.25], rot:[0.2,0.6,-0.6], amp:0.035, f:5, seed:13, mat:la.material });
+  const tag = (arr, sub) => { arr.forEach(m => m.userData.sub = sub); return arr; };
+  raA.userData.sub = 'orejuela'; laA.userData.sub = 'orejuela'; conus.userData.sub = 'cono';
   add('ventriculo-izquierdo', [lv]); add('ventriculo-derecho', [rv, conus]); add('auricula-derecha', [ra, raA]); add('auricula-izquierda', [la, laA]);
   const sep = chamber({ r:[0.07,0.95,0.62], c:[0,0,0], amp:0.01, f:3, seed:15, mat:muscle(0xd8b0b0) });
   { const nl = new THREE.Vector3(-0.62/VR[0], 0.38/VR[1], 0.75/VR[2]).normalize(); const q = new THREE.Quaternion().setFromEuler(new THREE.Euler(...VROT)); const nw = nl.clone().applyQuaternion(q);
@@ -1450,35 +1797,35 @@ function buildHeart(E){
   const LA_ = 0x3a0d0c, LV_ = 0x141a36;
   const aM = artMat();
   const aorta = [
-    ...vessel([[0.1,0.35,-0.1],[-0.2,1.4,0.1],[-0.3,2.3,0.05],[0.0,3.05,-0.3],[0.75,3.0,-0.85],[1.05,2.3,-1.25],[1.05,1.0,-1.35],[1.0,-1.0,-1.4],[0.95,-2.6,-1.4]], 0, 0, aM, [1], LA_, { rfn:u => 0.27 + 0.07*Math.exp(-Math.pow((u-0.03)/0.04,2)) + 0.04*(1-u), seg: low?60:120 }),
-    ...vessel([[-0.05,2.95,-0.2],[-0.3,3.55,-0.2],[-0.5,4.05,-0.15]], 0.17, 0.14, aM, [1], LA_),
-    ...vessel([[0.32,3.08,-0.45],[0.36,3.6,-0.47],[0.38,4.0,-0.48]], 0.12, 0.11, aM, [1], LA_),
-    ...vessel([[0.6,3.02,-0.72],[0.8,3.5,-0.8],[0.95,3.9,-0.82]], 0.13, 0.12, aM, [1], LA_)
+    ...tag(vessel([[0.1,0.35,-0.1],[-0.2,1.4,0.1],[-0.3,2.3,0.05],[0.0,3.05,-0.3],[0.75,3.0,-0.85],[1.05,2.3,-1.25],[1.05,1.0,-1.35],[1.0,-1.0,-1.4],[0.95,-2.6,-1.4]], 0, 0, aM, [1], LA_, { rfn:u => 0.27 + 0.07*Math.exp(-Math.pow((u-0.03)/0.04,2)) + 0.04*(1-u), seg: low?60:120 }),'main'),
+    ...tag(vessel([[-0.05,2.95,-0.2],[-0.3,3.55,-0.2],[-0.5,4.05,-0.15]], 0.17, 0.14, aM, [1], LA_),'bt'),
+    ...tag(vessel([[0.32,3.08,-0.45],[0.36,3.6,-0.47],[0.38,4.0,-0.48]], 0.12, 0.11, aM, [1], LA_),'cci'),
+    ...tag(vessel([[0.6,3.02,-0.72],[0.8,3.5,-0.8],[0.95,3.9,-0.82]], 0.13, 0.12, aM, [1], LA_),'sci')
   ];
   add('aorta', aorta);
   const pM = veinMat();
   add('arteria-pulmonar', [
-    ...vessel([[0.3,0.62,0.72],[0.42,1.3,0.52],[0.45,1.9,0.12]], 0.35, 0.31, pM, [], LV_),
-    ...vessel([[0.45,1.9,0.12],[1.1,2.05,-0.25],[1.95,2.0,-0.35]], 0.28, 0.22, pM, [1], LV_),
-    ...vessel([[0.45,1.9,0.12],[-0.1,1.95,-0.6],[-1.2,1.9,-0.68],[-2.3,1.85,-0.6]], 0.27, 0.22, pM, [1], LV_)
+    ...tag(vessel([[0.3,0.62,0.72],[0.42,1.3,0.52],[0.45,1.9,0.12]], 0.35, 0.31, pM, [], LV_),'tronco'),
+    ...tag(vessel([[0.45,1.9,0.12],[1.1,2.05,-0.25],[1.95,2.0,-0.35]], 0.28, 0.22, pM, [1], LV_),'izq'),
+    ...tag(vessel([[0.45,1.9,0.12],[-0.1,1.95,-0.6],[-1.2,1.9,-0.68],[-2.3,1.85,-0.6]], 0.27, 0.22, pM, [1], LV_),'der')
   ]);
   const cM = veinMat();
   add('vena-cava-superior', vessel([[-1.05,3.4,0.0],[-1.12,2.4,0.05],[-1.15,1.45,0.02]], 0.27, 0.28, cM, [0], LV_));
   add('vena-cava-inferior', vessel([[-1.15,0.2,-0.15],[-1.2,-0.9,-0.4],[-1.25,-2.4,-0.45]], 0.3, 0.3, veinMat(), [1], LV_));
   const pvM = artMat();
   add('venas-pulmonares', [
-    ...vessel([[0.2,1.0,-1.05],[-0.7,1.15,-1.25],[-1.7,1.25,-1.2]], 0.15, 0.13, pvM, [1], LA_),
-    ...vessel([[0.25,0.62,-1.05],[-0.7,0.58,-1.3],[-1.7,0.52,-1.25]], 0.15, 0.13, pvM, [1], LA_),
-    ...vessel([[1.3,1.0,-0.8],[1.9,1.2,-0.9],[2.5,1.35,-0.85]], 0.15, 0.13, pvM, [1], LA_),
-    ...vessel([[1.3,0.62,-0.85],[1.9,0.58,-0.95],[2.5,0.52,-0.9]], 0.15, 0.13, pvM, [1], LA_)
+    ...tag(vessel([[0.2,1.0,-1.05],[-0.7,1.15,-1.25],[-1.7,1.25,-1.2]], 0.15, 0.13, pvM, [1], LA_),'der'),
+    ...tag(vessel([[0.25,0.62,-1.05],[-0.7,0.58,-1.3],[-1.7,0.52,-1.25]], 0.15, 0.13, pvM, [1], LA_),'der'),
+    ...tag(vessel([[1.3,1.0,-0.8],[1.9,1.2,-0.9],[2.5,1.35,-0.85]], 0.15, 0.13, pvM, [1], LA_),'izq'),
+    ...tag(vessel([[1.3,0.62,-0.85],[1.9,0.58,-0.95],[2.5,0.52,-0.9]], 0.15, 0.13, pvM, [1], LA_),'izq')
   ]);
 
   /* --- vasos coronarios y grasa epicárdica, pegados a la superficie --- */
   const surf = [lv, rv, ra, la, raA, laA, conus]; const ctr = new THREE.Vector3(0.1,-0.4,0.1);
   const onSurf = (pts, n, lift) => Kit.snap(Kit.densify(pts, n), surf, ctr, lift);
   const corA = Kit.tissue({ color:0xC8352C, rough:0.3, coat:0.8, coatRough:0.2 }), corV = Kit.tissue({ color:0x4F5E9C, rough:0.32, coat:0.8, coatRough:0.2 }), fatM = Kit.tissue({ tex:'fat', rep:[8,1], bump:0.035, coat:0.6, rough:0.45, color:0xE8D2B0 });
-  const cor = []; const route = (pts, n, r0, r1, m, lift=0.055) => { const s = onSurf(pts, n, lift); if (s.length>3) cor.push(new THREE.Mesh(Kit.taper(s, r0, r1, { seg: low?24:48, rad:8 }), m)); return s; };
-  const fat = (pts, n, r) => { const s = onSurf(pts, n, -0.06); if (s.length>3) { const g = Kit.taper(s, r, r*0.65, { seg: low?30:60, rad:12, bumpy:0.55, bf:10, seed:3 }); cor.push(new THREE.Mesh(g, fatM)); } };
+  const cor = []; const route = (pts, n, r0, r1, m, lift=0.055) => { const s = onSurf(pts, n, lift); if (s.length>3){ const me = new THREE.Mesh(Kit.taper(s, r0, r1, { seg: low?24:48, rad:8 }), m); me.userData.sub = m===corA ? 'art' : 'ven'; cor.push(me); } return s; };
+  const fat = (pts, n, r) => { const s = onSurf(pts, n, -0.06); if (s.length>3) { const g = Kit.taper(s, r, r*0.65, { seg: low?30:60, rad:12, bumpy:0.55, bf:10, seed:3 }); const me = new THREE.Mesh(g, fatM); me.userData.sub = 'grasa'; cor.push(me); } };
   fat([[0.55,0.3,1.3],[0.4,-0.4,1.35],[0.35,-1.1,1.25],[0.6,-1.8,1.05],[0.95,-2.2,0.7]], 22, 0.15);
   fat([[-0.3,0.35,1.1],[-1.0,0.25,1.0],[-1.6,-0.05,0.55],[-1.75,-0.6,-0.1]], 18, 0.17);
   fat([[0.8,0.35,0.95],[1.45,0.3,0.4],[1.75,0.15,-0.3],[1.45,0.05,-1.0]], 18, 0.15);
@@ -1498,13 +1845,13 @@ function buildHeart(E){
   const valves = [];
   const valve = (id, c, axis, r, n, semilunar) => { const C = V3(c), A = V3(axis).normalize(); const U = new THREE.Vector3().crossVectors(A, Math.abs(A.y)<0.9 ? new THREE.Vector3(0,1,0) : new THREE.Vector3(1,0,0)).normalize(); const W = new THREE.Vector3().crossVectors(A, U).normalize();
     const m0 = leafMat(); const ring = new THREE.Mesh(new THREE.TorusGeometry(r, 0.035, 10, 40), Kit.tissue({ color:0xE6D3BE, rough:0.4, coat:0.5 })); ring.position.copy(C); ring.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1), A);
-    const meshes = [ring]; const span = Math.PI*2/n, gap = 0.05;
+    ring.userData.sub = 'anillo'; const meshes = [ring]; const span = Math.PI*2/n, gap = 0.05;
     for (let k=0;k<n;k++){ const th = k*span + span/2; const rd = U.clone().multiplyScalar(Math.cos(th)).addScaledVector(W, Math.sin(th)); const td = U.clone().multiplyScalar(-Math.sin(th)).addScaledVector(W, Math.cos(th)); const H = C.clone().addScaledVector(rd, r);
       const Q = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(td, rd.clone().negate(), A)); const Qi = Q.clone().invert();
       const NS = 7, NT = 9, P = [], I = []; for (let i=0;i<=NS;i++){ const s = i/NS; for (let j=0;j<=NT;j++){ const t = j/NT*2-1; const ang = th + t*(span/2-gap)*(1-0.35*s); const dir = U.clone().multiplyScalar(Math.cos(ang)).addScaledVector(W, Math.sin(ang)); const w = C.clone().addScaledVector(dir, r*(1-s*0.96)).addScaledVector(A, (semilunar?-1:1)*0.22*r*Math.sin(Math.PI*s*0.9)*(1-Math.abs(t)*0.3)); w.sub(H).applyQuaternion(Qi); P.push(w.x,w.y,w.z); } }
       for (let i=0;i<NS;i++) for (let j=0;j<NT;j++){ const a=i*(NT+1)+j, b=a+1, cc=a+NT+1, d=cc+1; I.push(a,cc,b, b,cc,d); }
       const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(P,3)); g.setIndex(I); g.computeVertexNormals(); const uv = []; for (let i=0;i<=NS;i++) for (let j=0;j<=NT;j++) uv.push(j/NT, i/NS); g.setAttribute('uv', new THREE.Float32BufferAttribute(uv,2));
-      const leaf = new THREE.Mesh(g, m0); leaf.position.copy(H); leaf.quaternion.copy(Q); leaf.userData.q0 = Q.clone(); leaf.userData.leaf = true; meshes.push(leaf); }
+      const leaf = new THREE.Mesh(g, m0); leaf.position.copy(H); leaf.quaternion.copy(Q); leaf.userData.q0 = Q.clone(); leaf.userData.leaf = true; leaf.userData.sub = 'valvas'; meshes.push(leaf); }
     add(id, meshes); valves.push({ id, meshes, semilunar, open:0 }); };
   valve('valvula-tricuspide', S['valvula-tricuspide'].pos, [0.25,-1,0.25], 0.36, 3, false);
   valve('valvula-mitral', S['valvula-mitral'].pos, [-0.1,-1,0.35], 0.34, 2, false);
@@ -1596,6 +1943,7 @@ function buildCell(E){
   const dm = new THREE.Object3D(); let pi = 0, pj = 0;
   for (let i=0;i<nProt*2 && (pi<nProt || pj<prot2.count);i++){ const d = randDir(); const p = new THREE.Vector3(d.x*MS[0], d.y*MS[1], d.z*MS[2]).addScaledVector(d, mDisp(d)); if (inCut(p, new THREE.Vector3(), 0.78)) continue; dm.position.copy(p); dm.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), d); dm.updateMatrix(); if (i%3 && pi<nProt) prot.setMatrixAt(pi++, dm.matrix); else if (pj<prot2.count) prot2.setMatrixAt(pj++, dm.matrix); }
   prot.count = pi; prot2.count = pj;
+  [outer, inner, rim].forEach(m => m.userData.sub='bicapa'); prot.userData.sub = prot2.userData.sub = 'prot';
   add('membrana', [outer, inner, rim, prot, prot2], [2.7,2.7,1.0], { explodeDir:new THREE.Vector3(0,0,0), passThrough:true });
 
   /* --- citoplasma: citoesqueleto (microtúbulos desde el centrosoma) y gránulos --- */
@@ -1616,6 +1964,7 @@ function buildCell(E){
   for (let i=0;i<poreN*3 && pc<poreN;i++){ const d = randDir(); if (d.dot(CAM) > 0.55) continue; dm.position.copy(NC).add(new THREE.Vector3(d.x*NR*1.005, d.y*NR*0.95*1.005, d.z*NR*1.005)); dm.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1), d); dm.updateMatrix(); pores.setMatrixAt(pc++, dm.matrix); } pores.count = pc;
   const chrom = []; for (let i=0;i<(low?10:18);i++){ let p = NC.clone().add(randDir().multiplyScalar(R()*0.6)); const pts = [p.clone()]; for (let j=0;j<7;j++){ p = p.clone().add(randDir().multiplyScalar(0.28)); if (p.distanceTo(NC) > 0.9) p.sub(NC).multiplyScalar(0.8).add(NC); pts.push(p); } chrom.push(Kit.taper(pts, 0.035, 0.03, { seg:30, rad:5, bumpy:0.4, bf:20, seed:i })); }
   const chromM = new THREE.Mesh(Kit.merge(chrom), org(0x4B3490, { rough:0.5, coat:0.3 }));
+  nOut.userData.sub = nIn.userData.sub = 'env'; pores.userData.sub = 'poros'; chromM.userData.sub = 'crom';
   add('nucleo', [nOut, nIn, pores, chromM], [0.1,1.75,0.6]);
   const nuc = new THREE.Mesh(Kit.sculpt({ radii:[0.36,0.33,0.35], w:40, h:30, disp:(p)=>0.04*Kit.n3(p.x*9,p.y*9,p.z*9) }), Kit.tissue({ tex:'granular', rep:[3,2], bump:0.02, color:0x3A2478, rough:0.55, coat:0.3 }));
   nuc.position.copy(NC).add(new THREE.Vector3(0.28,0.12,0.38));
@@ -1630,6 +1979,7 @@ function buildCell(E){
     for (let i=0;i<(low?60:130);i++){ const vi = Math.floor(R()*p.count); riboPts.push(new THREE.Vector3(p.getX(vi)+NC.x, p.getY(vi)+NC.y, p.getZ(vi)+NC.z).add(randDir().multiplyScalar(0.045))); } });
   const rerMesh = new THREE.Mesh(Kit.merge(sheets), rerM);
   const rrib = new THREE.InstancedMesh(new THREE.SphereGeometry(0.028, 6, 5), org(0x2F2A44, { rough:0.6, coat:0.2 }), riboPts.length); riboPts.forEach((p,i) => { dm.position.copy(p); dm.quaternion.identity(); dm.updateMatrix(); rrib.setMatrixAt(i, dm.matrix); });
+  rerMesh.userData.sub = 'cist'; rrib.userData.sub = 'ribo';
   add('rer', [rerMesh, rrib], [-1.2,-1.75,1.6]);
 
   /* --- retículo endoplasmático liso: red tubular --- */
@@ -1642,7 +1992,7 @@ function buildCell(E){
   for (let i=0;i<5;i++){ const rr = 0.66 - i*0.07, SR = 0.95; const cap = new THREE.SphereGeometry(SR, low?28:44, 8, 0, Math.PI*2, 0, Math.asin(Math.min(0.99,rr/SR))); cap.translate(0,-SR,0); cap.scale(1.45,1,0.75); const off = new THREE.Vector3(0, i*0.15, 0); xf(cap, GC.clone().add(off.clone().applyQuaternion(gq)), gq); gg.push(cap);
     const ring = new THREE.TorusGeometry(rr, 0.028, 8, 40); ring.rotateX(Math.PI/2); ring.translate(0, -SR + Math.sqrt(SR*SR-rr*rr), 0); ring.scale(1.45,1,0.75); xf(ring, GC.clone().add(off.clone().applyQuaternion(gq)), gq); gg.push(ring); }
   for (let i=0;i<14;i++){ const d = randDir(); const p = GC.clone().add(gAxis.clone().multiplyScalar(-0.7 - R()*0.35)).add(d.multiplyScalar(0.25+R()*0.35)); const s = new THREE.SphereGeometry(0.06+R()*0.04, 12, 10); s.translate(p.x,p.y,p.z); vesG.push(s); }
-  add('golgi', [new THREE.Mesh(Kit.merge(gg), org(0xE0AC45, { side:THREE.DoubleSide })), new THREE.Mesh(Kit.merge(vesG), org(0xF0C66A, { transparent:true, opacity:0.85 }))], [-1.85,-1.05,2.55]);
+  { const a = new THREE.Mesh(Kit.merge(gg), org(0xE0AC45, { side:THREE.DoubleSide })), b = new THREE.Mesh(Kit.merge(vesG), org(0xF0C66A, { transparent:true, opacity:0.85 })); a.userData.sub='cist'; b.userData.sub='ves'; add('golgi', [a,b], [-1.85,-1.05,2.55]); }
 
   /* --- mitocondrias abiertas: doble membrana y crestas --- */
   const mitoOut = [], mitoIn = [];
@@ -1653,11 +2003,11 @@ function buildCell(E){
     const o = new THREE.LatheGeometry(capsule(L, r, 16), low?20:32, 0.28*Math.PI, 1.44*Math.PI); xf(o, pos, q); mitoOut.push(o);
     const inn = new THREE.LatheGeometry(capsule(L*0.94, r*0.86, 16), low?20:32, 0.3*Math.PI, 1.4*Math.PI); xf(inn, pos, q); mitoIn.push(inn);
     const nC = 6; for (let j=0;j<nC;j++){ const y = -L*0.36 + j/(nC-1)*L*0.72; const w = r*0.82*Math.sqrt(1 - Math.pow(y/(L*0.5),2)); const pl = new THREE.PlaneGeometry(w*1.6, 0.3*r*2, 10, 3); const pp = pl.attributes.position; for (let i=0;i<pp.count;i++){ pp.setZ(i, 0.03*Math.sin(pp.getX(i)*28)); } pl.computeVertexNormals(); pl.rotateX(Math.PI/2); pl.translate((j%2 ? 1 : -1)*w*0.25, y, -0.02); xf(pl, pos, q); mitoIn.push(pl); } });
-  add('mitocondria', [new THREE.Mesh(Kit.merge(mitoOut), org(0xE0784A, { side:THREE.DoubleSide })), new THREE.Mesh(Kit.merge(mitoIn), org(0xF4A77A, { side:THREE.DoubleSide }))], [-2.75,1.55,1.1]);
+  { const a = new THREE.Mesh(Kit.merge(mitoOut), org(0xE0784A, { side:THREE.DoubleSide })), b = new THREE.Mesh(Kit.merge(mitoIn), org(0xF4A77A, { side:THREE.DoubleSide })); a.userData.sub='ext'; b.userData.sub='int'; add('mitocondria', [a,b], [-2.75,1.55,1.1]); }
 
   /* --- lisosomas: membrana + contenido denso --- */
   const lisO = [], lisI = []; [[1.25,-1.95,1.15],[-2.0,1.95,-0.4],[2.35,0.9,-0.95],[-0.4,2.25,-1.1],[1.9,-0.2,1.9]].forEach(p => { const a = new THREE.SphereGeometry(0.22,18,14); a.translate(...p); lisO.push(a); const b = Kit.sculpt({ radii:[0.16,0.16,0.16], w:20, h:14, disp:(q)=>0.03*Kit.n3(q.x*20,q.y*20,q.z*20) }); b.translate(...p); lisI.push(b); });
-  add('lisosomas', [new THREE.Mesh(Kit.merge(lisO), org(0xD27AA6, { transparent:true, opacity:0.55, depthWrite:false })), new THREE.Mesh(Kit.merge(lisI), org(0x8E2E62))], [2.1,-2.6,1.6]);
+  { const a = new THREE.Mesh(Kit.merge(lisO), org(0xD27AA6, { transparent:true, opacity:0.55, depthWrite:false })), b = new THREE.Mesh(Kit.merge(lisI), org(0x8E2E62)); a.userData.sub='memb'; b.userData.sub='cont'; add('lisosomas', [a,b], [2.1,-2.6,1.6]); }
 
   /* --- ribosomas libres y polirribosomas --- */
   const fr = []; for (let i=0;i<(low?140:320);i++){ const d = randDir(), r = 0.45+R()*0.45; const p = new THREE.Vector3(d.x*MS[0]*r, d.y*MS[1]*r, d.z*MS[2]*r); if (p.distanceTo(NC) < 1.35) continue; fr.push(p); }
@@ -1669,7 +2019,7 @@ function buildCell(E){
   const rods = []; const centriole = (pos, axisQ) => { for (let k=0;k<9;k++){ const a = k/9*Math.PI*2; for (let t=0;t<3;t++){ const rr = 0.1 + t*0.028; const aa = a + t*0.16; const c = new THREE.CylinderGeometry(0.014, 0.014, 0.42, 6); c.translate(Math.cos(aa)*rr, 0, Math.sin(aa)*rr); xf(c, pos, axisQ); rods.push(c); } } };
   centriole(CS.clone(), new THREE.Quaternion()); centriole(CS.clone().add(new THREE.Vector3(0.3,-0.2,0)), new THREE.Quaternion().setFromEuler(new THREE.Euler(0,0,Math.PI/2)));
   const pcm = new THREE.Mesh(new THREE.SphereGeometry(0.42, 20, 16), new THREE.MeshStandardMaterial({ color:0x8FA8C6, transparent:true, opacity:0.18, depthWrite:false })); pcm.position.copy(CS).add(new THREE.Vector3(0.15,-0.1,0));
-  add('centriolos', [new THREE.Mesh(Kit.merge(rods), org(0x4E6F92)), pcm], [-0.9,2.25,1.5]);
+  { const a = new THREE.Mesh(Kit.merge(rods), org(0x4E6F92)); a.userData.sub='rods'; pcm.userData.sub='pcm'; add('centriolos', [a, pcm], [-0.9,2.25,1.5]); }
 
   /* "Ver en acción": partículas que viajan entre organelos */
   const anim = { active:null, parts:[], t:0 };
@@ -1753,8 +2103,8 @@ function buildBrain(E){
   add('cerebelo', cb);
   const stemMat = Kit.tissue({ color:0xE4C3AE, rough:0.48, coat:0.4, tex:'tissue', rep:[2,6], bump:0.008 });
   add('tronco', [new THREE.Mesh(Kit.taper([[-0.1,-0.15,0],[-0.3,-0.9,0],[-0.5,-1.75,0],[-0.6,-2.35,0]], 0, 0, { rfn:u => 0.3 + 0.17*gauss(u-0.45,0.16) - 0.06*u }), stemMat)]);
-  const cord = [new THREE.Mesh(Kit.taper([[-0.6,-2.3,0],[-0.66,-3.2,0],[-0.72,-4.15,0]], 0.23, 0.18), stemMat)];
-  [-2.65,-3.05,-3.45,-3.85].forEach((y,i) => [1,-1].forEach(sg => { const x = -0.64 - 0.02*i; cord.push(new THREE.Mesh(Kit.taper([[x,y,sg*0.15],[x+0.05,y-0.12,sg*0.5],[x+0.12,y-0.35,sg*0.95]], 0.045, 0.03, { seg:12, rad:6 }), stemMat)); }));
+  const cordMat = Kit.tissue({ color:0xE4C3AE, rough:0.48, coat:0.4, tex:'tissue', rep:[2,6], bump:0.008 }); const cord = [new THREE.Mesh(Kit.taper([[-0.6,-2.3,0],[-0.66,-3.2,0],[-0.72,-4.15,0]], 0.23, 0.18), cordMat)]; cord[0].userData.sub = 'cordon';
+  [-2.65,-3.05,-3.45,-3.85].forEach((y,i) => [1,-1].forEach(sg => { const x = -0.64 - 0.02*i; const nv = new THREE.Mesh(Kit.taper([[x,y,sg*0.15],[x+0.05,y-0.12,sg*0.5],[x+0.12,y-0.35,sg*0.95]], 0.045, 0.03, { seg:12, rad:6 }), cordMat); nv.userData.sub = 'nervios'; cord.push(nv); }));
   add('medula', cord);
 
   /* estructuras profundas */
@@ -1763,7 +2113,7 @@ function buildBrain(E){
   const deep = (c, r, col, rot) => { const m = new THREE.Mesh(Kit.sculpt({ radii:r, w:40, h:30, disp:(p)=>0.012*Kit.n3(p.x*6,p.y*6,p.z*6) }), Kit.tissue({ color:col, rough:0.42, coat:0.5 })); m.position.set(...c); if (rot) m.rotation.set(...rot); return m; };
   add('talamo', [deep([-0.1,0.05,0.3],[0.5,0.3,0.25],0x9B6FB5), deep([-0.1,0.05,-0.3],[0.5,0.3,0.25],0x9B6FB5)]);
   add('hipotalamo', [deep([0.3,-0.36,0],[0.3,0.19,0.28],0xE0A040)]);
-  add('hipofisis', [deep([0.46,-1.0,0],[0.2,0.16,0.2],0xE8B890), deep([0.3,-1.0,0],[0.12,0.12,0.14],0xD8A07A), new THREE.Mesh(Kit.taper([[0.3,-0.5,0],[0.36,-0.72,0],[0.4,-0.9,0]], 0.06, 0.045, { seg:12, rad:8 }), Kit.tissue({ color:0xE0B08A, rough:0.45 }))]);
+  { const a = deep([0.46,-1.0,0],[0.2,0.16,0.2],0xE8B890), b = deep([0.3,-1.0,0],[0.12,0.12,0.14],0xD8A07A), c = new THREE.Mesh(Kit.taper([[0.3,-0.5,0],[0.36,-0.72,0],[0.4,-0.9,0]], 0.06, 0.045, { seg:12, rad:8 }), Kit.tissue({ color:0xE0B08A, rough:0.45 })); a.userData.sub='adeno'; b.userData.sub='neuro'; c.userData.sub='tallo'; add('hipofisis', [a,b,c]); }
   const hipM = Kit.tissue({ color:0x5F9DB0, rough:0.4, coat:0.5 });
   add('hipocampo', [1,-1].map(sg => new THREE.Mesh(Kit.taper([[-0.95,-0.2,sg*0.72],[-0.55,-0.5,sg*0.84],[0.05,-0.62,sg*0.9],[0.5,-0.55,sg*0.86],[0.62,-0.42,sg*0.8]], 0, 0, { rfn:u => 0.07 + 0.1*u*u }), hipM)));
 
@@ -1806,7 +2156,7 @@ function buildLungs(E){
   const cri = new THREE.Mesh(new THREE.TorusGeometry(0.33, 0.08, 10, 32), lm); cri.rotation.x = Math.PI/2; cri.position.set(0,3.55,0);
   const epi = new THREE.Mesh(Kit.sculpt({ radii:[0.24,0.36,0.05], w:28, h:20 }), cart()); epi.position.set(0,4.45,-0.2); epi.rotation.x = -0.35;
   const hyo = new THREE.Mesh(Kit.taper([[-0.5,4.58,-0.25],[-0.38,4.62,0.28],[0,4.62,0.44],[0.38,4.62,0.28],[0.5,4.58,-0.25]], 0.05, 0.05, { seg:30, rad:8 }), Kit.tissue({ color:0xEDE4D2, rough:0.35, coat:0.4 }));
-  add('laringe', [thy, cri, epi, hyo]);
+  thy.userData.sub='tiroides'; cri.userData.sub='cricoides'; epi.userData.sub='epiglotis'; hyo.userData.sub='hioides'; add('laringe', [thy, cri, epi, hyo]);
 
   /* --- tráquea con anillos en C --- */
   const ringGeos = []; const ringArc = 1.62*Math.PI;
@@ -1814,7 +2164,7 @@ function buildLungs(E){
   for (let y=3.35; y>1.75; y-=0.2) cRing(new THREE.Vector3(0,y,0), new THREE.Vector3(0,1,0), 0.31);
   const trM = new THREE.Mesh(Kit.merge(ringGeos.splice(0)), cart());
   const memb = new THREE.Mesh(Kit.taper([[0,3.48,0],[0,2.5,0],[0,1.62,0]], 0.29, 0.29), Kit.tissue({ color:0xD9A79C, rough:0.5, coat:0.4, tex:'tissue', rep:[3,1], bump:0.006 }));
-  add('traquea', [trM, memb]);
+  trM.userData.sub = 'anillos'; memb.userData.sub = 'membranosa'; add('traquea', [trM, memb]);
 
   /* --- pulmones: forma real, cisuras, lóbulos --- */
   const lungs = {}; const C = { R:new THREE.Vector3(-1.75,-0.25,0.05), L:new THREE.Vector3(1.75,-0.3,0.05) };
@@ -1831,7 +2181,7 @@ function buildLungs(E){
       store: (p) => p.y < yO(p.z) ? 'inf' : (s<0 && p.y < 0.35 ? 'med' : 'sup') });
     return { g, parts: Kit.split(g, i => g.userData.extra[i]) }; };
   const lungMat = (tint) => Kit.tissue({ tex:'lung', rep:[4,3], bump:0.022, coat:0.7, coatRough:0.3, rough:0.5, color:tint });
-  ['R','L'].forEach(side => { const { g, parts } = lungMesh(side); const m = lungMat(side==='R' ? 0xffffff : 0xfff4f2); lungs[side] = { g, meshes: Object.values(parts).map(pg => { const me = new THREE.Mesh(pg, m); me.position.copy(C[side]); return me; }) }; });
+  ['R','L'].forEach(side => { const { g, parts } = lungMesh(side); const m = lungMat(side==='R' ? 0xffffff : 0xfff4f2); lungs[side] = { g, meshes: Object.entries(parts).map(([k,pg]) => { const me = new THREE.Mesh(pg, m); me.position.copy(C[side]); me.userData.sub = k; return me; }) }; });
   add('pulmon-derecho', lungs.R.meshes); add('pulmon-izquierdo', lungs.L.meshes);
   const plM = () => new THREE.MeshPhysicalMaterial({ color:0xA9D2E6, transparent:true, opacity:0.08, roughness:0.12, clearcoat:1, depthWrite:false, side:THREE.DoubleSide });
   const pleura = ['R','L'].map(side => { const me = new THREE.Mesh(lungs[side].g, plM()); me.position.copy(C[side]); me.scale.setScalar(1.045); return me; });
@@ -1867,7 +2217,8 @@ function buildLungs(E){
   /* --- vasos pulmonares --- */
   const vA = [...vesselA]; vA.push(Kit.taper([[0,1.5,0.45],[-0.45,1.35,0.45],[-0.9,1.15,0.35]], 0.17, 0.15), Kit.taper([[0,1.5,0.45],[0.5,1.4,0.45],[1.0,1.2,0.35]], 0.17, 0.15), Kit.taper([[0,1.2,0.6],[0,1.5,0.45]], 0.2, 0.18));
   const vV = []; [[-1,0.55,-0.3,[-1.9,0.6,-0.5]],[-1,0.15,-0.3,[-1.85,-0.9,-0.6]],[1,0.5,-0.3,[1.85,0.4,-0.5]],[1,0.1,-0.3,[1.8,-0.95,-0.6]]].forEach(([s,y,z,to]) => { vV.push(Kit.taper([[s*0.45,y,z],[s*0.95,y-0.05,z-0.15],to], 0.13, 0.08)); });
-  add('vasos-pulmonares', [new THREE.Mesh(Kit.merge(vA), Kit.tissue({ tex:'vein', rep:[4,1], bump:0.006, coat:0.7, rough:0.35 })), new THREE.Mesh(Kit.merge(vV), Kit.tissue({ tex:'artery', rep:[4,1], bump:0.006, coat:0.7, rough:0.35 }))]);
+  const vaM = new THREE.Mesh(Kit.merge(vA), Kit.tissue({ tex:'vein', rep:[4,1], bump:0.006, coat:0.7, rough:0.35 })), vvM = new THREE.Mesh(Kit.merge(vV), Kit.tissue({ tex:'artery', rep:[4,1], bump:0.006, coat:0.7, rough:0.35 })); vaM.userData.sub='art'; vvM.userData.sub='ven';
+  add('vasos-pulmonares', [vaM, vvM]);
 
   /* --- ácino ampliado: alvéolos + red capilar (lupa) --- */
   const AC = V3(S.alveolos.pos);
@@ -1883,7 +2234,8 @@ function buildLungs(E){
   sacs.forEach((sc, si) => { const cc = AC.clone().add(sc); for (let i=0;i<9;i++){ const dir = new THREE.Vector3(R()-0.5,R()-0.5,R()-0.5).normalize(); const r = 0.12 + R()*0.04; const c = cc.clone().addScaledVector(dir, 0.16); alvCenters.push(c); const g = new THREE.SphereGeometry(r, 18, 14); g.translate(c.x,c.y,c.z); alvGeos.push(g);
       for (let k=0;k<3;k++){ const ax = new THREE.Vector3(R()-0.5,R()-0.5,R()-0.5).normalize(); const u = new THREE.Vector3().crossVectors(ax, new THREE.Vector3(0,1,0.3)).normalize(); const v = new THREE.Vector3().crossVectors(ax, u); const a0 = R()*6, pts = []; for (let j=0;j<=10;j++){ const a = a0 + j/10*3.6; pts.push(c.clone().addScaledVector(u, Math.cos(a)*(r+0.012)).addScaledVector(v, Math.sin(a)*(r+0.012))); }
         const cg = Kit.taper(pts, 0.011, 0.011, { seg:16, rad:5 }); const col = new Float32Array(cg.attributes.position.count*3); for (let q=0;q<cg.attributes.position.count;q++){ const x = cg.attributes.position.getX(q); const t = smooth01((x - (AC.x-0.6))/1.0); col[q*3] = lin(0.27+0.6*t); col[q*3+1] = lin(0.36-0.16*t); col[q*3+2] = lin(0.78-0.6*t); } cg.setAttribute('color', new THREE.BufferAttribute(col,3)); capGeos.push(cg); } } });
-  add('alveolos', [new THREE.Mesh(Kit.merge(alvGeos), alvM), new THREE.Mesh(Kit.merge(bro), Kit.tissue({ color:0xEBCFBF, rough:0.42, coat:0.5 }))], { explodeDir:new THREE.Vector3(-1,-0.4,0.6).normalize() });
+  const alvMesh = new THREE.Mesh(Kit.merge(alvGeos), alvM), broMesh = new THREE.Mesh(Kit.merge(bro), Kit.tissue({ color:0xEBCFBF, rough:0.42, coat:0.5 })); alvMesh.userData.sub='alveolos'; broMesh.userData.sub='bronquiolo';
+  add('alveolos', [alvMesh, broMesh], { explodeDir:new THREE.Vector3(-1,-0.4,0.6).normalize() });
   const capA = Kit.taper([AC.clone().add(new THREE.Vector3(-0.8,0.6,0.2)), AC.clone().add(new THREE.Vector3(-0.45,0.25,0.15))], 0.045, 0.035); const capVn = Kit.taper([AC.clone().add(new THREE.Vector3(0.35,-0.45,0.15)), AC.clone().add(new THREE.Vector3(0.75,-0.75,0.2))], 0.035, 0.045);
   [capA].forEach(g => { const c = new Float32Array(g.attributes.position.count*3); for (let i=0;i<c.length;i+=3){ c[i]=0.27; c[i+1]=0.36; c[i+2]=0.78; } g.setAttribute('color', new THREE.BufferAttribute(c,3)); });
   [capVn].forEach(g => { const c = new Float32Array(g.attributes.position.count*3); for (let i=0;i<c.length;i+=3){ c[i]=0.87; c[i+1]=0.2; c[i+2]=0.18; } g.setAttribute('color', new THREE.BufferAttribute(c,3)); });
@@ -1924,10 +2276,78 @@ BIO.builders = { corazon: buildHeart, cerebro: buildBrain, pulmones: buildLungs 
 </script>
 <script>
 /* =====================================================================
-   VISTAS: Inicio, Panel del estudiante, Explorar (hub)
+   VISTAS: Inicio, Panel del estudiante, Áreas de Ciencias Naturales
    ===================================================================== */
-const DOM = { anat:{n:'Anatomía',em:'🫀'}, cell:{n:'Célula',em:'🔬'}, gen:{n:'Genética',em:'🧬'}, eco:{n:'Ecología',em:'🌎'}, lab:{n:'Laboratorio',em:'🧪'}, mis:{n:'Misión',em:'🎯'} };
+const DOM = { anat:{n:'Cuerpo humano y salud',em:'🫀'}, cell:{n:'Mundo celular',em:'🔬'}, gen:{n:'Genética y evolución',em:'🧬'}, eco:{n:'Biodiversidad y ecosistemas',em:'🌎'}, lab:{n:'Laboratorio',em:'🧪'}, mis:{n:'Misión',em:'🎯'} };
 const SCALE = [['🧬','ADN','Molécula de ~2 nm de ancho que almacena la información genética.'],['🧩','Gen','Fragmento de ADN que codifica una proteína o un ARN funcional (cientos a miles de nucleótidos).'],['🎗️','Cromosoma','ADN muy compactado con proteínas; un ser humano tiene 46 (~µm).'],['⚡','Organelo','Estructura especializada dentro de la célula, como la mitocondria (~1 µm).'],['🔬','Célula','Unidad básica de la vida (10–100 µm).'],['🧱','Tejido','Grupo de células similares que cumplen una función (mm).'],['🫀','Órgano','Conjunto de tejidos con una función común, como el corazón (cm).'],['🫁','Sistema','Órganos que trabajan juntos: circulatorio, respiratorio…'],['🧍','Organismo','Un ser vivo completo (m).'],['👥','Población','Individuos de la misma especie en un lugar y tiempo.'],['🦜','Comunidad','Todas las poblaciones que conviven en un área.'],['🌳','Ecosistema','Comunidad + ambiente físico: Amazonía, manglar, páramo (km).'],['🌎','Biosfera','Todos los ecosistemas de la Tierra (miles de km).']];
+
+/* ---------- utilidades de áreas ---------- */
+const areaById = id => BIO.areas.find(a => a.id===id);
+const areaPct = a => Math.round(a.unidades.reduce((t,u)=>t+Store.unitProgress(u),0)/a.unidades.length);
+const areaRes = id => BIO.resources.filter(r => r.areas.includes(id));
+const areaTags = (ids, skip) => h('span',{class:'area-tags'}, ids.filter(i=>i!==skip).map(i => { const a = areaById(i); return a ? h('span',{class:'pill '+a.dom},a.n) : null; }));
+const retoDone = r => !!(r.act && Store.s.activities[r.act]?.done);
+function resTile(r, ctxArea){
+  const a = areaById(ctxArea && r.areas.includes(ctxArea) ? ctxArea : r.areas[0]); const dom = r.transversal ? (r.tipo==='Laboratorio'?'lab':a.dom) : a.dom;
+  const done = retoDone(r);
+  return h('a',{class:`tile res ${dom}`+(r.ok?'':' planned'), href:r.href, onclick: r.ok ? null : (e)=>{ if (r.href.includes('/explorar/celula')) { e.preventDefault(); toast(`${r.t}: en construcción. Por ahora explora la célula animal.`); } }},
+    h('span',{class:'ico'},r.em),
+    h('span',{class:'tipo'}, r.transversal ? r.tipo+' · transversal' : r.tipo),
+    h('h3',{},r.t), h('p',{},r.d),
+    r.reto ? h('div',{class:'res-reto'}, h('b',{}, done ? '✓ Reto resuelto' : (r.ok ? '🎯 Tu reto' : '🎯 Propósito')), h('span',{},r.reto)) : null,
+    r.areas.length>1 ? areaTags(r.areas, ctxArea) : null,
+    done ? h('span',{class:'pill ok soon'},'Completado') : r.ok ? h('span',{class:`pill ${dom} soon`},'Disponible') : h('span',{class:'pill soon'},'En construcción'));
+}
+function areaTile(a){
+  const rs = areaRes(a.id), ok = rs.filter(r=>r.ok).length, pr = areaPct(a);
+  return h('a',{class:`tile area-tile ${a.dom}`, href:'#/area/'+a.id},
+    h('div',{class:'row',style:'justify-content:space-between;align-items:flex-start'}, h('span',{class:'ico'},a.em), h('span',{class:'mono small muted'}, a.unidades.map(u=>'U'+u).join(' · '))),
+    h('h3',{},a.n), h('p',{},a.d),
+    h('span',{class:'small muted',style:'margin-top:auto'}, `${ok} recurso${ok===1?'':'s'} disponible${ok===1?'':'s'} · ${rs.length-ok} en construcción`),
+    h('div',{class:'row',style:'gap:10px;align-items:center'}, h('div',{class:`progress ${a.dom}`,style:'flex:1'}, h('i',{style:`width:${pr}%`})), h('span',{class:'mono small muted'},pr+'%')));
+}
+const TRANSV = [
+  ['mis','🎯','Misiones','Casos que cruzan varias áreas: sigue a un glóbulo rojo, salva una célula…','#/misiones',['cuerpo','celular','genetica','biodiversidad']],
+  ['lab','🧪','Laboratorios','Hipótesis, variables y datos. La fotosíntesis une célula y ecosistema.','#/laboratorio',['celular','biodiversidad']],
+  ['anat','∿','Simuladores','Cambia una variable y observa el sistema completo responder.','#/simuladores',['cuerpo','celular']],
+  ['cell','✓','Evaluación','Selección visual en 3D, ordenar, relacionar y argumentar.','#/evaluacion',['cuerpo']]
+];
+function transversalBand(){
+  return h('section',{class:'transv'},
+    h('div',{class:'transv-head'}, h('span',{class:'eyebrow'},'Transversal'), h('b',{},'Conecta las áreas'), h('span',{class:'small muted'},'Las misiones, los laboratorios y los simuladores no pertenecen a un solo tema: integran lo aprendido en varias áreas.')),
+    h('div',{class:'transv-grid'}, TRANSV.map(([dom,em,t,d,href,ids]) => h('a',{class:'transv-item',href}, h('span',{class:'ico',style:`background:var(--${dom}-soft)`},em), h('span',{}, h('b',{},t), h('span',{class:'d'},d), h('span',{class:'dots'}, ids.map(i=>h('i',{class:'navdot '+areaById(i).dom,title:areaById(i).n}))))))));
+}
+
+/* ---------- Progresión pedagógica: primero se explora, después se explica ---------- */
+const PROG = [
+  {v:'Observar', s:'un corazón que late', d:'Antes de leer una sola definición, miras el corazón latir y la sangre moverse. La curiosidad aparece primero.', where:'Atlas 3D · vista general', href:'#/explorar/corazon'},
+  {v:'Explorar', s:'rota, separa, amplía', d:'Rotas el modelo, separas capas y abres cada estructura "en detalle" para ver sus partes numeradas.', where:'Ver en detalle · capas', href:'#/explorar/corazon?s=ventriculo-izquierdo&detalle=1'},
+  {v:'Preguntar', s:'¿por qué esta pared es más gruesa?', d:'Al comparar, surge una pregunta real. Cada recurso te plantea un propósito y un reto concreto que resolver.', where:'Propósito y reto del recurso', href:'#/explorar/corazon'},
+  {v:'Manipular', s:'cambia variables', d:'Modificas la actividad física, la respiración o la altitud y observas cómo responde todo el sistema.', where:'Simulador cardiorrespiratorio', href:'#/simuladores/circulacion'},
+  {v:'Comprender', s:'tres niveles de profundidad', d:'Recién ahora llega la explicación: básica, intermedia y avanzada, con conexiones a otros sistemas.', where:'Ficha de la estructura · niveles 1-2-3', href:'#/explorar/corazon?s=ventriculo-izquierdo'},
+  {v:'Aplicar', s:'resuelve un caso', d:'Usas lo aprendido en una situación nueva: sigues a un glóbulo rojo por todo el cuerpo.', where:'Misión transversal', href:'#/mision/globulo-rojo'},
+  {v:'Comprobar', s:'retroalimentación inmediata', d:'Demuestras lo que entendiste. Si fallas, recibes una pista específica, no solo "incorrecto".', where:'Reto y evaluación', href:'#/evaluacion/corazon'}
+];
+function progression(){
+  let cur = 0, timer = null, user = false;
+  const fill = h('div',{class:'prog-fill','aria-hidden':'true'}), track = h('ol',{class:'prog-track'}), rail = h('div',{class:'prog-rail'}, fill, track);
+  const steps = PROG.map((p,i) => { const b = h('button',{class:'prog-step',onclick:()=>{ user=true; stop(); set(i); }}, h('span',{class:'dot'},String(i+1)), h('b',{},p.v), h('span',{class:'s'},p.s)); track.append(h('li',{},b)); return b; });
+  const dN = h('span',{class:'eyebrow'}), dT = h('h3',{}), dD = h('p',{}), dW = h('span',{class:'pill'}), dA = h('a',{class:'btn sm primary'},'Verlo en el corazón →');
+  const prev = h('button',{class:'btn sm ghost','aria-label':'Paso anterior',onclick:()=>{ user=true; stop(); set((cur+6)%7); }},'←'), next = h('button',{class:'btn sm ghost','aria-label':'Paso siguiente',onclick:()=>{ user=true; stop(); set((cur+1)%7); }},'→');
+  const detail = h('div',{class:'prog-detail',role:'region','aria-label':'Detalle del paso','aria-live':'off'}, h('div',{class:'stack',style:'gap:6px;flex:1;min-width:220px'}, dN, dT, dD, h('div',{class:'row'}, dW, dA)), h('div',{class:'row',style:'gap:6px'}, prev, next));
+  function set(i){ cur = i; const p = PROG[i];
+    steps.forEach((b,j) => { b.classList.toggle('on', j===i); b.classList.toggle('past', j<i); b.setAttribute('aria-current', j===i ? 'step' : 'false'); });
+    fill.style.setProperty('--f', (i/(PROG.length-1)));
+    dN.textContent = `Paso ${i+1} de 7 · ${i<4 ? 'se explora' : 'se explica y se aplica'}`; dT.textContent = p.v; dD.textContent = p.d; dW.textContent = p.where; dA.href = p.href; }
+  function stop(){ if (timer){ clearInterval(timer); timer = null; } if (user) detail.setAttribute('aria-live','polite'); }
+  const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const el = h('section',{class:'prog'},
+    h('div',{class:'prog-phases','aria-hidden':'true'}, h('span',{class:'ph1'},'Se explora'), h('span',{class:'ph2'},'Se explica y se aplica')),
+    rail, detail);
+  el.addEventListener('mouseenter', ()=>{ if (!user) stop(); });
+  set(0); if (!reduce) timer = setInterval(()=>{ if (!document.hidden) set((cur+1)%7); }, 4200);
+  return { el, stop };
+}
 
 route('/', (view, q) => {
   const p = Store.overall();
@@ -1935,22 +2355,23 @@ route('/', (view, q) => {
   const hero = h('section',{class:'hero'},
     h('div',{class:'grid-bg'}),
     h('div',{class:'hero-text'},
-      h('span',{class:'eyebrow'},'ANAI Online · Bachillerato'),
+      h('span',{class:'eyebrow'},'ANAI Online · Ciencias Naturales · Bachillerato'),
       h('h1',{},'ANAI BioLab'),
       h('p',{class:'sub'},'Laboratorio Virtual de Biología'),
       h('p',{class:'msg'},'Explora la vida. Desde una molécula hasta un ecosistema.'),
       h('div',{class:'row',style:'margin-top:8px'},
-        h('a',{class:'btn primary lg',href:'#/explorar/corazon'},'Comenzar a explorar'),
+        h('a',{class:'btn primary lg',href:'#/area/cuerpo'},'Comenzar a explorar'),
         h('a',{class:'btn lg',href:'#/mision/globulo-rojo',style:'background:transparent;color:var(--hero-ink);border-color:rgba(159,179,204,.4)'},'Misión: el glóbulo rojo')),
       h('p',{class:'small',style:'color:var(--hero-ink-2)'},'No estudiar Biología solamente. Explorar la vida.')),
     h('div',{class:'hero-3d',id:'hero-3d'}, h('span',{class:'cap'},'corazón · modelo simplificado · arrastra para rotar')));
   view.append(hero);
-  const access = h('div',{class:'access'});
-  [['anat','🫀','Cuerpo humano','Corazón · cerebro · pulmones 3D','#/explorar'],['cell','🔬','Mundo celular','Célula animal 3D','#/explorar/celula'],['gen','🧬','Genética','Constructor de cruces','#/explorar/genetica'],['eco','🌎','Ecosistemas','Redes tróficas','#/explorar/ecosistemas'],['lab','🧪','Laboratorios','Fotosíntesis','#/laboratorio'],['mis','🎯','Misiones','El viaje de un glóbulo rojo','#/misiones']].forEach(([d,em,t,s,href]) => access.append(h('a',{class:`tile ${d}`,href}, h('span',{class:'ico'},em), h('h3',{},t), h('p',{},s))));
-  view.append(access);
-  view.append(h('div',{class:'page-head',style:'margin-bottom:6px'}, h('div',{}, h('span',{class:'eyebrow'},'Cómo se aprende aquí'), h('h2',{},'Primero se explora; después se explica'))));
-  const loop = h('div',{class:'loop'}); [['OBSERVAR','un corazón que late'],['EXPLORAR','rota, separa, transparenta'],['PREGUNTAR','¿por qué esta pared es más gruesa?'],['MANIPULAR','cambia variables'],['COMPRENDER','tres niveles de profundidad'],['APLICAR','resuelve un caso'],['COMPROBAR','retroalimentación inmediata']].forEach(([b,s]) => loop.append(h('div',{}, h('b',{},b), h('span',{},s))));
-  view.append(loop);
+  // Áreas
+  view.append(h('div',{class:'page-head',style:'margin-bottom:12px'}, h('div',{}, h('span',{class:'eyebrow'},'Áreas de Ciencias Naturales'), h('h2',{},'Cuatro grandes temas, todo el currículo')), h('a',{class:'btn sm',href:'#/explorar'},'Ver todos los recursos')));
+  view.append(h('div',{class:'areas-grid'}, BIO.areas.map(areaTile)));
+  view.append(transversalBand());
+  // Progresión
+  view.append(h('div',{class:'page-head',style:'margin-bottom:6px'}, h('div',{}, h('span',{class:'eyebrow'},'Cómo se aprende aquí'), h('h2',{},'Primero se explora; después se explica'), h('p',{},'Cada recurso sigue la misma progresión de siete pasos. Toca un paso para ver cómo se vive con el corazón.'))));
+  const prog = progression(); view.append(prog.el);
   // Escala biológica
   const sc = h('section',{class:'scale',id:'escala'});
   let si = q.escala ? 4 : 0;
@@ -1961,77 +2382,98 @@ route('/', (view, q) => {
   const range = h('input',{type:'range',min:0,max:12,value:si,'aria-label':'Nivel de organización'}); range.addEventListener('input', ()=>setS(+range.value));
   sc.append(viz, h('div',{class:'stack'}, h('span',{class:'eyebrow'},'Del ADN a la biosfera'), title, desc, range, stepsEl, meta));
   view.append(sc); setS(si);
-  // Unidades
-  view.append(h('div',{class:'page-head',style:'margin-bottom:10px'}, h('div',{}, h('span',{class:'eyebrow'},'Currículo · Biología BGU'), h('h2',{},'Diez unidades, un solo laboratorio')), h('span',{class:'pill'},`Progreso general ${p} %`)));
-  const units = h('div',{class:'units'}); BIO.units.forEach(u => { const pr = Store.unitProgress(u.n); units.append(h('div',{class:'unit'}, h('span',{class:'n'},'U'+u.n), h('span',{class:'t'},u.t), h('div',{class:'progress'},h('i',{style:`width:${pr}%`})), h('span',{class:'pct'},pr+'%'))); });
-  view.append(units);
+  // Currículo por área
+  view.append(h('div',{class:'page-head',style:'margin-bottom:10px'}, h('div',{}, h('span',{class:'eyebrow'},'Currículo · Biología BGU'), h('h2',{},'Diez unidades organizadas por área')), h('span',{class:'pill'},`Progreso general ${p} %`)));
+  view.append(curriculum());
   view.append(h('p',{class:'small muted',style:'margin-top:26px;max-width:70ch'},'Prototipo MVP. Los modelos 3D son representaciones simplificadas con fines educativos, creadas para este proyecto y sustituibles por modelos anatómicos definitivos. Los datos de estudiantes son ficticios.'));
   // hero 3D
   let E=null;
   if (webglOK){ try { E = new Engine3D($('#hero-3d'), { interactive:true, autoRotate:true, radius:11.5, phi:1.38, theta:0.45, target:[0.2,0.5,0], dark:true, exposure:1.1, aria:'Corazón 3D decorativo en rotación' }); const m = buildHeart(E); m.setBeat(true); E.setLabels(false); } catch(e){ console.warn(e); } }
   else $('#hero-3d').append(h('div',{class:'ph',style:'margin:24px'},'Tu navegador no admite WebGL: el modelo 3D se sustituye por esquemas 2D en toda la plataforma.'));
-  return { unmount(){ E && E.dispose(); } };
+  return { unmount(){ prog.stop(); E && E.dispose(); } };
 });
+function curriculum(){
+  const unitRow = u => { const pr = Store.unitProgress(u.n); return h('div',{class:'unit'}, h('span',{class:'n'},'U'+u.n), h('span',{class:'t'},u.t), h('div',{class:'progress'},h('i',{style:`width:${pr}%`})), h('span',{class:'pct'},pr+'%')); };
+  const box = h('div',{class:'curr'});
+  BIO.areas.forEach(a => box.append(h('div',{class:`curr-area ${a.dom}`},
+    h('a',{class:'curr-head',href:'#/area/'+a.id}, h('span',{class:'navdot '+a.dom}), h('b',{},a.n), h('span',{class:'mono small muted',style:'margin-left:auto'},areaPct(a)+'%')),
+    BIO.units.filter(u=>a.unidades.includes(u.n)).map(unitRow))));
+  box.append(h('div',{class:'curr-area transversal'},
+    h('a',{class:'curr-head',href:'#/misiones'}, h('span',{class:'navdot mis'}), h('b',{},'Transversal · problemas contemporáneos'), h('span',{class:'small muted',style:'margin-left:auto'},'misiones · laboratorios · simuladores')),
+    BIO.units.filter(u=>BIO.transversalUnits.includes(u.n)).map(unitRow)));
+  return box;
+}
 
 /* ---------- PANEL DEL ESTUDIANTE ---------- */
 route('/panel', (view) => {
   const s = Store.s, p = Store.overall(); const hr = new Date().getHours(); const saludo = hr<12?'Buenos días':hr<19?'Buenas tardes':'Buenas noches';
   const pendientes = BIO.missions.filter(m=>m.disponible && !s.activities['mision-globulo']?.done);
-  const sug = [['explorar-corazon','🫀','Explorar el corazón','Atlas 3D · 10 min','#/explorar/corazon','anat'],['mision-globulo','🩸','Misión: Sigue al glóbulo rojo','Misión · 15–20 min','#/mision/globulo-rojo','mis'],['lab-fotosintesis','🧪','Laboratorio: Fotosíntesis','Laboratorio · 20 min','#/laboratorio/fotosintesis','lab'],['reto-genetica','🧬','Reto de genética','Próximamente','#/explorar/genetica','gen']];
+  const sug = [['reto-corazon','🎯','Reto: dos circulaciones en un corazón','Cuerpo humano y salud · Atlas 3D · 10 min','#/explorar/corazon','anat'],['mision-globulo','🩸','Misión: Sigue al glóbulo rojo','Misión transversal · 15–20 min','#/mision/globulo-rojo','mis'],['reto-celula','🔬','Reto: la fábrica de proteínas','Mundo celular · Célula 3D · 10 min','#/explorar/celula','cell'],['lab-fotosintesis','🧪','Laboratorio: Fotosíntesis','Laboratorio transversal · 20 min','#/laboratorio/fotosintesis','lab'],['reto-genetica','🧬','Reto de genética','Genética y evolución · próximamente','#/area/genetica','gen']];
   const timeMin = s.timeMin + Math.round(s.events.length*0.4) + 186;
   const descubrimientos = Object.values(s.seen).reduce((a,arr)=>a+arr.length,0);
   view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow'},'Mi panel'), h('h1',{},`${saludo}, ${s.user.nombre.split(' ')[0]}`), h('p',{},'Tu laboratorio te espera. Continúa donde lo dejaste o elige una actividad recomendada.'))));
   const left = h('div',{class:'stack'}), right = h('div',{class:'stack'});
   left.append(h('div',{class:'card',style:'display:flex;gap:22px;align-items:center;flex-wrap:wrap'},
     h('div',{class:'ring',style:`--p:${p}`}, h('i',{},p+'%')),
-    h('div',{class:'stack',style:'flex:1;min-width:200px;gap:6px'}, h('span',{class:'eyebrow'},'Biología · progreso general'), h('h3',{},'Unidad actual: Anatomía y fisiología humana'), h('p',{class:'small muted'},`Última actividad: ${s.lastActivity.t} · ${timeAgo(s.lastActivity.at)}`), h('a',{class:'btn sm',href:s.lastActivity.href,style:'align-self:flex-start'},'Continuar')),
+    h('div',{class:'stack',style:'flex:1;min-width:200px;gap:6px'}, h('span',{class:'eyebrow'},'Biología · progreso general'), h('h3',{},'Área actual: Cuerpo humano y salud'), h('p',{class:'small muted'},`Unidad 6 · Anatomía y fisiología humana · última actividad: ${s.lastActivity.t} · ${timeAgo(s.lastActivity.at)}`), h('a',{class:'btn sm',href:s.lastActivity.href,style:'align-self:flex-start'},'Continuar')),
     h('div',{class:'grid',style:'grid-template-columns:repeat(3,auto);gap:18px'}, h('div',{class:'stat'},h('span',{class:'v'},s.xp),h('span',{class:'l'},'XP · nivel '+Store.level())), h('div',{class:'stat'},h('span',{class:'v'},fmtMin(timeMin)),h('span',{class:'l'},'tiempo de actividad')), h('div',{class:'stat'},h('span',{class:'v'},descubrimientos),h('span',{class:'l'},'descubrimientos')))));
   left.append(h('h3',{style:'margin-top:8px'},'Actividades sugeridas'));
   sug.forEach(([id,em,t,d,href,dom]) => { const done = s.activities[id]?.done; left.append(h('a',{class:'act',href}, h('span',{class:'ico',style:`background:var(--${dom}-soft)`},em), h('span',{}, h('div',{class:'t'},t), h('div',{class:'d'},d)), done ? h('span',{class:'pill ok',style:'margin-left:auto'},'Completada') : h('span',{class:'go'},'→'))); });
   left.append(h('h3',{style:'margin-top:8px'},'Misiones pendientes'));
-  if (pendientes.length) pendientes.forEach(m => left.append(h('a',{class:'act',href:`#/mision/${m.id}`}, h('span',{class:'ico',style:'background:var(--mis-soft)'},m.em), h('span',{}, h('div',{class:'t'},m.t), h('div',{class:'d'},`${m.dur} · +${m.xp} XP`)), h('span',{class:'go'},'→'))));
+  if (pendientes.length) pendientes.forEach(m => left.append(h('a',{class:'act',href:`#/mision/${m.id}`}, h('span',{class:'ico',style:'background:var(--mis-soft)'},m.em), h('span',{}, h('div',{class:'t'},m.t), h('div',{class:'d'},`${m.dur} · +${m.xp} XP · conecta: ${m.areas.map(i=>areaById(i).n).join(' + ')}`)), h('span',{class:'go'},'→'))));
   else left.append(h('div',{class:'notice ok'},'No tienes misiones pendientes. Nuevas misiones se publicarán en las próximas unidades.'));
-  right.append(h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Laboratorio recomendado'), h('h3',{},'Fotosíntesis: ¿qué limita la producción de oxígeno?'), h('p',{class:'small muted'},'Formula una hipótesis, manipula luz, CO₂, temperatura y agua, y registra datos reales del modelo.'), h('a',{class:'btn primary sm',href:'#/laboratorio/fotosintesis',style:'align-self:flex-start'},'Abrir laboratorio')));
-  const ub = h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Progreso por unidad'));
-  BIO.units.filter(u=>[1,2,3,4,6,7].includes(u.n)).forEach(u => { const pr = Store.unitProgress(u.n); ub.append(h('div',{}, h('div',{class:'row',style:'justify-content:space-between;font-size:.84rem'}, h('span',{},`U${u.n} · ${u.t}`), h('span',{class:'mono muted small'},pr+'%')), h('div',{class:'progress'},h('i',{style:`width:${pr}%`})))); });
-  right.append(ub);
+  const ab = h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Progreso por área'));
+  BIO.areas.forEach(a => { const pr = areaPct(a); ab.append(h('a',{href:'#/area/'+a.id,style:'text-decoration:none;color:inherit'}, h('div',{class:'row',style:'justify-content:space-between;font-size:.86rem'}, h('span',{class:'row',style:'gap:8px'}, h('span',{class:'navdot '+a.dom}), h('b',{},a.n)), h('span',{class:'mono muted small'},pr+'%')), h('div',{class:`progress ${a.dom}`,style:'margin-top:5px'},h('i',{style:`width:${pr}%`})), h('span',{class:'small muted'}, a.unidades.map(u=>`U${u} ${Store.unitProgress(u)}%`).join(' · ')))); });
+  right.append(ab);
+  right.append(h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Laboratorio recomendado · transversal'), h('h3',{},'Fotosíntesis: ¿qué limita la producción de oxígeno?'), h('p',{class:'small muted'},'Formula una hipótesis, manipula luz, CO₂, temperatura y agua, y registra datos reales del modelo.'), areaTags(['celular','biodiversidad']), h('a',{class:'btn primary sm',href:'#/laboratorio/fotosintesis',style:'align-self:flex-start'},'Abrir laboratorio')));
   const bd = h('div',{class:'card'}, h('span',{class:'eyebrow'},'Insignias'), h('div',{class:'grid',style:'grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px'}, BIO.badges.slice(0,6).map(b => h('div',{class:'badge-tile'+(s.badges.includes(b.id)?'':' locked'),title:b.d}, h('span',{class:'em'},b.em), h('span',{class:'n'},b.n)))));
   right.append(bd);
   view.append(h('div',{class:'dash'}, left, right));
 });
 
-/* ---------- EXPLORAR (hub) ---------- */
+/* ---------- EXPLORAR: vista general de las áreas ---------- */
 route('/explorar', (view) => {
-  view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow'},'Explorar'), h('h1',{},'Atlas biológico interactivo'), h('p',{},'Modelos que se rotan, se separan, se transparentan y responden. Los entornos marcados como "en construcción" muestran el alcance previsto de la plataforma.'))));
-  const mk = (dom, em, t, d, href, ok, extra) => h('a',{class:`tile ${dom}`,href}, h('span',{class:'ico'},em), h('h3',{},t), h('p',{},d), ok ? h('span',{class:`pill ${dom} soon`},'Disponible') : h('span',{class:'pill soon'},'En construcción'), extra||null);
-  view.append(h('h3',{style:'margin-bottom:10px'},'Cuerpo humano'));
-  const body = h('div',{class:'grid g4'});
-  body.append(mk('anat','🫀','Corazón','14 estructuras · latido y flujo sanguíneo · exploración guiada · evaluación.','#/explorar/corazon',true));
-  body.append(mk('anat','🧠','Cerebro','12 estructuras · impulso nervioso · ¿qué se activa cuando…? · exploración guiada.','#/explorar/cerebro',true));
-  body.append(mk('anat','🫁','Pulmones y vía aérea','10 estructuras · respiración con diafragma · intercambio gaseoso · exploración guiada.','#/explorar/pulmones',true));
-  BIO.plannedOrgans.forEach(o => body.append(mk('anat',o.em,o.t,o.d,'#/explorar/organo/'+o.id,false)));
-  view.append(body);
-  view.append(h('h3',{style:'margin:24px 0 10px'},'Células'));
-  const cells = h('div',{class:'grid g4'});
-  cells.append(mk('cell','🔬','Célula animal','11 componentes seleccionables con función, estructura, analogía y "ver en acción".','#/explorar/celula',true));
-  cells.append(mk('cell','🌿','Célula vegetal','Cloroplastos, pared celular y vacuola central.','#/explorar/celula',false));
-  cells.append(mk('cell','🦠','Célula procariota','Sin núcleo: nucleoide, plásmidos, flagelo.','#/explorar/celula',false));
-  cells.append(mk('cell','🔁','Procesos celulares','Mitosis, meiosis, replicación, transcripción, traducción, ósmosis.','#/explorar/celula',false));
-  view.append(cells);
-  view.append(h('h3',{style:'margin:24px 0 10px'},'Genética, ecosistemas y microbiología'));
-  const more = h('div',{class:'grid g4'});
-  more.append(mk('gen','🧬','ADN 3D y Edita el ADN','Doble hélice manipulable; nucleótidos; mutaciones.','#/explorar/genetica',false));
-  more.append(mk('gen','🟪','Constructor de cruces','Genotipos parentales → gametos → Punnett → fenotipos. Modo aprender / modo reto.','#/explorar/genetica',false));
-  more.append(mk('eco','🌎','Ecosistemas del Ecuador','Amazonía, manglar, páramo, Galápagos. Redes tróficas interactivas.','#/explorar/ecosistemas',false));
-  more.append(mk('cell','🦠','Microscopio virtual','4x · 10x · 40x · 100x. Enfoque, desplazamiento, capturas y etiquetas.','#/microscopio',false));
-  view.append(more);
+  view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow'},'Áreas de Ciencias Naturales'), h('h1',{},'Todo el laboratorio, por área'), h('p',{},'Cada área reúne sus modelos 3D, animaciones y actividades. Cada recurso tiene un propósito y un reto: sabrás qué observar y qué resolver. Los recursos "en construcción" muestran el alcance previsto.'))));
+  view.append(h('div',{class:'areas-grid',style:'margin-bottom:26px'}, BIO.areas.map(areaTile)));
+  BIO.areas.forEach(a => {
+    const rs = areaRes(a.id).filter(r => r.areas[0]===a.id && !r.transversal && r.tipo!=='Evaluación').sort((x,y)=>(y.ok-x.ok));
+    view.append(h('div',{class:'area-sec-head'}, h('span',{class:'navdot '+a.dom}), h('h3',{},a.n), h('span',{class:'mono small muted'},a.unidades.map(u=>'U'+u).join(' · ')), h('a',{class:'btn sm ghost',href:'#/area/'+a.id,style:'margin-left:auto'},'Abrir el área →')));
+    const g = h('div',{class:'grid g4',style:'margin-bottom:24px'}, rs.map(r => resTile(r, a.id)));
+    if (a.id==='cuerpo') BIO.plannedOrgans.slice(0,1).forEach(o => g.append(plannedOrganTile(o)));
+    view.append(g);
+  });
+  view.append(transversalBand());
 });
-route('/explorar/genetica', v => placeholderView(v,'gen','🧬','Laboratorio de genética','Constructor de cruces con generación de gametos, cuadro de Punnett, probabilidades y fenotipos; ADN 3D con separación de cadenas; herramienta Edita el ADN. Módulo planificado para la fase 2.'));
-route('/explorar/ecosistemas', v => placeholderView(v,'eco','🌎','Explorador de ecosistemas','Bosque, océano, manglar, agua dulce, desierto, Amazonía y Galápagos con redes alimentarias interactivas y simulación de poblaciones. Módulo planificado para la fase 2.'));
-route('/microscopio', v => placeholderView(v,'cell','🔬','Microscopio virtual','Selección de muestras (epidermis de cebolla, sangre, bacterias, tejidos), aumentos 4x–100x, enfoque, desplazamiento, capturas y preguntas dentro de la observación. Módulo planificado para la fase 2.'));
-function placeholderView(view, dom, em, t, d){
-  view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:`eyebrow ${dom}`},'En construcción'), h('h1',{},`${em} ${t}`), h('p',{},d))));
-  view.append(h('div',{class:'ph'}, h('b',{},'Placeholder profesional. '), 'La arquitectura de la plataforma (registro de contenidos, motor 3D, motor pedagógico, analítica) ya admite este módulo. Mientras tanto, explora los entornos disponibles:'), h('div',{class:'row',style:'margin-top:14px'}, h('a',{class:'btn primary',href:'#/explorar/corazon'},'Corazón 3D'), h('a',{class:'btn',href:'#/explorar/celula'},'Célula animal 3D'), h('a',{class:'btn',href:'#/mision/globulo-rojo'},'Misión del glóbulo rojo'), h('a',{class:'btn',href:'#/laboratorio/fotosintesis'},'Laboratorio de fotosíntesis')));
+function plannedOrganTile(o){
+  return h('a',{class:'tile res anat planned',href:'#/explorar/organo/'+o.id}, h('span',{class:'ico'},o.em), h('span',{class:'tipo'},'Modelo 3D'), h('h3',{},o.t), h('p',{},o.d), h('div',{class:'res-reto'}, h('b',{},'🎯 Propósito'), h('span',{},'Descubre cómo su estructura le permite cumplir su función y cómo se conecta con los demás sistemas.')), h('span',{class:'pill soon'},'En construcción'));
+}
+
+/* ---------- ÁREA ---------- */
+route('/area/:id', (view, p) => {
+  const a = areaById(p.id); if (!a) { navigate('#/explorar'); return; }
+  const pr = areaPct(a), rs = areaRes(a.id);
+  view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow '+a.dom},`Área de Ciencias Naturales · ${a.unidades.length>1 ? 'Unidades '+a.unidades.slice(0,-1).join(', ')+' y '+a.unidades.slice(-1) : 'Unidad '+a.unidades[0]}`), h('h1',{},`${a.em} ${a.n}`), h('p',{},a.d)), h('div',{class:'ring',style:`--p:${pr}`}, h('i',{},pr+'%'))));
+  view.append(h('div',{class:`guide-q ${a.dom}`}, h('span',{class:'eyebrow'},'Pregunta guía del área'), h('b',{},a.pregunta), h('span',{class:'small muted'},'Cada recurso de esta área tiene un propósito y un reto que te acercan a responderla. Avanza en orden: explora, experimenta, aplica y comprueba.')));
+  view.append(h('div',{class:'unit-chips'}, BIO.units.filter(u=>a.unidades.includes(u.n)).map(u => { const up = Store.unitProgress(u.n); return h('div',{class:'unit'}, h('span',{class:'n'},'U'+u.n), h('span',{class:'t'},u.t), h('div',{class:`progress ${a.dom}`},h('i',{style:`width:${up}%`})), h('span',{class:'pct'},up+'%')); })));
+  const sec = (n, t, sub, items, empty) => { view.append(h('div',{class:'area-sec-head'}, h('span',{class:'secn '+a.dom},n), h('div',{}, h('h3',{},t), h('span',{class:'small muted'},sub)))); view.append(items.length ? h('div',{class:'grid g3',style:'margin-bottom:26px'}, items) : h('div',{class:'ph',style:'margin-bottom:26px'},empty)); };
+  const sortOk = arr => arr.sort((x,y)=>(y.ok-x.ok));
+  const explora = sortOk(rs.filter(r => ['Modelo 3D','Animación','Microscopio'].includes(r.tipo))).map(r => resTile(r, a.id));
+  if (a.id==='cuerpo') BIO.plannedOrgans.forEach(o => explora.push(plannedOrganTile(o)));
+  sec('1','Explora','Modelos 3D y animaciones: observa, rota, amplía cada estructura y cumple su reto.', explora, 'Los modelos de esta área están en construcción.');
+  sec('2','Experimenta','Laboratorios y simuladores: manipula variables y comprueba tus hipótesis.', sortOk(rs.filter(r => ['Laboratorio','Simulador'].includes(r.tipo))).map(r => resTile(r, a.id)), 'Los laboratorios y simuladores de esta área se habilitarán en la fase 2.');
+  const mis = BIO.missions.filter(m => m.areas.includes(a.id));
+  sec('3','Aplica en una misión','Las misiones son transversales: conectan esta área con otras en un caso real.', mis.map(m => h('a',{class:'tile res mis'+(m.disponible?'':' planned'),href: m.disponible ? `#/mision/${m.id}` : '#/misiones'}, h('span',{class:'ico'},m.em), h('span',{class:'tipo'},'Misión · transversal'), h('h3',{},m.t), h('p',{},m.d), areaTags(m.areas, a.id), m.disponible ? h('span',{class:'pill mis soon'}, Store.s.activities['mision-globulo']?.done ? 'Completada' : 'Disponible') : h('span',{class:'pill soon'},'En construcción'))), 'Pronto habrá misiones que conecten esta área con las demás.');
+  sec('4','Comprueba','Evaluaciones interactivas con retroalimentación inmediata.', rs.filter(r => r.tipo==='Evaluación').map(r => resTile(r, a.id)), 'La evaluación de esta área se habilitará junto con sus primeros recursos. Mientras tanto, cada reto resuelto cuenta para tu progreso.');
+  view.append(h('div',{class:'row',style:'margin-top:6px;gap:8px;flex-wrap:wrap'}, h('span',{class:'small muted'},'Otras áreas:'), BIO.areas.filter(x=>x.id!==a.id).map(x => h('a',{class:'btn sm',href:'#/area/'+x.id}, h('span',{class:'navdot '+x.dom}), x.n))));
+});
+
+route('/explorar/genetica', v => placeholderView(v,'gen','🧬','Laboratorio de genética','Constructor de cruces con generación de gametos, cuadro de Punnett, probabilidades y fenotipos; ADN 3D con separación de cadenas; herramienta Edita el ADN. Módulo planificado para la fase 2.','genetica'));
+route('/explorar/ecosistemas', v => placeholderView(v,'eco','🌎','Explorador de ecosistemas','Bosque, océano, manglar, agua dulce, desierto, Amazonía y Galápagos con redes alimentarias interactivas y simulación de poblaciones. Módulo planificado para la fase 2.','biodiversidad'));
+route('/microscopio', v => placeholderView(v,'cell','🔬','Microscopio virtual','Selección de muestras (epidermis de cebolla, sangre, bacterias, tejidos), aumentos 4x–100x, enfoque, desplazamiento, capturas y preguntas dentro de la observación. Módulo planificado para la fase 2.', null));
+function placeholderView(view, dom, em, t, d, areaId){
+  const a = areaId ? areaById(areaId) : null;
+  view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:`eyebrow ${dom}`}, a ? `${a.n} · en construcción` : 'Recurso transversal · en construcción'), h('h1',{},`${em} ${t}`), h('p',{},d))));
+  view.append(h('div',{class:'ph'}, h('b',{},'Placeholder profesional. '), 'La arquitectura de la plataforma (registro de contenidos, motor 3D, motor pedagógico, analítica) ya admite este módulo. Mientras tanto, explora los entornos disponibles:'), h('div',{class:'row',style:'margin-top:14px'}, a ? h('a',{class:'btn primary',href:'#/area/'+a.id},`Volver a ${a.n}`) : null, h('a',{class:'btn'+(a?'':' primary'),href:'#/explorar/corazon'},'Corazón 3D'), h('a',{class:'btn',href:'#/explorar/celula'},'Célula animal 3D'), h('a',{class:'btn',href:'#/mision/globulo-rojo'},'Misión del glóbulo rojo'), h('a',{class:'btn',href:'#/laboratorio/fotosintesis'},'Laboratorio de fotosíntesis')));
 }
 </script>
 <script>
@@ -2051,15 +2493,73 @@ function stageChrome(stage, E, opts){
   return { phase };
 }
 
+
+/* ---------- Reto del recurso: propósito · qué observar · reto que se desbloquea ---------- */
+function ordenBlock(o, onDone){
+  const wrap = h('div',{class:'stack'}, h('p',{style:'font-weight:600'},o.q)); let pos = 0, att = 0;
+  const chips = h('div',{class:'stack',style:'gap:6px'}), seq = h('ol',{class:'seq'}), fb = h('div',{class:'notice',style:'display:none'});
+  o.seq.map((t,i)=>({t,i})).sort(()=>Math.random()-0.5).forEach(({t,i}) => chips.append(h('button',{class:'chip',style:'text-align:left;white-space:normal;justify-content:flex-start',onclick:function(){ if (this.classList.contains('ok')) return; att++;
+    if (i===pos){ this.classList.add('ok'); this.disabled = true; seq.append(h('li',{},t)); pos++; if (pos===o.seq.length){ fb.className='notice ok'; fb.innerHTML = `<b>Correcto.</b> ${esc(o.fb)}`; fb.style.display='flex'; onDone && onDone(att===o.seq.length?1:2); } }
+    else { this.classList.add('bad'); setTimeout(()=>this.classList.remove('bad'),700); fb.className='notice warn'; fb.innerHTML = pos===0 ? '<b>Aún no.</b> Todo empieza donde está guardada la información genética.' : `<b>Aún no.</b> Después de "${esc(o.seq[pos-1].split(':')[0])}" viene otra etapa. Piensa en qué organelo recibe lo que acaba de salir.`; fb.style.display='flex'; }
+    Store.log('respuesta',{pregunta:'reto-orden',opcion:t,correcto:i===pos-1}); }}, t)));
+  wrap.append(chips, seq, fb); return wrap;
+}
+function retoBanner(R, seenKey, actId, onObserve){
+  const el = h('section',{class:'reto','aria-label':'Tu reto en este recurso'}); const ui = Store.s.ui = Store.s.ui || {}; ui.reto = ui.reto || {};
+  let open = ui.reto[actId] ?? (!Store.s.activities[actId]?.done && window.innerWidth > 860), lastKey = '';  /* en móvil empieza plegado para que el modelo quede a la vista */
+  const render = (force) => { const seen = Store.s.seen[seenKey]||[]; const done = !!Store.s.activities[actId]?.done; const got = R.observa.filter(o=>seen.includes(o.id)).length; const key = `${open}|${got}|${done}`; if (!force && key===lastKey) return; lastKey = key; el.innerHTML='';
+    const obsOk = got === R.observa.length;
+    el.classList.toggle('done', done);
+    el.classList.toggle('closed', !open);
+    el.append(h('button',{class:'reto-head','aria-expanded':String(open),onclick:()=>{ open=!open; ui.reto[actId]=open; Store.save(); render(true); }}, h('span',{class:'reto-ico','aria-hidden':'true'},'🎯'), h('span',{class:'reto-t'}, h('b',{},'Tu reto en este recurso'), h('span',{class:'muted'}, done ? ' · resuelto ✓' : ` · ${got}/${R.observa.length} observaciones`), open ? null : h('span',{class:'reto-p'}, R.proposito)), h('span',{class:'reto-caret'}, open ? 'Ocultar ▴' : 'Ver reto ▾')));
+    if (!open) return;
+    const q = R.pregunta ? R.pregunta.q : R.orden.q;
+    const rc = h('div',{class:'reto-col'}, h('span',{class:'eyebrow'},'3 · Resuelve'));
+    if (done) rc.append(h('p',{class:'small'},q), h('div',{class:'notice ok'},'Reto resuelto. Puedes repasarlo con la evaluación o la misión relacionada.'));
+    else if (!obsOk) rc.append(h('p',{class:'small',style:'font-weight:600'},q), h('div',{class:'notice'},'🔒 Se desbloquea cuando completes las observaciones.'));
+    else rc.append(R.pregunta ? quizBlock(R.pregunta, att => { Store.completeActivity(actId,{score: att===1?'1.er intento':`${att} intentos`, attempts:att}); setTimeout(()=>render(true), 2200); }) : ordenBlock(R.orden, att => { Store.completeActivity(actId,{score: att===1?'sin errores':'con errores', attempts:att}); setTimeout(()=>render(true), 2600); }));
+    el.append(h('div',{class:'reto-body'},
+      h('div',{class:'reto-col'}, h('span',{class:'eyebrow'},'1 · Propósito'), h('p',{},R.proposito)),
+      h('div',{class:'reto-col'}, h('span',{class:'eyebrow'},'2 · Observa'), h('ul',{class:'checks'}, R.observa.map(o => { const ok = seen.includes(o.id); return h('li',{class: ok?'ok':''}, h('span',{class:'ck','aria-hidden':'true'}, ok?'✓':''), h('button',{class:'linklike',onclick:()=>onObserve && onObserve(o.id)}, o.txt)); })), R.pista ? h('p',{class:'small muted'},R.pista) : null),
+      rc)); };
+  render(true); return { el, render };
+}
+function purposeBanner(o){
+  return h('section',{class:'reto static'+(o.done?' done':'')}, h('div',{class:'reto-body'},
+    h('div',{class:'reto-col'}, h('span',{class:'eyebrow'},'Propósito'), h('p',{},o.proposito)),
+    h('div',{class:'reto-col'}, h('span',{class:'eyebrow'},'Observa'), h('ul',{class:'checks plain'}, o.observa.map(t => h('li',{}, h('span',{class:'ck dotck','aria-hidden':'true'}), t)))),
+    h('div',{class:'reto-col'}, h('span',{class:'eyebrow'},'🎯 Reto'), h('p',{style:'font-weight:600'},o.reto), o.statusEl || (o.done ? h('div',{class:'notice ok'},'Reto resuelto ✓') : null))));
+}
+/* ---------- Vista en detalle: aislar, ampliar, girar y recorrer las partes ---------- */
+function makeDetail(E, stage, S, rerender){
+  let id = null, active = -1; const bar = h('div',{class:'detail-bar',style:'display:none'}); stage.append(bar);
+  const api = {
+    get id(){ return id; }, get active(){ return active; },
+    enter(sid){ if (!E) return toast('La vista en detalle requiere el modelo 3D.'); id = sid; active = -1; const s = S[sid]; E.enterDetail(sid, (s.partes||[]).map(p => p.at)); E.outline(sid); E.setMarkers(s.partes||[], i => api.pick(i));
+      bar.innerHTML=''; bar.append(h('span',{}, '🔍 Vista en detalle: ', h('b',{},s.nombre)), h('button',{class:'btn sm',onclick:()=>{ api.exit(); rerender(); }},'Salir')); bar.style.display='';
+      Store.log('vista_detalle',{estructura:sid}); rerender(); },
+    exit(){ if (!id) return; E.exitDetail(); E.outline(E.selected); id = null; active = -1; bar.style.display='none'; },
+    pick(i){ const s = S[id]; const p = (s.partes||[])[i]; if (!p) return; active = i; E.highlightMarker(i); E.outline(id, p.sub||null); E.spin = false; E.focus(V3(p.at), Math.max(E.opts.minR, Math.min(E.goal.r, 4.2))); Store.log('parte_detalle',{estructura:id, parte:p.n}); rerender(); },
+    panel(){ const s = S[id]; const box = h('div',{class:'parts stack'}, h('span',{class:'eyebrow'},'Partes · toca un número en el modelo o en la lista'));
+      if (!s.partes || !s.partes.length) box.append(h('p',{class:'small muted'},'Esta estructura no tiene subpartes en esta versión. Obsérvala de cerca: rota, acerca y compárala con sus vecinas.'));
+      else s.partes.forEach((p,i) => box.append(h('button',{class:'part'+(i===active?' on':''),onclick:()=>api.pick(i)}, h('span',{class:'pn'},String(i+1)), h('span',{}, h('b',{},p.n), h('span',{class:'small muted',style:'display:block'},p.d)))));
+      box.append(h('div',{class:'row'}, h('button',{class:'btn sm',onclick:()=>{ E.fitDetail(id, (S[id].partes||[]).map(p => p.at)); E.spin = true; E.highlightMarker(-1); E.outline(id); active=-1; rerender(); }},'↺ Ver completa'), h('button',{class:'btn sm ghost',onclick:()=>{ api.exit(); rerender(); }},'Salir de la vista en detalle')));
+      return box; }
+  };
+  return api;
+}
+
 function organView(view, q, D, build){
   const S = Object.fromEntries(D.structures.map(s=>[s.id,s]));
   view.classList.add('wide');
   view.append(h('div',{class:'page-head',style:'margin-bottom:14px'}, h('div',{}, h('span',{class:'eyebrow anat'},D.eyebrow), h('h1',{},D.nombre), h('p',{},D.intro)), h('div',{class:'row'}, D.related.map(r => h('a',{class:'btn sm',href:r.href},r.t)))));
   const stage = h('div',{class:'stage'}), panel = h('div',{class:'panel'});
+  const reto = D.reto ? retoBanner(D.reto, D.id, 'reto-'+D.id, id => { select(id,'reto'); stage.scrollIntoView({behavior:'smooth', block:'nearest'}); }) : null; if (reto) view.append(reto.el);
   view.append(h('div',{class:'viewer'}, stage, panel));
   let E=null, M=null, mode='libre', guideIdx=0, guideDone=false, selected=null, hidden=new Set(), tab='explorar', opacity=D.opacityDefault ?? 1;
   const modeSeg = h('div',{class:'segmented',role:'tablist'}, h('button',{role:'tab','aria-selected':'true',onclick:()=>setMode('libre')},'Exploración libre'), h('button',{role:'tab','aria-selected':'false',onclick:()=>setMode('guiada')},'Exploración guiada'));
-  if (webglOK){ try { E = new Engine3D(stage, { radius:D.radius, phi:D.phi, theta:D.theta, target:D.target, minR:2.5, maxR:22, floor:D.floor, floorSize:D.floorSize, onSelect:(id,src)=>{ if (id) select(id, src); } }); M = build(E); } catch(e){ console.warn(e); E=null; } }
+  if (webglOK){ try { E = new Engine3D(stage, { radius:D.radius, phi:D.phi, theta:D.theta, target:D.target, minR:2.5, maxR:22, floor:D.floor, floorSize:D.floorSize, onSelect:(id,src)=>{ if (id) select(id, src); }, onDetail:(id)=>{ if (selected!==id) select(id,'modelo'); detail.enter(id); } }); M = build(E); } catch(e){ console.warn(e); E=null; } }
+  const detail = makeDetail(E, stage, S, () => renderTab());
   const chrome = stageChrome(stage, E, { left:modeSeg, model:D.id, captureTxt:()=>`Captura · ${D.nombre}${selected?` · ${S[selected].nombre}`:''}` });
   if (E && M) E.onFrame(()=>{ const t = M.phaseText ? M.phaseText() : ''; if (chrome.phase.textContent!==t) chrome.phase.textContent=t; chrome.phase.style.display = t ? '' : 'none'; });
   if (!E){ if (D.id==='corazon') stage.append(heart2D((id)=>select(id,'esquema'))); stage.append(h('div',{class:'notice info',style:'position:absolute;left:12px;right:12px;top:56px'},'WebGL no disponible: usa la lista de estructuras para explorar el contenido.')); }
@@ -2075,6 +2575,7 @@ function organView(view, q, D, build){
   const seen = () => Store.s.seen[D.id] || [];
   function renderList(){ listEl.innerHTML=''; const sn = seen(); D.structures.forEach(s => listEl.append(h('li',{}, h('button',{'aria-pressed':selected===s.id,onclick:()=>select(s.id,'lista')}, h('span',{class:'sw',style:`background:${s.color}`}), s.nombre, sn.includes(s.id)?h('span',{class:'seen'},'✓'):null)))); }
   function renderTab(){ $$('button',tabs).forEach((b,i)=>b.setAttribute('aria-selected', TABS[i][0]===tab)); tabBody.innerHTML='';
+    if (tab==='explorar' && detail.id){ tabBody.append(h('h3',{},S[detail.id].nombre), detail.panel()); return; }
     if (tab==='explorar'){ if (mode==='guiada') tabBody.append(guideBox()); tabBody.append(selected ? hotspotCard(S[selected]) : h('div',{class:'notice'},'Selecciona una estructura en el modelo, en una etiqueta o en la lista. Arrastra para rotar · rueda para acercar · Shift + arrastrar para desplazar · teclado: flechas, + y −.')); tabBody.append(h('div',{}, h('span',{class:'eyebrow'},'Estructuras'), listEl)); renderList(); }
     else if (tab==='capas') tabBody.append(layersBox());
     else if (tab==='animacion') tabBody.append(animBox());
@@ -2084,12 +2585,13 @@ function organView(view, q, D, build){
     const capaN = (D.capas.find(c=>c.id===s.capa)||{}).n || '';
     return h('div',{class:'hcard stack',style:'gap:4px'},
       h('div',{class:'row',style:'justify-content:space-between'}, h('span',{class:'pill anat'},capaN), h('span',{class:'mono small muted'},`${seen().length}/${D.structures.length} exploradas`)),
-      h('h3',{},s.nombre),
+      h('div',{class:'row',style:'justify-content:space-between;align-items:flex-start;flex-wrap:nowrap'}, h('h3',{},s.nombre), h('button',{class:'btn sm primary',style:'flex:none',onclick:()=>detail.enter(s.id)},'🔍 Ver en detalle')),
+      s.partes ? h('p',{class:'small muted'},`${s.partes.length} partes para descubrir en la vista en detalle · también con doble clic sobre el modelo`) : null,
       h('div',{class:'q'},'¿Qué es? · ¿Qué hace?'), depthBlock(s),
       h('div',{class:'q'},'Dato importante'), h('p',{},s.dato),
       h('div',{class:'q'},'Conecta con'), h('div',{class:'conecta'}, s.conecta.map(id => S[id] ? h('button',{onclick:()=>select(id,'conecta')},'→ '+S[id].nombre) : null), (s.temas||[]).map(t => h('button',{style:'border-style:dashed',onclick:()=>toast(`Tema transversal: ${t}. Se relaciona con ${s.nombre}.`)},t))),
       h('div',{class:'ctrl-row',style:'margin-top:10px'},
-        h('button',{class:'btn sm primary',onclick:()=>{ if (!M) return toast('Requiere el modelo 3D.'); const a = M.anims[0]; M.anims.forEach(x=>x.set(x===a || x.id==='flujo')); if (a.needsOpacity && opacity>a.needsOpacity+0.1) applyOpacity(a.needsOpacity); tab='animacion'; renderTab(); if (!a.focus) E.focus(V3(s.pos), D.focusR); Store.log('animacion',{modelo:D.id,estructura:s.id}); }},'Ver funcionamiento'),
+        h('button',{class:'btn sm',onclick:()=>{ if (!M) return toast('Requiere el modelo 3D.'); const a = M.anims[0]; M.anims.forEach(x=>x.set(x===a || x.id==='flujo')); if (a.needsOpacity && opacity>a.needsOpacity+0.1) applyOpacity(a.needsOpacity); tab='animacion'; renderTab(); if (!a.focus) E.focus(V3(s.pos), D.focusR); Store.log('animacion',{modelo:D.id,estructura:s.id}); }},'Ver funcionamiento'),
         h('button',{class:'btn sm',onclick:()=>{ tab='quiz'; renderTab(); }},'Comprueba lo aprendido'),
         h('button',{class:'btn sm',onclick:()=>{ if(!E) return; D.structures.forEach(x=>E.setVisible(x.id, x.id===s.id)); hidden = new Set(D.structures.filter(x=>x.id!==s.id).map(x=>x.id)); toast(`Aislado: ${s.nombre}. Usa Capas → Mostrar todo para volver.`); }},'Aislar'),
         h('button',{class:'btn sm',onclick:()=>{ if(!E) return; E.setVisible(s.id,false); hidden.add(s.id); toast(`${s.nombre}: oculta.`); }},'Ocultar'),
@@ -2137,7 +2639,8 @@ function organView(view, q, D, build){
   function guideAdvance(stay){ guideIdx++; if (guideIdx>=D.guiada.length){ guideDone=true; Store.completeActivity(D.guidedActivity); toast('Exploración guiada completada.'); } else if (stay) toast('Paso completado. Vuelve a Explorar para ver el siguiente.'); if (!stay) { tab='explorar'; renderTab(); } }
   function setMode(m){ mode=m; $$('button',modeSeg).forEach((b,i)=>b.setAttribute('aria-selected', (i===0)===(m==='libre'))); tab='explorar'; renderTab(); Store.log('modo_exploracion',{modelo:D.id,modo:m}); }
   function select(id, src){
-    selected=id; E && E.select(id); Store.markSeen(D.id, id); Store.log('seleccion_estructura',{modelo:D.id,estructura:id,origen:src});
+    if (detail.id && detail.id !== id) detail.exit();
+    selected=id; E && E.select(id); Store.markSeen(D.id, id); reto && reto.render(); Store.log('seleccion_estructura',{modelo:D.id,estructura:id,origen:src});
     if (E && src!=='modelo') E.focus(V3(S[id].pos), Math.min(E.goal.r, D.focusR));
     if (E && S[id].interno && opacity>0.6){ applyOpacity(0.35); toast('Transparencia ajustada: esta estructura está en el interior.'); }
     if (mode==='guiada' && !guideDone){ const st = D.guiada[guideIdx]; if (st.tipo==='select'){ if (st.target===id){ toast('Correcto. Siguiente paso.'); guideAdvance(); return; } else { toast(`Aún no. Has seleccionado ${S[id].nombre}. ${hint(st.target, id)}`, 5200); Store.log('respuesta',{pregunta:'guiada:'+st.target,opcion:id,correcto:false}); } } }
@@ -2150,7 +2653,9 @@ function organView(view, q, D, build){
     if (t.capa!==p.capa) return `La estructura buscada está en la capa "${(D.capas.find(c=>c.id===t.capa)||{}).n}". ${p.nombre}: ${p.n1}`;
     return `${p.nombre}: ${p.n1} Observa de nuevo la posición y la función que buscas.`; }
   renderTab();
-  if (q.s && S[q.s]) { select(q.s,'busqueda'); if (q.quiz){ tab='quiz'; renderTab(); } }
+  if (q.modo==='guiada') setMode('guiada');
+  if (q.s && S[q.s]) { select(q.s,'busqueda'); if (q.quiz){ tab='quiz'; renderTab(); } if (q.detalle && E) detail.enter(q.s); }
+  if (q.tab && ['capas','animacion','quiz'].includes(q.tab)) { tab=q.tab; renderTab(); }
   return { unmount(){ E && E.dispose(); } };
 }
 route('/explorar/corazon', (view,q) => organView(view, q, BIO.heart, buildHeart));
@@ -2158,7 +2663,7 @@ route('/explorar/cerebro', (view,q) => organView(view, q, BIO.brain, buildBrain)
 route('/explorar/pulmones', (view,q) => organView(view, q, BIO.lungs, buildLungs));
 route('/explorar/organo/:id', (view, p) => {
   const o = BIO.plannedOrgans.find(x=>x.id===p.id) || { em:'🫀', t:'Órgano', d:'' };
-  view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow anat'},'Cuerpo humano · en construcción'), h('h1',{},`${o.em} ${o.t}`), h('p',{},o.d))));
+  view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow anat'},'Cuerpo humano y salud · Unidad 6 · en construcción'), h('h1',{},`${o.em} ${o.t}`), h('p',{},o.d))));
   view.append(h('div',{class:'ph stack'}, h('b',{},'Este órgano aún no tiene modelo 3D.'), h('span',{},'Cuando esté disponible tendrá la misma experiencia que el corazón, el cerebro y los pulmones: Vista general → Anatomía → Funcionamiento → Explorar → ¿Qué pasaría si…? → Caso → Comprueba. El registro de contenidos y el visor ya lo admiten; solo falta el modelo y sus hotspots.')));
   view.append(h('h3',{style:'margin:20px 0 10px'},'Mientras tanto, explora'), h('div',{class:'grid g3'}, [['corazon','🫀','Corazón'],['cerebro','🧠','Cerebro'],['pulmones','🫁','Pulmones y vía aérea']].map(([id,em,t]) => h('a',{class:'tile anat',href:'#/explorar/'+id}, h('span',{class:'ico'},em), h('h3',{},t), h('p',{},`${BIO.organs[id].structures.length} estructuras · animaciones · exploración guiada`), h('span',{class:'pill anat soon'},'Disponible')))));
 });
@@ -2169,11 +2674,13 @@ route('/explorar/organo/:id', (view, p) => {
 route('/explorar/celula', (view, q) => {
   const D = BIO.cell; const S = Object.fromEntries(D.structures.map(s=>[s.id,s]));
   view.classList.add('wide');
-  view.append(h('div',{class:'page-head',style:'margin-bottom:14px'}, h('div',{}, h('span',{class:'eyebrow cell'},'Explorador celular 3D · Unidad 2 · Biología celular'), h('h1',{},'Célula animal'), h('p',{},'Cada organelo muestra su nombre, función, estructura, relaciones, una analogía y un botón "ver en acción".')), h('div',{class:'row'}, h('span',{class:'pill cell'},'Disponible'), h('span',{class:'pill'},'Vegetal · Procariota: en construcción'))));
+  view.append(h('div',{class:'page-head',style:'margin-bottom:14px'}, h('div',{}, h('span',{class:'eyebrow cell'},'Mundo celular · Unidad 2 · Biología celular'), h('h1',{},'Célula animal'), h('p',{},'Cada organelo muestra su nombre, función, estructura, relaciones, una analogía y un botón "ver en acción".')), h('div',{class:'row'}, h('span',{class:'pill cell'},'Disponible'), h('span',{class:'pill'},'Vegetal · Procariota: en construcción'))));
   const stage = h('div',{class:'stage'}), panel = h('div',{class:'panel'});
+  const reto = retoBanner(D.reto, 'celula-animal', 'reto-celula', id => { select(id,'reto'); stage.scrollIntoView({behavior:'smooth', block:'nearest'}); }); view.append(reto.el);
   view.append(h('div',{class:'viewer'}, stage, panel));
   let E=null, M=null, selected=null, tab='explorar', actionTxt='';
-  if (webglOK){ try { E = new Engine3D(stage, { radius:11.2, phi:1.25, theta:0.4, minR:3, maxR:20, floor:-3.35, floorSize:9, onSelect:(id,src)=>{ if(id) select(id,src); } }); M = buildCell(E); } catch(e){ console.warn(e); E=null; } }
+  if (webglOK){ try { E = new Engine3D(stage, { radius:11.2, phi:1.25, theta:0.4, minR:3, maxR:20, floor:-3.35, floorSize:9, onSelect:(id,src)=>{ if(id) select(id,src); }, onDetail:(id)=>{ if (selected!==id) select(id,'modelo'); detail.enter(id); } }); M = buildCell(E); } catch(e){ console.warn(e); E=null; } }
+  const detail = makeDetail(E, stage, S, () => renderTab());
   stageChrome(stage, E, { left:h('span',{class:'pill cell'},'Célula animal'), model:'celula-animal', captureTxt:()=>`Captura de la célula animal 3D${selected?` · ${S[selected].nombre}`:''}` });
   if (!E) stage.append(h('div',{class:'ph',style:'margin:60px 24px'},'WebGL no disponible. Usa la lista de componentes para explorar la célula.'));
   const tabs = h('div',{class:'tabs',role:'tablist'}); const tabBody = h('div',{class:'stack'});
@@ -2187,14 +2694,15 @@ route('/explorar/celula', (view, q) => {
     const act = h('div',{class:'notice info',style:actionTxt?'':'display:none'}, actionTxt);
     return h('div',{class:'hcard stack',style:'gap:4px'},
       h('div',{class:'row',style:'justify-content:space-between'}, h('span',{class:'pill cell'},'Organelo / componente'), h('span',{class:'mono small muted'},`${seenN}/${D.structures.length} explorados`)),
-      h('h3',{},s.nombre),
+      h('div',{class:'row',style:'justify-content:space-between;align-items:flex-start;flex-wrap:nowrap'}, h('h3',{},s.nombre), h('button',{class:'btn sm primary',style:'flex:none',onclick:()=>detail.enter(s.id)},'🔍 Ver en detalle')),
+      s.partes ? h('p',{class:'small muted'},`${s.partes.length} partes para descubrir en la vista en detalle · también con doble clic`) : null,
       h('div',{class:'q'},'Función'), h('p',{},s.funcion),
       h('div',{class:'q'},'Estructura'), h('p',{},s.estructura),
       h('div',{class:'q'},'Relaciones'), h('p',{},s.relaciones),
       h('div',{class:'q'},'Analogía'), h('p',{style:'font-style:italic'},s.analogia),
       more,
       h('div',{class:'ctrl-row',style:'margin-top:10px'},
-        h('button',{class:'btn sm primary',onclick:()=>{ if (!M) return toast('Requiere el modelo 3D.'); actionTxt = `${s.accion.t}: ${s.accion.d} ` + (M.action(s.id)||''); act.textContent = actionTxt; act.style.display=''; Store.log('animacion',{modelo:'celula-animal',estructura:s.id,accion:s.accion.t}); }},'Ver en acción'),
+        h('button',{class:'btn sm',onclick:()=>{ if (!M) return toast('Requiere el modelo 3D.'); actionTxt = `${s.accion.t}: ${s.accion.d} ` + (M.action(s.id)||''); act.textContent = actionTxt; act.style.display=''; Store.log('animacion',{modelo:'celula-animal',estructura:s.id,accion:s.accion.t}); }},'Ver en acción'),
         h('button',{class:'btn sm',onclick:()=>{ more.style.display = more.style.display==='none'?'':'none'; Store.log('nivel_profundidad',{estructura:s.id,nivel:'3'}); }},'Profundizar'),
         h('button',{class:'btn sm',onclick:()=>{ if(!E) return; D.structures.forEach(x=>E.setVisible(x.id, x.id===s.id || x.id==='membrana')); toast(`Aislado: ${s.nombre}. Capas → Mostrar todo para volver.`); }},'Aislar'),
         h('button',{class:'btn sm ghost',onclick:()=>{ Store.addNote('observacion', `${s.nombre}: ${s.funcion} Analogía: ${s.analogia}`); toast('Guardado en tu cuaderno.'); }},'Guardar en cuaderno')),
@@ -2219,11 +2727,13 @@ route('/explorar/celula', (view, q) => {
     return box;
   }
   function renderTab(){ $$('button',tabs).forEach((b,i)=>b.setAttribute('aria-selected', ['explorar','capas','quiz'][i]===tab)); tabBody.innerHTML='';
+    if (tab==='explorar' && detail.id){ tabBody.append(h('h3',{},S[detail.id].nombre), detail.panel()); return; }
     if (tab==='explorar'){ tabBody.append(selected ? card(S[selected]) : h('div',{class:'notice'},'Selecciona un organelo en el modelo o en la lista. La membrana es translúcida: haz clic a través de ella.')); tabBody.append(h('div',{}, h('span',{class:'eyebrow'},'Componentes'), listEl)); renderList(); }
     else if (tab==='capas') tabBody.append(layersBox()); else tabBody.append(quizBox()); }
   function select(id, src){
     if (vqActive && tab==='quiz'){ vqAttempts++; const t = VQ[vq].target; if (id===t){ if (vqAttempts===1) vqScore++; toast(`Correcto: ${S[id].nombre}.`); Store.log('respuesta',{pregunta:VQ[vq].q,opcion:id,correcto:true,intento:vqAttempts}); vq++; vqAttempts=0; if (vq>=VQ.length){ Store.addXP(40,'Quiz visual de la célula'); } renderTab(); } else { toast(`Aún no. Has seleccionado ${S[id].nombre}, cuya función es: ${S[id].funcion.split('.')[0].toLowerCase()}. Inténtalo nuevamente.`, 5500); Store.log('respuesta',{pregunta:VQ[vq].q,opcion:id,correcto:false,intento:vqAttempts}); } E && E.select(id); return; }
-    selected=id; actionTxt=''; M && M.stop(); E && E.select(id); Store.markSeen('celula-animal', id); Store.log('seleccion_estructura',{modelo:'celula-animal',estructura:id,origen:src});
+    if (detail.id && detail.id !== id) detail.exit();
+    selected=id; actionTxt=''; M && M.stop(); E && E.select(id); Store.markSeen('celula-animal', id); reto.render(); Store.log('seleccion_estructura',{modelo:'celula-animal',estructura:id,origen:src});
     const seen = Store.s.seen['celula-animal'].length; if (seen>=6) Store.completeActivity('explorar-celula'); if (seen>=D.structures.length) Store.grantBadge('explorador-celular');
     tab='explorar'; renderTab();
   }
@@ -2237,9 +2747,10 @@ route('/explorar/celula', (view, q) => {
    MISIONES · MISIÓN: EL VIAJE DE UN GLÓBULO ROJO
    ===================================================================== */
 route('/misiones', (view) => {
-  view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow mis'},'Misiones biológicas'), h('h1',{},'Usa lo que sabes para resolver algo'), h('p',{},'Cada misión exige aplicar conocimientos: seguir un recorrido, diagnosticar, predecir. No basta con recordar.'))));
+  view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow mis'},'Misiones biológicas'), h('h1',{},'Usa lo que sabes para resolver algo'), h('p',{},'Las misiones son transversales: cada una integra conocimientos de varias áreas de Ciencias Naturales. Exigen aplicar lo aprendido —seguir un recorrido, diagnosticar, predecir—, no solo recordar.'))));
+  view.append(h('div',{class:'row',style:'margin:-8px 0 16px'}, h('span',{class:'small muted'},'Áreas que conectan:'), BIO.areas.map(a => h('span',{class:`pill ${a.dom}`},a.n))));
   const g = h('div',{class:'grid g3'});
-  BIO.missions.forEach(m => { const done = m.id==='globulo-rojo' && Store.s.activities['mision-globulo']?.done; g.append(h('a',{class:`tile ${m.dominio}`,href: m.disponible?`#/mision/${m.id}`:'#/misiones',onclick: m.disponible?null:(e)=>{e.preventDefault(); toast('Misión planificada para la fase 2.');}}, h('span',{class:'ico'},m.em), h('h3',{},m.t), h('p',{},m.d), h('div',{class:'row small muted',style:'margin-top:auto'}, h('span',{},m.dur), h('span',{},'·'), h('span',{},`+${m.xp} XP`), h('span',{},'·'), h('span',{},`Unidad ${m.unidad}`)), done ? h('span',{class:'pill ok soon'},'Completada') : m.disponible ? h('span',{class:'pill mis soon'},'Disponible') : h('span',{class:'pill soon'},'Fase 2'))); });
+  BIO.missions.forEach(m => { const done = m.id==='globulo-rojo' && Store.s.activities['mision-globulo']?.done; g.append(h('a',{class:`tile ${m.dominio}`,href: m.disponible?`#/mision/${m.id}`:'#/misiones',onclick: m.disponible?null:(e)=>{e.preventDefault(); toast('Misión planificada para la fase 2.');}}, h('span',{class:'ico'},m.em), h('h3',{},m.t), h('p',{},m.d), h('div',{class:'row',style:'gap:6px'}, (m.areas||[]).map(aid => { const a = BIO.areas.find(x=>x.id===aid); return h('span',{class:`pill ${a.dom}`,style:'font-size:.68rem'},a.n); })), h('div',{class:'row small muted',style:'margin-top:auto'}, h('span',{},m.dur), h('span',{},'·'), h('span',{},`+${m.xp} XP`), h('span',{},'·'), h('span',{},`Unidad ${m.unidad}`)), done ? h('span',{class:'pill ok soon'},'Completada') : m.disponible ? h('span',{class:'pill mis soon'},'Disponible') : h('span',{class:'pill soon'},'Fase 2'))); });
   view.append(g);
 });
 
@@ -2262,6 +2773,7 @@ route('/mision/globulo-rojo', (view) => {
   const S = Object.fromEntries(BIO.heart.structures.map(s=>[s.id,s]));
   view.classList.add('wide');
   view.append(h('div',{class:'page-head',style:'margin-bottom:14px'}, h('div',{}, h('span',{class:'eyebrow mis'},'Misión biológica · Unidad 6'), h('h1',{},'El viaje de un glóbulo rojo'), h('p',{},'Objetivo: comprender cómo interactúan los sistemas circulatorio y respiratorio siguiendo a un eritrocito por la circulación doble.')), h('span',{class:'pill mis'},'+150 XP · 15–20 min')));
+  view.append(purposeBanner({ proposito:'Comprender cómo interactúan los sistemas circulatorio y respiratorio y qué ocurre con el oxígeno en cada etapa.', observa:['El color y la saturación de O₂ del glóbulo rojo en cada estación','Por qué vaso entra y sale la sangre de cada cámara','Dónde se carga y dónde se entrega el oxígeno'], reto:'Al final, reconstruye el recorrido completo sin ayuda y explica por qué la arteria pulmonar lleva sangre pobre en oxígeno.', done: !!Store.s.activities['mision-globulo']?.done }));
   const stage = h('div',{class:'stage'}), panel = h('div',{class:'panel'});
   view.append(h('div',{class:'mission'}, stage, panel));
   let E=null, M=null, idx=0, errors=0, answered=false, finished=false, quizSel=null, startAt=Date.now();
@@ -2389,16 +2901,19 @@ route('/mision/globulo-rojo', (view) => {
    SIMULADORES · SIMULADOR CARDIORRESPIRATORIO
    ===================================================================== */
 route('/simuladores', (view) => {
-  view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow anat'},'Simuladores'), h('h1',{},'Cambia una variable. Observa el sistema.'), h('p',{},'Modelos cuantitativos simplificados que responden en tiempo real. Sirven para predecir, probar y comparar.'))));
+  view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow anat'},'Simuladores · transversal'), h('h1',{},'Cambia una variable. Observa el sistema.'), h('p',{},'Modelos cuantitativos simplificados que responden en tiempo real. Son transversales: un mismo simulador integra conceptos de varias áreas. Cada uno te plantea un reto concreto.'))));
   const g = h('div',{class:'grid g3'});
-  g.append(h('a',{class:'tile anat',href:'#/simuladores/circulacion'}, h('span',{class:'ico'},'🫀'), h('h3',{},'Sistema cardiorrespiratorio'), h('p',{},'Actividad física, frecuencia respiratoria, anemia, altitud. Gasto cardíaco y aporte de O₂ frente a la demanda.'), h('span',{class:'pill anat soon'},'Disponible')));
-  [['lab','🌿','Fotosíntesis','Luz, CO₂, temperatura y agua sobre la tasa fotosintética.','#/laboratorio/fotosintesis',true],['eco','🌎','Ecosistema','Productores, consumidores, depredadores y recursos: dinámica de poblaciones.','#/explorar/ecosistemas',false],['cell','💧','Ósmosis','Concentración de soluciones y movimiento de agua a través de la membrana.','#/explorar/celula',false]].forEach(([d,em,t,s,href,ok]) => g.append(h('a',{class:`tile ${d}`,href}, h('span',{class:'ico'},em), h('h3',{},t), h('p',{},s), ok?h('span',{class:`pill ${d} soon`},'Disponible (laboratorio)'):h('span',{class:'pill soon'},'Fase 2'))));
+  const sim = BIO.resources.find(r=>r.id==='sim-circulacion'); g.append(resTile(sim));
+  [['lab','🌿','Fotosíntesis','Luz, CO₂, temperatura y agua sobre la tasa fotosintética.','#/laboratorio/fotosintesis',true,['celular','biodiversidad'],'Encuentra el factor que limita la fotosíntesis.'],['eco','🌎','Ecosistema','Productores, consumidores, depredadores y recursos: dinámica de poblaciones.','#/explorar/ecosistemas',false,['biodiversidad','genetica'],'Encuentra las condiciones que llevan a una población al equilibrio o al colapso.'],['cell','💧','Ósmosis','Concentración de soluciones y movimiento de agua a través de la membrana.','#/explorar/celula',false,['celular','cuerpo'],'Predice qué le pasa a un glóbulo rojo en agua pura y en agua de mar.']].forEach(([d,em,t,s2,href,ok,ids,reto]) => g.append(h('a',{class:`tile res ${d}`+(ok?'':' planned'),href}, h('span',{class:'ico'},em), h('span',{class:'tipo'},'Simulador · transversal'), h('h3',{},t), h('p',{},s2), h('div',{class:'res-reto'}, h('b',{},ok?'🎯 Tu reto':'🎯 Propósito'), h('span',{},reto)), areaTags(ids), ok?h('span',{class:`pill ${d} soon`},'Disponible (laboratorio)'):h('span',{class:'pill soon'},'Fase 2'))));
   view.append(g);
 });
 
 route('/simuladores/circulacion', (view) => {
   view.classList.add('wide');
-  view.append(h('div',{class:'page-head',style:'margin-bottom:14px'}, h('div',{}, h('span',{class:'eyebrow anat'},'Simulador · Unidad 6 · Sistemas circulatorio y respiratorio'), h('h1',{},'¿Le llega suficiente oxígeno al cuerpo?'), h('p',{},'Ajusta la actividad física y la respiración. El modelo calcula la frecuencia cardíaca, el gasto cardíaco, la ventilación y compara el oxígeno que llega con el que los tejidos demandan.')), h('span',{class:'pill'},'Modelo cuantitativo simplificado')));
+  view.append(h('div',{class:'page-head',style:'margin-bottom:14px'}, h('div',{}, h('span',{class:'eyebrow anat'},'Simulador transversal · Cuerpo humano y salud · Mundo celular'), h('h1',{},'¿Le llega suficiente oxígeno al cuerpo?'), h('p',{},'Ajusta la actividad física y la respiración. El modelo calcula la frecuencia cardíaca, el gasto cardíaco, la ventilación y compara el oxígeno que llega con el que los tejidos demandan.')), h('span',{class:'pill'},'Modelo cuantitativo simplificado')));
+  const retoSt = h('div',{class:'notice'},'Pendiente: sube la actividad a 80 % o más y ajusta la frecuencia respiratoria.');
+  const simDone = () => !!Store.s.activities['reto-simulador']?.done; if (simDone()){ retoSt.className='notice ok'; retoSt.textContent='Reto resuelto ✓'; }
+  view.append(purposeBanner({ proposito:'Comprender cómo el corazón y los pulmones se ajustan juntos a la demanda de oxígeno de los tejidos.', observa:['Qué cambia en el corazón y en la respiración al subir la actividad física','Cómo afectan la anemia o la altitud al aporte de O₂'], reto:'Con 80 % de actividad física, encuentra la frecuencia respiratoria mínima con la que la ventilación deja de ser insuficiente.', statusEl:retoSt }));
   const state = { act:0, fr:12, cond:'normal' };
   const COND = { normal:{n:'Condición normal', hb:15, sat:98, d:'Hemoglobina 15 g/dL · saturación 98 %'}, anemia:{n:'Anemia (menos glóbulos rojos)', hb:8, sat:98, d:'Hemoglobina 8 g/dL: la sangre transporta casi la mitad de O₂'}, altitud:{n:'Altitud 3.000 m (Quito)', hb:15, sat:90, d:'Menos presión de O₂ en el aire: saturación 90 %'}, alveolos:{n:'Alvéolos dañados', hb:15, sat:84, d:'Intercambio gaseoso deficiente: saturación 84 %'} };
   function calc(){ const c = COND[state.cond]; const fc = Math.round(65 + 1.15*state.act); const vs = Math.min(105, 70 + 0.35*state.act); const gc = fc*vs/1000; const vo2 = 250 + 28*state.act; const cao2 = 1.34*c.hb*c.sat/100; const do2 = gc*10*cao2; const vc = 500 + 20*state.act; const vm = state.fr*vc/1000; const vmReq = vo2*0.022; return { fc, vs, gc, vo2, do2, vm, vmReq, vc, ratio: do2/vo2, vent: vm/vmReq, sat:c.sat }; }
@@ -2454,7 +2969,8 @@ route('/simuladores/circulacion', (view) => {
     histT += dt; if (histT>0.5){ histT=0; history.push({ t:Date.now(), do2:r.do2, vo2:r.vo2 }); if (history.length>120) history.shift(); drawHist(); }
   }
   function drawHist(){ const now = Date.now(); lineChart(chart, { series:[ { label:'Aporte de O₂', color:cssVar('--oxy'), pts: history.map(p=>({x:(p.t-now)/1000, y:p.do2})) }, { label:'Demanda de O₂', color:cssVar('--ink-3'), pts: history.map(p=>({x:(p.t-now)/1000, y:p.vo2})) } ], xmin:-60, xmax:0, ymin:0, ymax:4200, xfmt:v=>Math.round(v)+' s', yfmt:v=>Math.round(v), ylabel:'mL O₂/min', xticks:6 }); }
-  function update(){ const r = calc(); $('#cond-d',ctrls).textContent = COND[state.cond].d; read.innerHTML='';
+  function checkReto(r){ if (simDone()) return; if (state.act>=80 && state.cond==='normal'){ if (r.vent>=0.85 && r.vent<=0.96){ Store.completeActivity('reto-simulador',{score:`${state.fr} resp/min`}); retoSt.className='notice ok'; retoSt.innerHTML=`<span><b>¡Reto resuelto!</b> Con ${state.act} % de actividad necesitas al menos ~${state.fr} resp/min: el volumen de cada respiración ya aumentó, pero no basta; la frecuencia también debe subir para expulsar el CO₂ extra que producen los músculos.</span>`; } else if (r.vent>0.96){ retoSt.className='notice warn'; retoSt.textContent='La ventilación ya es suficiente, pero ¿es la frecuencia mínima? Baja de una en una hasta el límite.'; } else { retoSt.className='notice'; retoSt.textContent='Todavía hay hipoventilación: sube la frecuencia respiratoria.'; } } }
+  function update(){ const r = calc(); checkReto(r); $('#cond-d',ctrls).textContent = COND[state.cond].d; read.innerHTML='';
     [[r.fc,'lpm','Frecuencia cardíaca'],[r.gc.toFixed(1),'L/min','Gasto cardíaco'],[r.vm.toFixed(1),'L/min','Ventilación pulmonar'],[Math.round(r.do2),'mL/min','O₂ que llega a los tejidos']].forEach(([v,u,l]) => read.append(h('div',{class:'readout'}, h('div',{class:'v'},v,' ',h('span',{class:'u'},u)), h('div',{class:'l'},l))));
     status.innerHTML='';
     const o2 = r.ratio>=1.05 ? ['ok','Aporte de O₂ suficiente',`Llega ${(r.ratio*100).toFixed(0)} % de lo que demandan los tejidos.`] : r.ratio>=0.9 ? ['warn','Aporte de O₂ al límite',`Llega ${(r.ratio*100).toFixed(0)} % de la demanda. Los músculos empezarán a usar fermentación láctica.`] : ['bad','Déficit de O₂',`Solo llega ${(r.ratio*100).toFixed(0)} % de la demanda: fatiga, ácido láctico, disnea. El cuerpo no puede sostener esta intensidad.`];
@@ -2469,16 +2985,17 @@ route('/simuladores/circulacion', (view) => {
    LABORATORIOS · FOTOSÍNTESIS
    ===================================================================== */
 route('/laboratorio', (view) => {
-  view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow lab'},'Laboratorio virtual'), h('h1',{},'Experimenta como un investigador'), h('p',{},'Pregunta → hipótesis → materiales → procedimiento → variables → experimentación → resultados → representación → análisis → conclusión.'))));
+  view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow lab'},'Laboratorios · transversal'), h('h1',{},'Experimenta como un investigador'), h('p',{},'Pregunta → hipótesis → materiales → procedimiento → variables → experimentación → resultados → representación → análisis → conclusión. Cada laboratorio conecta varias áreas y parte de una pregunta que debes resolver.'))));
   const g = h('div',{class:'grid g3'});
-  g.append(h('a',{class:'tile lab',href:'#/laboratorio/fotosintesis'}, h('span',{class:'ico'},'🌿'), h('h3',{},'Fotosíntesis: ¿qué limita la producción de O₂?'), h('p',{},'Elodea bajo la lámpara. Manipula luz, CO₂, temperatura y agua; cuenta burbujas; grafica.'), h('span',{class:'pill lab soon'},'Disponible')));
-  [['🫀','Frecuencia cardíaca y ejercicio','Registra pulsaciones antes y después de distintas intensidades.'],['🧫','Enzimas: catalasa y temperatura','Descomposición de H₂O₂ por catalasa de hígado o papa.'],['💧','Ósmosis en papa','Masa de cilindros de papa en soluciones de distinta concentración.'],['🍞','Fermentación de levadura','CO₂ producido según azúcar y temperatura.']].forEach(([em,t,s]) => g.append(h('a',{class:'tile lab',href:'#/laboratorio/fotosintesis',onclick:e=>{e.preventDefault();toast('Laboratorio planificado para la fase 2.');}}, h('span',{class:'ico'},em), h('h3',{},t), h('p',{},s), h('span',{class:'pill soon'},'Fase 2'))));
+  g.append(resTile(BIO.resources.find(r=>r.id==='lab-fotosintesis')));
+  [['🫀','Frecuencia cardíaca y ejercicio','Registra pulsaciones antes y después de distintas intensidades.',['cuerpo'],'¿Cuánto tarda tu corazón en recuperarse después del ejercicio?'],['🧫','Enzimas: catalasa y temperatura','Descomposición de H₂O₂ por catalasa de hígado o papa.',['celular','cuerpo'],'¿A qué temperatura trabaja mejor una enzima y por qué deja de funcionar?'],['💧','Ósmosis en papa','Masa de cilindros de papa en soluciones de distinta concentración.',['celular'],'Encuentra la concentración de sal en la que la papa no gana ni pierde agua.'],['🍞','Fermentación de levadura','CO₂ producido según azúcar y temperatura.',['celular','biodiversidad'],'¿Qué necesita la levadura para producir más CO₂?']].forEach(([em,t,s2,ids,reto]) => g.append(h('a',{class:'tile res lab planned',href:'#/laboratorio/fotosintesis',onclick:e=>{e.preventDefault();toast('Laboratorio planificado para la fase 2.');}}, h('span',{class:'ico'},em), h('span',{class:'tipo'},'Laboratorio · transversal'), h('h3',{},t), h('p',{},s2), h('div',{class:'res-reto'}, h('b',{},'🎯 Propósito'), h('span',{},reto)), areaTags(ids), h('span',{class:'pill soon'},'Fase 2'))));
   view.append(g);
 });
 
 route('/laboratorio/fotosintesis', (view) => {
   view.classList.add('wide');
-  view.append(h('div',{class:'page-head',style:'margin-bottom:14px'}, h('div',{}, h('span',{class:'eyebrow lab'},'Laboratorio virtual · Unidad 3 · Metabolismo celular'), h('h1',{},'Fotosíntesis: ¿qué limita la producción de oxígeno?'), h('p',{},'Una rama de Elodea sumergida libera burbujas de O₂ cuando fotosintetiza. Contar burbujas por minuto es una forma clásica de medir la tasa fotosintética.')), h('span',{class:'pill lab'},'+120 XP')));
+  view.append(h('div',{class:'page-head',style:'margin-bottom:14px'}, h('div',{}, h('span',{class:'eyebrow lab'},'Laboratorio transversal · Mundo celular · Biodiversidad y ecosistemas'), h('h1',{},'Fotosíntesis: ¿qué limita la producción de oxígeno?'), h('p',{},'Una rama de Elodea sumergida libera burbujas de O₂ cuando fotosintetiza. Contar burbujas por minuto es una forma clásica de medir la tasa fotosintética.')), h('span',{class:'pill lab'},'+120 XP')));
+  view.append(purposeBanner({ proposito:'Descubrir qué factores limitan la fotosíntesis y por qué la tasa no puede aumentar sin límite.', observa:['Cómo cambian las burbujas de O₂ al variar un solo factor','Qué pasa con tus datos si cambias dos variables a la vez'], reto:'Encuentra el valor a partir del cual aumentar el factor ya casi no aumenta la tasa (la meseta) y explica qué otro factor pasa a limitarla.', done: !!Store.s.activities['lab-fotosintesis']?.done }));
   const STEPS = ['Pregunta','Hipótesis','Materiales','Procedimiento','Variables','Experimentación','Resultados','Representación','Análisis','Conclusión'];
   const L = { step:0, done:new Set(), hip:'', indep:'', vars:{luz:50,co2:0.3,temp:25,agua:80}, runs:[], analysis:{}, concl:'' };
   const VARS = { luz:{n:'Intensidad de luz',u:'%',min:0,max:100,step:5}, co2:{n:'CO₂ (bicarbonato)',u:'%',min:0,max:1,step:0.05}, temp:{n:'Temperatura',u:'°C',min:5,max:55,step:1}, agua:{n:'Agua disponible',u:'%',min:10,max:100,step:5} };
@@ -2525,7 +3042,7 @@ route('/laboratorio/fotosintesis', (view) => {
    EVALUACIÓN INTERACTIVA · PROGRESO · CUADERNO · DOCENTE · INICIO APP
    ===================================================================== */
 route('/evaluacion', (view) => {
-  view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow'},'Evaluación interactiva'), h('h1',{},'Demuestra lo que comprendes, no lo que memorizas'), h('p',{},'Selección directa sobre modelos 3D, ordenamiento de procesos, relación estructura-función, verdadero/falso argumentado. Retroalimentación inmediata y específica.'))));
+  view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow'},'Evaluación interactiva · transversal'), h('h1',{},'Demuestra lo que comprendes, no lo que memorizas'), h('p',{},'Selección directa sobre modelos 3D, ordenamiento de procesos, relación estructura-función, verdadero/falso argumentado. Retroalimentación inmediata y específica.'))));
   const g = h('div',{class:'grid g3'});
   g.append(h('a',{class:'tile anat',href:'#/evaluacion/corazon'}, h('span',{class:'ico'},'🫀'), h('h3',{},'El corazón y la circulación'), h('p',{},'5 ítems · selección visual, ordenar, relacionar, V/F argumentado.'), Store.s.activities['eval-corazon']?.done ? h('span',{class:'pill ok soon'},`Realizada · ${Store.s.activities['eval-corazon'].score}`) : h('span',{class:'pill anat soon'},'Disponible')));
   g.append(h('a',{class:'tile cell',href:'#/explorar/celula'}, h('span',{class:'ico'},'🔬'), h('h3',{},'Quiz visual de la célula'), h('p',{},'Selecciona organelos directamente sobre el modelo 3D según su función.'), h('span',{class:'pill cell soon'},'En el explorador celular')));
@@ -2574,7 +3091,10 @@ route('/progreso', (view) => {
   [[s.xp,'XP acumulados'],['Nivel '+Store.level(),`${400-(s.xp%400)} XP para el siguiente nivel`],[Object.values(s.activities).filter(a=>a.done).length+'/'+Object.keys(BIO.activities).length,'actividades completadas'],[`${Object.values(BIO.organs).reduce((a,o)=>a+(s.seen[o.id]||[]).length,0)+(s.seen['celula-animal']||[]).length}/${Object.values(BIO.organs).reduce((a,o)=>a+o.structures.length,0)+BIO.cell.structures.length}`,'estructuras exploradas']].forEach(([v,l]) => top.append(h('div',{class:'card stat'}, h('span',{class:'v'},String(v)), h('span',{class:'l'},l))));
   view.append(top, h('div',{style:'height:16px'}));
   const g = h('div',{class:'grid g2'});
-  const units = h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Progreso por unidad')); BIO.units.forEach(u => { const pr = Store.unitProgress(u.n); units.append(h('div',{}, h('div',{class:'row',style:'justify-content:space-between;font-size:.86rem'}, h('span',{},`U${u.n} · ${u.t}`), h('span',{class:'mono small muted'},pr+'%')), h('div',{class:'progress'},h('i',{style:`width:${pr}%`})))); });
+  const units = h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Progreso por área y unidad'));
+  const uRow = (u, dom) => { const pr = Store.unitProgress(u.n); return h('div',{style:'padding-left:16px'}, h('div',{class:'row',style:'justify-content:space-between;font-size:.84rem'}, h('span',{},`U${u.n} · ${u.t}`), h('span',{class:'mono small muted'},pr+'%')), h('div',{class:'progress'+(dom?' '+dom:'')},h('i',{style:`width:${pr}%`}))); };
+  BIO.areas.forEach(a => { units.append(h('a',{href:'#/area/'+a.id,class:'row',style:'justify-content:space-between;text-decoration:none;color:inherit;margin-top:4px'}, h('span',{class:'row',style:'gap:8px'}, h('span',{class:'navdot '+a.dom}), h('b',{},a.n)), h('span',{class:'mono small'},areaPct(a)+'%'))); BIO.units.filter(u=>a.unidades.includes(u.n)).forEach(u => units.append(uRow(u, a.dom))); });
+  units.append(h('div',{class:'row',style:'gap:8px;margin-top:4px'}, h('span',{class:'navdot mis'}), h('b',{},'Transversal'))); BIO.units.filter(u=>BIO.transversalUnits.includes(u.n)).forEach(u => units.append(uRow(u, null)));
   const badges = h('div',{class:'card'}, h('span',{class:'eyebrow'},'Insignias'), h('div',{class:'grid',style:'grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:10px'}, BIO.badges.map(b => h('div',{class:'badge-tile'+(s.badges.includes(b.id)?'':' locked')}, h('span',{class:'em'},b.em), h('span',{class:'n'},b.n), h('span',{class:'d'},b.d)))));
   const expl = h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Exploración de modelos'));
   [...Object.values(BIO.organs).map(o => [o.nombre, (s.seen[o.id]||[]).length, o.structures.length, 'anat', '#/explorar/'+o.id]), ['Célula animal', (s.seen['celula-animal']||[]).length, BIO.cell.structures.length, 'cell', '#/explorar/celula']].forEach(([n,a,b,d,href]) => expl.append(h('div',{}, h('div',{class:'row',style:'justify-content:space-between;font-size:.86rem'}, h('a',{href},n), h('span',{class:'mono small muted'},`${a}/${b} · ${Math.round(a/b*100)}%`)), h('div',{class:'progress '+d},h('i',{style:`width:${a/b*100}%`})))));
