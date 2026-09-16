@@ -5096,18 +5096,25 @@ const Admin = {
   docentes(){ return Object.values(Store.s.docentes || {}); },
   docente(id){ return (Store.s.docentes||{})[id]; },
   docentesDe(prog){ return this.docentes().filter(d => d.prog===prog); },
+  /* sugerencia según la convención institucional: inicial del nombre + primer apellido (jheredia@anai.edu.ec); siempre editable */
   emailDocente(nombres, apellidos){
-    const n = sinTildes(String(nombres||'').trim().split(/\s+/)[0] || 'docente').toLowerCase().replace(/[^a-z]/g,'');
+    const n = sinTildes(String(nombres||'').trim()).toLowerCase().replace(/[^a-z]/g,'');
     const a = sinTildes(String(apellidos||'').trim().split(/\s+/)[0] || '').toLowerCase().replace(/[^a-z]/g,'');
-    let base = a ? `${n}.${a}` : n, email = `${base}@${DOMINIO_DOC}`, i = 2;
+    let base = (n[0]||'') + a || n || 'docente', email = `${base}@${DOMINIO_DOC}`, i = 2;
     while (this.docentes().some(d => d.email === email)) email = `${base}${i++}@${DOMINIO_DOC}`;
     return email;
   },
-  async crearDocente({nombres, apellidos, prog, cursos}){
+  validarEmail(email, idActual){
+    const e = String(email||'').trim().toLowerCase();
+    if (!/^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(e)) return { ok:false, msg:'Escribe un correo válido, por ejemplo jheredia@anai.edu.ec.' };
+    if (this.docentes().some(d => d.email.toLowerCase() === e && d.id !== idActual)) return { ok:false, msg:'Ya existe un docente con ese correo.' };
+    return { ok:true, email:e };
+  },
+  async crearDocente({nombres, apellidos, prog, cursos, email}){
     const d = Store.s.docentes = Store.s.docentes || {};
     const pass = generarPass(), id = 'd'+Date.now().toString(36);
     d[id] = { id, nombres:capital(nombres), apellidos:capital(apellidos), nombre:(capital(nombres)+' '+capital(apellidos)).trim(),
-      email:this.emailDocente(nombres, apellidos), prog, cursos:cursos||[], temp:pass, hash: await hashPass(pass),
+      email:(email && String(email).trim().toLowerCase()) || this.emailDocente(nombres, apellidos), prog, cursos:cursos||[], temp:pass, hash: await hashPass(pass),
       cambiar:true, entregada:false, creado:Date.now(), ultimoAcceso:null };
     Store.save(); Store.log('admin_docente_creado', { prog }); return d[id];
   },
@@ -5293,14 +5300,17 @@ function admDocentes(body, rerender){
   const nom = h('input',{type:'text',placeholder:'Nombres','aria-label':'Nombres'});
   const ape = h('input',{type:'text',placeholder:'Apellidos','aria-label':'Apellidos'});
   const prog = h('select',{'aria-label':'Asignatura'}, Object.values(BIO.programas).map(p=>h('option',{value:p.id},'Docente de '+p.n)));
-  const vista = h('span',{class:'small muted'});
-  const actualizar = () => { vista.textContent = (nom.value||ape.value) ? 'Usuario: '+Admin.emailDocente(nom.value, ape.value) : `Usuario: nombre.apellido@${DOMINIO_DOC}`; };
-  nom.addEventListener('input', actualizar); ape.addEventListener('input', actualizar); actualizar();
+  const mail = h('input',{type:'email',placeholder:`jheredia@${DOMINIO_DOC}`,'aria-label':'Correo institucional del docente'});
+  let mailEditado = false; mail.addEventListener('input', ()=>{ mailEditado = mail.value.trim().length > 0; });
+  const vista = h('span',{class:'small muted'},'El correo se sugiere con la convención institucional (inicial + apellido) y puedes corregirlo: a ese correo se envían las credenciales.');
+  const actualizar = () => { if (!mailEditado) mail.value = (nom.value||ape.value) ? Admin.emailDocente(nom.value, ape.value) : ''; };
+  nom.addEventListener('input', actualizar); ape.addEventListener('input', actualizar);
   body.append(h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Crear una cuenta docente'),
     h('p',{class:'small muted'},'Puede haber tantos docentes como haga falta en cada asignatura. Cada docente entra únicamente a su entorno y a los cursos que se le asignen; no administra usuarios.'),
-    h('div',{class:'adm-form'}, h('label',{},'Nombres', nom), h('label',{},'Apellidos', ape), h('label',{},'Asignatura', prog),
+    h('div',{class:'adm-form'}, h('label',{},'Nombres', nom), h('label',{},'Apellidos', ape), h('label',{},'Correo institucional', mail), h('label',{},'Asignatura', prog),
       h('button',{class:'btn primary',onclick:async function(){ if (!nom.value.trim() || !ape.value.trim()) return toast('Escribe nombres y apellidos.');
-        this.disabled = true; const d = await Admin.crearDocente({nombres:nom.value, apellidos:ape.value, prog:prog.value, cursos:[]});
+        const v = Admin.validarEmail(mail.value); if (!v.ok) return toast(v.msg);
+        this.disabled = true; const d = await Admin.crearDocente({nombres:nom.value, apellidos:ape.value, prog:prog.value, cursos:[], email:v.email});
         this.disabled = false; toast(`Cuenta creada: ${d.email}`); credDocenteModal(d, rerender); rerender(); }},'Crear docente')),
     vista));
   const ds = Admin.docentes();
@@ -5320,13 +5330,18 @@ function admDocentes(body, rerender){
         d.ultimoAcceso ? h('div',{class:'small muted'},'Ingresó '+timeAgo(d.ultimoAcceso)) : h('div',{class:'small muted'},'Sin ingresar')),
       h('td',{style:'white-space:nowrap'}, h('div',{class:'row',style:'gap:6px;flex-wrap:nowrap'},
         h('button',{class:'btn sm ghost',onclick:()=>credDocenteModal(d, rerender)},'Credenciales'),
+        h('button',{class:'btn sm ghost',onclick:()=>{ const inp = h('input',{type:'email',value:d.email,'aria-label':'Correo'});
+          openModal(h('div',{class:'stack'}, h('h3',{},'Corregir el correo de '+d.nombre), inp, h('div',{class:'row'},
+            h('button',{class:'btn primary sm',onclick:()=>{ const v = Admin.validarEmail(inp.value, d.id); if (!v.ok) return toast(v.msg); d.email = v.email; Store.save(); closeModal(); rerender(); toast('Correo actualizado.'); }},'Guardar'),
+            h('button',{class:'btn sm ghost',onclick:closeModal},'Cancelar')))); }},'Corregir correo'),
         h('button',{class:'btn sm ghost',onclick:async()=>{ await Admin.resetDocente(d.id); rerender(); toast('Contraseña restablecida.'); }},'Restablecer'),
         h('button',{class:'btn sm ghost',onclick:()=>{ if (confirm(`¿Eliminar la cuenta de ${d.nombre}?`)){ Admin.borrarDocente(d.id); rerender(); } }},'Eliminar')))))));
   body.append(h('div',{class:'tablewrap',style:'margin-top:16px'}, tbl));
   body.append(h('p',{class:'small muted',style:'margin-top:10px'},'El docente de Ciencias Naturales solo ve 8.º, 9.º y 10.º de EGB; el de Biología solo ve Bachillerato. Ninguno puede crear usuarios ni cursos.'));
 }
 function credDocenteModal(d, rerender){
-  const txt = `Estimado/a ${d.nombres}, estas son sus credenciales de ANAI BioLab (${BIO.programas[d.prog].n}):\n\nUsuario: ${d.email}\nContraseña temporal: ${d.temp || '(ya la cambió)'}\n\nAl ingresar por primera vez el sistema le pedirá crear su propia contraseña.`;
+  const marca = d.prog==='cn' ? 'ANAI Ciencias' : 'ANAI BioLab';
+  const txt = `Estimado/a ${d.nombres}, estas son sus credenciales de ${marca} (${BIO.programas[d.prog].n} · ${BIO.programas[d.prog].sub}):\n\nUsuario: ${d.email}\nContraseña temporal: ${d.temp || '(ya la cambió)'}\n\nAl ingresar por primera vez el sistema le pedirá crear su propia contraseña.`;
   const ta = h('textarea',{style:'min-height:130px'}, txt);
   openModal(h('div',{class:'stack'}, h('span',{class:'eyebrow'},'Credenciales de docente'), h('h3',{},d.nombre),
     h('div',{class:'cred-box'}, h('div',{}, h('span',{class:'small muted'},'Usuario'), h('b',{class:'mono'},d.email)), h('div',{}, h('span',{class:'small muted'},'Contraseña temporal'), h('b',{class:'mono'},d.temp||'—'))),
@@ -5387,7 +5402,7 @@ async function admDemo(){
   const base = [ {prog:'cn', nivel:8, par:'A'}, {prog:'cn', nivel:9, par:'A'}, {prog:'bio', nivel:2, par:'A'} ];
   for (const b of base){ if (!Admin.cursoDe(b.nivel,b.par)) Admin.crearCurso({prog:b.prog, nivel:b.nivel, paralelo:b.par}); }
   const d1 = Admin.docentes().find(d=>d.prog==='cn') || await Admin.crearDocente({nombres:'Paola', apellidos:'Villacís', prog:'cn', cursos:[]});
-  const d2 = Admin.docentes().find(d=>d.prog==='bio') || await Admin.crearDocente({nombres:'Jonathan', apellidos:'Heredia', prog:'bio', cursos:[]});
+  const d2 = Admin.docentes().find(d=>d.prog==='bio') || await Admin.crearDocente({nombres:'Jonathan', apellidos:'Heredia', prog:'bio', cursos:[], email:'jheredia@'+DOMINIO_DOC});
   Admin.cursos().filter(c=>c.prog==='cn').forEach(c => Admin.asignar(d1.id, c.id, true));
   Admin.cursos().filter(c=>c.prog==='bio').forEach(c => Admin.asignar(d2.id, c.id, true));
   const filas = [];
