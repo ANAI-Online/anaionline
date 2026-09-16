@@ -11,7 +11,7 @@
 </head>
 <body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&family=Atkinson+Hyperlegible:wght@400;700&family=Lexend:wght@400;500;700&display=swap">
 <style>
 /* ============ TOKENS ============ */
 :root{
@@ -66,7 +66,7 @@
 /* ============ BASE ============ */
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-b);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-b);font-size:calc(15px * var(--text-scale,1));line-height:calc(1.55 + var(--line-extra,0em));-webkit-font-smoothing:antialiased}
 h1,h2,h3,h4{font-family:var(--font-d);margin:0;line-height:1.15;text-wrap:balance;letter-spacing:-.01em}
 h1{font-size:clamp(1.9rem,3.6vw,2.8rem);font-weight:800}
 h2{font-size:clamp(1.35rem,2.4vw,1.75rem);font-weight:800}
@@ -469,6 +469,145 @@ table.data tr:last-child td{border-bottom:0}
 .pn{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--ink);color:var(--bg);font-family:var(--font-d);font-weight:800;font-size:.74rem;flex:none;margin-top:1px}
 .part.on .pn{background:var(--accent);color:#fff}
 
+
+/* ============ ACCESIBILIDAD (NEE) ============ */
+:root{--text-scale:1;--line-extra:0em}
+html[data-font="hyper"] body,html[data-font="hyper"] .nav,html[data-font="hyper"] button,html[data-font="hyper"] input,html[data-font="hyper"] textarea{font-family:"Atkinson Hyperlegible",var(--font-b)}
+html[data-font="hyper"] h1,html[data-font="hyper"] h2,html[data-font="hyper"] h3,html[data-font="hyper"] h4,html[data-font="hyper"] .eyebrow{font-family:"Atkinson Hyperlegible",var(--font-d);letter-spacing:0}
+html[data-font="lexend"] body,html[data-font="lexend"] button,html[data-font="lexend"] input,html[data-font="lexend"] textarea{font-family:"Lexend",var(--font-b)}
+html[data-font="lexend"] h1,html[data-font="lexend"] h2,html[data-font="lexend"] h3,html[data-font="lexend"] h4{font-family:"Lexend",var(--font-d)}
+html[data-contrast="alto"]{--bg:#FFFFFF;--bg-2:#FFFFFF;--bg-3:#ECF1F6;--ink:#000000;--ink-2:#14243A;--ink-3:#2C3D55;--line:#4A5B72;--line-2:#31465F;--accent:#0A5C68;--accent-2:#07434C;--accent-soft:#D3EEF2;--anat:#9E2A24;--cell:#0A5C68;--gen:#4A3A9E;--eco:#22633A;--lab:#8A5A0B;--mis:#7A5C0B;--ok:#1C6B3E;--bad:#96251A;--warn:#8A5A0B;--chart-grid:#A9B6C6}
+html[data-contrast="alto"] .tile,html[data-contrast="alto"] .card,html[data-contrast="alto"] .act,html[data-contrast="alto"] .notice{border-width:2px}
+html[data-contrast="alto"] a{text-decoration:underline}
+html[data-contrast="alto"] .muted,html[data-contrast="alto"] .small.muted{color:var(--ink-2)}
+html[data-focus-mode="on"] .sidebar{display:none}
+html[data-focus-mode="on"] #app{grid-template-columns:1fr}
+html[data-focus-mode="on"] .view{max-width:1100px}
+html[data-motion="reducido"] *,html[data-motion="reducido"] *::before,html[data-motion="reducido"] *::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+.tts-btn{padding:4px 8px;font-size:.78rem}
+.a11y-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.a11y-card{display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:var(--r-l);border:1px solid var(--line);background:var(--bg-2)}
+.a11y-card h3{font-size:1rem}
+.a11y-card .small{color:var(--ink-2)}
+.segbtns{display:flex;gap:6px;flex-wrap:wrap}
+.segbtns button{padding:7px 12px;border-radius:9px;border:1px solid var(--line-2);background:var(--bg-2);font-weight:600;font-size:.85rem}
+.segbtns button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.sample{padding:12px 14px;border-radius:12px;background:var(--bg-3);font-size:.95rem}
+
+/* ============ ¿DÓNDE ESTOY?: RUTA DE NAVEGACIÓN ============ */
+.crumbs{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 28px 0;font-size:.8rem;color:var(--ink-3);max-width:1280px;width:100%;margin:0 auto}
+.crumbs a{color:var(--ink-3);text-decoration:none}
+.crumbs a:hover{color:var(--accent);text-decoration:underline}
+.crumbs [aria-current="page"]{color:var(--ink);font-weight:600}
+.crumbs .sep{opacity:.6}
+.crumbs .crumb-map{margin-left:auto;border:1px solid var(--line);border-radius:999px;padding:3px 10px;background:var(--bg-2);font-weight:600}
+
+/* ============ AVISOS (CAMPANA) ============ */
+.bell-wrap{position:relative}
+#btn-bell .dot{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--anat);box-shadow:0 0 0 2px var(--bg-2)}
+.bell-panel{display:none;position:absolute;top:44px;right:0;width:min(360px,calc(100vw - 32px));background:var(--bg-2);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-lg);z-index:60;overflow:hidden;max-height:70vh;overflow-y:auto}
+.bell-panel.open{display:block}
+.bell-head{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--line)}
+.bell-item{display:flex;gap:10px;align-items:flex-start;padding:11px 14px;border-bottom:1px solid var(--line);text-decoration:none!important;color:var(--ink);background:color-mix(in srgb,var(--accent-soft) 26%,transparent)}
+.bell-item.leido{background:transparent}
+.bell-item:hover{background:var(--bg-3)}
+.bell-item .em{font-size:1.1rem}
+.bell-item b{display:block;font-size:.88rem}
+.bell-item .small{display:block;line-height:1.35}
+.bell-empty{padding:18px 14px;color:var(--ink-3);font-size:.85rem}
+.bell-foot{display:block;padding:10px 14px;font-size:.8rem;font-weight:600;text-align:center}
+
+/* ============ BIENVENIDA (ASISTENTE) ============ */
+.wizard{position:fixed;inset:0;z-index:120;background:color-mix(in srgb,var(--bg-deep) 82%,transparent);display:grid;place-items:center;padding:16px;overflow:auto;backdrop-filter:blur(3px)}
+.wizard[hidden]{display:none}
+.wizard-box{background:var(--bg-2);border-radius:22px;max-width:720px;width:100%;padding:26px;box-shadow:var(--shadow-lg);display:flex;flex-direction:column;gap:18px;max-height:92vh;overflow:auto}
+.wz-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-d)}
+.wz-brand .logo-mark{width:30px;height:30px;border-radius:9px;background:var(--accent-soft);display:grid;place-items:center}
+.wz-roles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.wz-role{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;padding:16px;border-radius:14px;border:1px solid var(--line);background:var(--bg-2);color:var(--ink)}
+.wz-role:hover{border-color:var(--accent);background:var(--accent-soft)}
+.wz-role .em{font-size:1.7rem}
+.wz-years{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.wz-year{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;padding:14px;border-radius:14px;border:1.5px solid var(--line);background:var(--bg-2);color:var(--ink)}
+.wz-year .em{font-size:1.4rem}
+.wz-year.on{border-color:var(--accent);background:var(--accent-soft)}
+.wz-tips{display:grid;gap:10px}
+.wz-tip{display:flex;gap:12px;align-items:flex-start;text-align:left;padding:12px 14px;border-radius:12px;background:var(--bg-3);border:1px solid transparent;color:var(--ink);width:100%}
+button.wz-tip:hover{border-color:var(--accent);background:var(--accent-soft)}
+.wz-tip .em{font-size:1.3rem}
+
+/* ============ RECORRIDO GUIADO ============ */
+.coach{position:fixed;inset:0;z-index:110}
+.coach[hidden]{display:none}
+.coach-hole{position:fixed;border-radius:14px;box-shadow:0 0 0 9999px rgba(7,14,25,.62);transition:all .25s ease;pointer-events:none;border:2px solid var(--accent)}
+.coach-card{position:fixed;background:var(--bg-2);border-radius:16px;padding:16px;box-shadow:var(--shadow-lg);display:flex;flex-direction:column;gap:8px;z-index:111}
+.coach-card p{font-size:.88rem;color:var(--ink-2)}
+
+/* ============ BANNER DE REENCUENTRO Y SIGUIENTE PASO ============ */
+.welcome,.nextstep{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:14px 18px;border-radius:var(--r-l);border:1px solid var(--line);background:linear-gradient(180deg,color-mix(in srgb,var(--accent-soft) 60%,var(--bg-2)),var(--bg-2));margin-bottom:18px}
+.welcome .em,.nextstep .em{font-size:1.6rem}
+.nextstep{background:linear-gradient(180deg,color-mix(in srgb,var(--mis-soft) 55%,var(--bg-2)),var(--bg-2))}
+
+/* ============ MAPA DE ORIENTACIÓN ============ */
+.map{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.map-area{display:flex;flex-direction:column;gap:7px;padding:16px;border-radius:var(--r-l);border:1px solid var(--line);background:var(--bg-2);text-decoration:none!important;color:var(--ink);position:relative;transition:transform .15s}
+.map-area:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.map-area .ico{font-size:1.5rem}
+.map-area.actual{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.map-area.proximo{opacity:.62}
+.map-tag{position:absolute;top:12px;right:12px;font-size:.64rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.map-area.actual .map-tag{color:var(--accent)}
+.map-row{display:flex;gap:8px;flex-wrap:wrap}
+.map-chip{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;border:1px solid var(--line);background:var(--bg-2);text-decoration:none!important;color:var(--ink);font-weight:600;font-size:.86rem}
+.map-chip:hover{border-color:var(--accent);background:var(--accent-soft)}
+.map-path{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.map-step{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:12px;background:var(--bg-2);border:1px solid var(--line);text-decoration:none!important;color:var(--ink);font-size:.82rem}
+.map-step .n{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-family:var(--font-d);font-weight:800;font-size:.72rem}
+
+/* ============ TABLAS DE CALIFICACIONES Y REPORTES ============ */
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--bg-2)}
+.tablewrap table.data{min-width:640px}
+table.data th{padding:10px;white-space:nowrap}
+table.grades td.nota{text-align:center;font-family:var(--font-m);font-variant-numeric:tabular-nums;cursor:pointer;font-weight:600}
+table.grades td.nota.ok{background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok)}
+table.grades td.nota.mid{background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn)}
+table.grades td.nota.low{background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad)}
+table.grades td.nota.na{color:var(--ink-3)}
+table.grades td.nota:hover{outline:2px solid var(--accent);outline-offset:-2px}
+table.data td.mono,table.data td.mono.ok,table.data td.mono.mid,table.data td.mono.low{font-family:var(--font-m);font-variant-numeric:tabular-nums}
+table.data td.mono.ok{color:var(--ok)} table.data td.mono.mid{color:var(--warn)} table.data td.mono.low{color:var(--bad)} table.data td.mono.na{color:var(--ink-3)}
+table.data .sticky{position:sticky;left:0;background:var(--bg-2);z-index:1;min-width:190px}
+table.data tfoot td{border-top:2px solid var(--line);font-weight:700;background:var(--bg-3)}
+table.grades{table-layout:fixed;min-width:940px}
+table.grades th.rot{font-size:.64rem;white-space:normal;line-height:1.25;width:80px;overflow-wrap:anywhere;vertical-align:bottom}
+table.grades th.sticky,table.grades td.sticky{width:210px}
+table.grades th:nth-last-child(-n+2),table.grades td:nth-last-child(-n+2){width:88px;text-align:center}
+table.grades th:nth-last-child(-n+2){white-space:normal;font-size:.64rem;line-height:1.25;vertical-align:bottom}
+th.rot{font-size:.68rem;white-space:normal}
+.report{border:1px solid var(--line);border-radius:var(--r-l);background:var(--bg-2);padding:22px}
+.report-head{display:flex;gap:18px;align-items:center;justify-content:space-between;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:14px}
+.report h3{margin:14px 0 8px}
+
+/* ============ IMPRESIÓN ============ */
+@media print{
+  .sidebar,.topbar,.bottomnav,.crumbs,.noprint,.bell-panel,.coach,.wizard,.toast{display:none!important}
+  #app{grid-template-columns:1fr}
+  .view{padding:0;max-width:none}
+  .card,.report,.tablewrap{break-inside:avoid;box-shadow:none}
+  body{background:#fff;font-size:12px}
+  a{color:inherit;text-decoration:none}
+}
+
+/* etiquetas de año en las áreas */
+.yeartag{position:absolute;top:4px;left:0;right:0;text-align:center;font-size:.62rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px;color:var(--ink-3);background:var(--bg-3)}
+.area-tile{padding-top:26px}
+.yeartag.actual{background:var(--accent);color:#fff}
+.area-tile.anat .yeartag.actual{background:var(--anat)} .area-tile.cell .yeartag.actual{background:var(--cell)} .area-tile.gen .yeartag.actual{background:var(--gen)} .area-tile.eco .yeartag.actual{background:var(--eco)}
+.yeartag.repaso{background:var(--bg-3);color:var(--ink-2)}
+.yeartag.proximo{background:transparent;color:var(--ink-3)}
+.area-tile.proximo{opacity:.72}
+.area-tile.actual{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+
 /* ============ RESPONSIVE ============ */
 @media (max-width:1100px){
   .access{grid-template-columns:repeat(3,1fr)}
@@ -479,6 +618,7 @@ table.data tr:last-child td{border-bottom:0}
   .loop div:not(:last-child)::after{display:none}
   .readouts{grid-template-columns:repeat(2,1fr)}
   .areas-grid{grid-template-columns:repeat(2,1fr)}
+  .map{grid-template-columns:repeat(2,1fr)}
   .transv{grid-template-columns:1fr}
   .transv-grid{grid-template-columns:repeat(2,1fr)}
   .reto-body{grid-template-columns:1fr 1fr}
@@ -505,6 +645,10 @@ table.data tr:last-child td{border-bottom:0}
   .stage{min-height:400px}
   .userchip .n,.userchip .c{display:none}
   .curr{grid-template-columns:1fr}
+  .crumbs{padding:8px 16px 0}
+  .wz-roles,.wz-years{grid-template-columns:1fr}
+  .map{grid-template-columns:1fr}
+  .coach-card{left:12px!important;right:12px;width:auto!important;max-width:none}
   .reto-body{grid-template-columns:1fr}
   .reto-col+.reto-col{border-left:0;border-top:1px solid var(--line)}
   .reto-t{white-space:normal}
@@ -520,6 +664,10 @@ table.data tr:last-child td{border-bottom:0}
   .prog-step .s{max-width:none}
   .prog-step.on .dot{transform:none}
   .detail-bar{top:auto;bottom:52px}
+}
+@media (max-width:520px){
+  #btn-motion,#btn-help{display:none}
+  .topbar{gap:8px;padding:10px 12px}
 }
 @media (max-width:480px){
   .loop{grid-template-columns:repeat(2,1fr)}
@@ -545,7 +693,7 @@ table.data tr:last-child td{border-bottom:0}
       <span><b>ANAI BioLab</b><span class="sub">Laboratorio virtual</span></span>
     </a>
     <nav class="nav" id="nav-main"></nav>
-    <div class="sidebar-foot">Prototipo MVP · ANAI Online<br><span class="mono">v0.4 · Ciencias Naturales · Biología BGU</span></div>
+    <div class="sidebar-foot">Prototipo MVP · ANAI Online<br><span class="mono">v0.5 · Ciencias Naturales · Biología BGU</span></div>
   </aside>
   <div class="main">
     <header class="topbar">
@@ -555,15 +703,24 @@ table.data tr:last-child td{border-bottom:0}
         <input type="search" id="search-input" placeholder="Buscar: mitocondria, ventrículo, fotosíntesis…" aria-label="Búsqueda universal" autocomplete="off">
         <div class="search-results" id="search-results" role="listbox" aria-label="Resultados"></div>
       </div>
+      <div class="bell-wrap">
+        <button class="iconbtn" id="btn-bell" aria-label="Avisos" title="Avisos" aria-expanded="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 6-3 7-3 7h18s-3-1-3-7"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="dot" id="bell-dot" hidden></span></button>
+        <div class="bell-panel" id="bell-panel" role="dialog" aria-label="Avisos"></div>
+      </div>
+      <button class="iconbtn" id="btn-a11y" aria-label="Mi forma de aprender" title="Mi forma de aprender: letra, contraste, voz"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4.5" r="1.6"/><path d="M4.5 8.5h15M12 8.5v6M12 14.5 8.5 21M12 14.5 15.5 21"/></svg></button>
+      <button class="iconbtn" id="btn-help" aria-label="Ayuda y recorrido" title="Ayuda: recorrido guiado y mapa"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 1 1 3.2 2.5c-.5.2-.7.6-.7 1.1v.7"/><path d="M12 17h.01"/></svg></button>
       <button class="iconbtn" id="btn-motion" aria-label="Pausar animaciones" title="Pausar / reanudar animaciones" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg></button>
-      <button class="iconbtn" id="btn-role" aria-label="Cambiar a vista docente" title="Alternar estudiante / docente"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 8l10 5 10-5-10-5z"/><path d="M6 10.5V16c0 1.5 3 3 6 3s6-1.5 6-3v-5.5"/></svg></button>
-      <a class="userchip" href="#/progreso" id="userchip"><span><span class="n">Mateo Andrade</span><br><span class="c">1.º de Bachillerato</span></span><span class="avatar">MA</span></a>
+      <button class="iconbtn" id="btn-role" aria-label="Cambiar de vista: estudiante, docente o familia" title="Cambiar de vista: estudiante, docente o familia"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 8l10 5 10-5-10-5z"/><path d="M6 10.5V16c0 1.5 3 3 6 3s6-1.5 6-3v-5.5"/></svg></button>
+      <a class="userchip" href="#/progreso" id="userchip"><span><span class="n" id="chip-nombre">Mateo Andrade</span><br><span class="c" id="chip-curso">2.º de Bachillerato</span></span><span class="avatar">MA</span></a>
     </header>
+    <nav class="crumbs" id="crumbs" aria-label="Dónde estoy"></nav>
     <main id="view" class="view" tabindex="-1"></main>
   </div>
 </div>
 <nav class="bottomnav" id="nav-bottom" aria-label="Navegación móvil"></nav>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="coach" id="coach" hidden><div class="coach-hole" id="coach-hole"></div><div class="coach-card" id="coach-card" role="dialog" aria-label="Recorrido guiado"></div></div>
+<div class="wizard" id="wizard" hidden><div class="wizard-box" id="wizard-box" role="dialog" aria-modal="true" aria-label="Bienvenida"></div></div>
 <div class="modal-bg" id="modal-bg"><div class="modal" id="modal" role="dialog" aria-modal="true"></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
@@ -1214,6 +1371,112 @@ BIO.lungs.eyebrow = 'Cuerpo humano y salud · Unidad 6 · Sistema respiratorio';
 </script>
 <script>
 /* =====================================================================
+   COLEGIO: años de Bachillerato, códigos de acceso, curso de demostración,
+   tareas asignadas, adaptaciones NEE y representantes.
+   Todos los datos de estudiantes son ficticios.
+   ===================================================================== */
+BIO.school = { institucion:'ANAI Online', asignatura:'Biología',
+  docente:{ id:'doc-1', nombre:'Docente de Biología', email:'biologia@anai.edu.ec' } };
+
+/* Distribución de unidades por año (editable desde el panel docente) */
+BIO.years = [
+  { id:1, n:'1.º de Bachillerato', corto:'1.º BGU', unidades:[1,2,3],
+    d:'La vida y su organización, la célula y el metabolismo celular.' },
+  { id:2, n:'2.º de Bachillerato', corto:'2.º BGU', unidades:[4,5,6],
+    d:'Genética, evolución y anatomía y fisiología humana.' },
+  { id:3, n:'3.º de Bachillerato', corto:'3.º BGU', unidades:[7,8,9,10],
+    d:'Ecología, biodiversidad, biotecnología y biología aplicada.' }
+];
+BIO.year = id => BIO.years.find(y => y.id===id) || BIO.years[0];
+/* unidades de un año: la docente puede reasignarlas (se guarda en el navegador) */
+BIO.unitsOf = y => (typeof Store!=='undefined' && Store.s && Store.s.yearUnits && Store.s.yearUnits[y]) || BIO.year(y).unidades;
+BIO.yearOfUnit = u => (BIO.years.find(y => BIO.unitsOf(y.id).includes(u)) || BIO.years[0]).id;
+BIO.paralelos = ['A','B'];
+
+/* Códigos de acceso por año y paralelo (en la fase con servidor se validan en línea) */
+BIO.accessCodes = [
+  { code:'1BGU-A-7K3P', year:1, paralelo:'A', activo:true, usos:22 },
+  { code:'1BGU-B-M4QD', year:1, paralelo:'B', activo:true, usos:19 },
+  { code:'2BGU-A-R9TX', year:2, paralelo:'A', activo:true, usos:24 },
+  { code:'2BGU-B-V6HN', year:2, paralelo:'B', activo:true, usos:21 },
+  { code:'3BGU-A-J2WF', year:3, paralelo:'A', activo:true, usos:17 },
+  { code:'2BGU-A-OLD1', year:2, paralelo:'A', activo:false, usos:24 }
+];
+BIO.familyCode = 'FAM-2K9P';   /* código de representante de demostración (Mateo Andrade) */
+
+/* ---------- Ítems calificables: actividades y retos con su peso ---------- */
+BIO.gradeItems = [
+  { id:'explorar-celula', t:'Explorar la célula', corto:'Célula 3D', unidad:2, tipo:'Exploración', peso:1 },
+  { id:'reto-celula', t:'Reto: la fábrica de proteínas', corto:'Reto célula', unidad:2, tipo:'Reto', peso:2 },
+  { id:'lab-fotosintesis', t:'Laboratorio: fotosíntesis', corto:'Lab. fotosíntesis', unidad:3, tipo:'Laboratorio', peso:3 },
+  { id:'explorar-corazon', t:'Explorar el corazón', corto:'Corazón 3D', unidad:6, tipo:'Exploración', peso:1 },
+  { id:'guiada-corazon', t:'Exploración guiada del corazón', corto:'Guiada corazón', unidad:6, tipo:'Exploración', peso:1 },
+  { id:'reto-corazon', t:'Reto: dos circulaciones', corto:'Reto corazón', unidad:6, tipo:'Reto', peso:2 },
+  { id:'reto-cerebro', t:'Reto: el cerebro', corto:'Reto cerebro', unidad:6, tipo:'Reto', peso:2 },
+  { id:'reto-pulmones', t:'Reto: los pulmones', corto:'Reto pulmones', unidad:6, tipo:'Reto', peso:2 },
+  { id:'sim-circulacion', t:'Simulador cardiorrespiratorio', corto:'Simulador', unidad:6, tipo:'Simulador', peso:1 },
+  { id:'mision-globulo', t:'Misión: el viaje de un glóbulo rojo', corto:'Misión glóbulo', unidad:6, tipo:'Misión', peso:3 },
+  { id:'eval-corazon', t:'Evaluación: el corazón', corto:'Evaluación', unidad:6, tipo:'Evaluación', peso:4 }
+];
+BIO.gradeItemsOf = year => BIO.gradeItems.filter(i => BIO.unitsOf(year).includes(i.unidad));
+
+/* ---------- Curso de demostración (datos ficticios) ---------- */
+const NOMBRES = ['Valentina Cobo','Sebastián Ríos','Camila Ortiz','Nicolás Paredes','Isabella Mora','Emilio Vaca','Doménica Salas','Joaquín Torres','Martina Vélez','Andrés Cedeño','Rafaela Ponce','Matías Alvarado','Emilia Zambrano','Thiago Benítez','Antonella Guerra','Samuel Loor','Renata Espín','Ariel Chávez','Julieta Mendoza','Bruno Carrasco','Luciana Peña','Iván Maldonado','Sofía Arteaga','Daniel Yépez','Paula Jaramillo','Mateo Cárdenas','Elena Suárez','Gabriel Noboa','Amelia Vintimilla','Óliver Tapia'];
+const REPRE = ['Sra. Pérez','Sr. Gómez','Sra. Andrade','Sr. Villacís','Sra. Naranjo','Sr. Bustamante','Sra. Espinoza','Sr. Palacios'];
+const ADAPT = { 'letra-grande':'Letra grande', 'tipografia':'Tipografía legible', 'voz':'Lectura en voz alta', 'menos-movimiento':'Menos movimiento', 'pistas':'Pistas siempre visibles', 'intentos':'Intentos adicionales', 'tiempo':'Sin límite de tiempo' };
+BIO.adaptaciones = ADAPT;
+
+/* generador determinista: los mismos datos en cada visita */
+function lcg(seed){ let s = seed>>>0; return () => (s = (s*1664525 + 1013904223)>>>0) / 4294967296; }
+function buildRoster(){
+  const out = []; let k = 0;
+  const grupos = [ {year:1, par:'A', n:10}, {year:1, par:'B', n:8}, {year:2, par:'A', n:11}, {year:2, par:'B', n:8}, {year:3, par:'A', n:8} ];
+  grupos.forEach(g => {
+    const items = BIO.gradeItemsOf(g.year);
+    for (let i=0;i<g.n;i++){
+      const r = lcg(97 + k*31 + g.year*7);
+      const nombre = NOMBRES[k % NOMBRES.length]; k++;
+      const nivel = 0.3 + r()*0.68;                       // desempeño general del estudiante
+      const notas = {};
+      const DIF = [0.4,-0.5,0.2,0.5,-0.2,-0.7,0.1,-0.4,0.6,-0.3,-0.8];   // dificultad relativa de cada actividad
+      items.forEach((it,j) => { const hecho = r() < (nivel + 0.18 - j*0.045); if (hecho) notas[it.id] = Math.max(3.5, Math.min(10, Math.round((4.2 + nivel*5.6 + DIF[j%11]*1.6 + (r()-0.5)*2.6)*10)/10)); });
+      const dias = Math.round(Math.pow(r(),2)*14);         // días desde la última conexión
+      const adapt = []; if (r()<0.16) adapt.push('letra-grande'); if (r()<0.12) adapt.push('voz'); if (r()<0.1) adapt.push('pistas'); if (r()<0.08) adapt.push('tiempo');
+      out.push({ id:'e'+k, nombre, year:g.year, paralelo:g.par,
+        email: nombre.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z ]/g,'').split(' ').join('.')+'@anai.edu.ec',
+        rep: REPRE[k % REPRE.length], repTel:'09'+String(80000000 + Math.floor(r()*19999999)),
+        notas, dias, min: 60 + Math.round(nivel*260), adapt, demo:false });
+    }
+  });
+  return out;
+}
+BIO.roster = null;
+BIO.getRoster = () => BIO.roster || (BIO.roster = buildRoster());
+BIO.rosterOf = (year, par) => BIO.getRoster().filter(e => e.year===year && (!par || e.paralelo===par));
+/* El estudiante de demostración (Mateo Andrade) se integra al curso 2.º A y usa el progreso real de este navegador */
+BIO.demoStudentId = 'demo-mateo';
+
+/* Notas de arranque del estudiante de demostración (si aún no realiza la actividad en este navegador) */
+BIO.demoNotas = { 'explorar-corazon':8.6, 'guiada-corazon':8.0, 'explorar-celula':9.0, 'lab-fotosintesis':7.4, 'sim-circulacion':8.2, 'mision-globulo':8.8 };
+
+/* ---------- Tareas asignadas por la docente (fechas relativas a hoy) ---------- */
+const D = n => Date.now() + n*86400000;
+BIO.assignments = [
+  { id:'a1', item:'reto-corazon',    year:2, paralelo:'A', vence:D(2),  nota:'Resuélvelo después de observar los dos ventrículos.' },
+  { id:'a2', item:'mision-globulo',  year:2, paralelo:'A', vence:D(6),  nota:'Anota en el cuaderno dónde se carga y dónde se descarga el oxígeno.' },
+  { id:'a3', item:'eval-corazon',    year:2, paralelo:'A', vence:D(-1), nota:'Evaluación de la unidad 6.' },
+  { id:'a4', item:'reto-celula',     year:1, paralelo:'A', vence:D(3),  nota:'Ordena el recorrido de la insulina.' },
+  { id:'a5', item:'lab-fotosintesis',year:1, paralelo:'A', vence:D(8),  nota:'Formula tu hipótesis antes de experimentar.' }
+];
+
+/* ---------- Comentarios de la docente (vista de familia) ---------- */
+BIO.comentarios = [
+  { alumno:'demo-mateo', at:D(-2), txt:'Muy buena exploración del corazón. Le sugiero revisar el reto del tabique interventricular antes de la evaluación.' },
+  { alumno:'demo-mateo', at:D(-9), txt:'Completó la misión del glóbulo rojo con una argumentación clara.' }
+];
+</script>
+<script>
+/* =====================================================================
    NÚCLEO: store persistente, analítica, router, utilidades, búsqueda
    ===================================================================== */
 const $ = (s, r=document) => r.querySelector(s);
@@ -1234,10 +1497,48 @@ const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
 const fmtMin = m => m < 60 ? `${Math.round(m)} min` : `${Math.floor(m/60)} h ${Math.round(m%60)} min`;
 const timeAgo = ts => { const d = (Date.now()-ts)/60000; if (d<1) return 'ahora'; if (d<60) return `hace ${Math.round(d)} min`; if (d<1440) return `hace ${Math.round(d/60)} h`; return `hace ${Math.round(d/1440)} d`; };
 
+/* ---------- Rutas de cada actividad (avisos, tareas, reportes) ---------- */
+const ACT_HREF = {
+  'explorar-corazon':'#/explorar/corazon', 'guiada-corazon':'#/explorar/corazon?modo=guiada', 'reto-corazon':'#/explorar/corazon',
+  'reto-cerebro':'#/explorar/cerebro', 'reto-pulmones':'#/explorar/pulmones', 'explorar-celula':'#/explorar/celula',
+  'reto-celula':'#/explorar/celula', 'mision-globulo':'#/mision/globulo-rojo', 'lab-fotosintesis':'#/laboratorio/fotosintesis',
+  'sim-circulacion':'#/simuladores/circulacion', 'eval-corazon':'#/evaluacion/corazon'
+};
+
+/* ---------- Accesibilidad: se aplica al documento completo ---------- */
+function applyA11y(){
+  const a = Store.s.a11y, r = document.documentElement;
+  r.style.setProperty('--text-scale', a.text || 1);
+  r.style.setProperty('--line-extra', (a.spacing || 0) + 'em');
+  r.dataset.font = a.font || '';
+  r.dataset.contrast = a.contrast ? 'alto' : '';
+  r.dataset.focusMode = a.focus ? 'on' : '';
+  r.dataset.motion = (a.motion || !Store.s.settings.motion) ? 'reducido' : '';
+}
+/* Lectura en voz alta con la voz del propio navegador (sin servicios externos) */
+const TTS = {
+  get on(){ return !!Store.s.a11y.tts; },
+  speak(txt){ if (!('speechSynthesis' in window)) return toast('Tu navegador no admite la lectura en voz alta.');
+    const sp = window.speechSynthesis; if (sp.speaking){ sp.cancel(); return; }
+    const u = new SpeechSynthesisUtterance(String(txt).replace(/\s+/g,' ').trim());
+    const v = sp.getVoices().find(x=>/es/i.test(x.lang)); if (v) u.voice = v; u.lang = v?.lang || 'es-ES'; u.rate = 0.98;
+    sp.speak(u); Store.log('lectura_voz',{caracteres:String(txt).length}); },
+  stop(){ if ('speechSynthesis' in window) window.speechSynthesis.cancel(); },
+  btn(getText, label='Escuchar'){ return h('button',{class:'btn sm ghost tts-btn',title:'Leer en voz alta','aria-label':label,onclick:()=>TTS.speak(typeof getText==='function'?getText():getText)}, '🔊 ', label); }
+};
+
 /* ---------- STORE ---------- */
 const DEFAULT_STATE = () => ({
   version: 1,
-  user: { id:"demo-mateo", nombre:"Mateo Andrade", iniciales:"MA", curso:"1.º de Bachillerato", rol:"estudiante" },
+  user: { id:"demo-mateo", nombre:"Mateo Andrade", iniciales:"MA", curso:"2.º de Bachillerato", rol:"estudiante" },
+  /* sesión: rol, año matriculado y código usado (con servidor, esto lo valida el backend) */
+  session: { rol:"estudiante", year:null, paralelo:null, code:null, onboarded:false, tour:false, invitado:false, repaso:true },
+  /* accesibilidad: "Mi forma de aprender" */
+  a11y: { text:1, font:"", spacing:0, contrast:false, motion:false, focus:false, tts:false, level:1, hints:false },
+  visitas: { last:null, prev:null, total:0 },
+  avisos: { leidos:[], prefs:{ inactividad:true, vencimientos:true, logros:true } },
+  yearUnits: null,          // reasignación de unidades por año hecha por la docente
+  docente: { adapt:{}, notas:{}, codes:null },
   xp: 740,
   badges: ["explorador-celular"],
   // progreso base por unidad (datos ficticios de demostración → 37 %)
@@ -1250,7 +1551,7 @@ const DEFAULT_STATE = () => ({
   ],
   events: [],
   settings: { motion: true },
-  lastActivity: { t:"Explorar la célula animal", at: Date.now()-86400000, href:"#/explorar/celula" },
+  lastActivity: { t:"Explorar la célula animal", at: Date.now()-86400000*4, href:"#/explorar/celula" },
   timeMin: 0
 });
 const KEY = 'anai-biolab-v1';
@@ -1285,6 +1586,56 @@ const Store = {
     const b = BIO.badges.find(x=>x.id===id); toast(`${b.em} Insignia obtenida: ${b.n}`); this.log('insignia', {insignia:id}); return true;
   },
   addNote(k, txt, extra={}){ const e = Object.assign({ id:Math.random().toString(36).slice(2,9), k, at:Date.now(), txt }, extra); this.s.notebook.unshift(e); this.save(); this.log('cuaderno', {clase:k}); return e; },
+  /* ---- sesión y año ---- */
+  get ses(){ return this.s.session; },
+  yearUnits(){ return this.s.yearUnits || Object.fromEntries(BIO.years.map(y=>[y.id,y.unidades])); },
+  year(){ return this.ses.year; },
+  enroll(code, opts={}){
+    const c = (this.s.docente.codes || BIO.accessCodes).find(x => x.code.toUpperCase() === String(code||'').trim().toUpperCase());
+    if (!c) return { ok:false, msg:'Ese código no existe. Revisa las letras y los guiones, o pídeselo a tu docente.' };
+    if (!c.activo) return { ok:false, msg:'Ese código ya no está activo. Tu docente puede darte el código vigente.' };
+    Object.assign(this.ses, { rol:'estudiante', year:c.year, paralelo:c.paralelo, code:c.code, invitado:false });
+    this.s.user.curso = BIO.year(c.year).n;
+    this.save(); this.log('matricula',{year:c.year, paralelo:c.paralelo, codigo:c.code});
+    return { ok:true, year:c.year, paralelo:c.paralelo };
+  },
+  guest(year){ Object.assign(this.ses, { rol:'estudiante', year, paralelo:null, code:null, invitado:true }); this.s.user.curso = BIO.year(year).n; this.save(); this.log('acceso_invitado',{year}); },
+  /* estado de una unidad para el estudiante: de su año, de repaso o de un año posterior */
+  unitStatus(u){ const y = this.year(); if (!y) return 'actual'; const yu = BIO.yearOfUnit(u); return yu===y ? 'actual' : yu<y ? 'repaso' : 'proximo'; },
+  areaStatus(a){ const st = a.unidades.map(u => this.unitStatus(u)); return st.includes('actual') ? 'actual' : st.includes('repaso') ? 'repaso' : 'proximo'; },
+  canSee(u){ const st = this.unitStatus(u); return st==='actual' || (st==='repaso' && this.ses.repaso!==false); },
+  /* ---- accesibilidad ---- */
+  setA11y(patch){ Object.assign(this.s.a11y, patch); this.save(); applyA11y(); this.log('accesibilidad', patch); },
+  /* ---- visitas y avisos ---- */
+  touchVisit(){ const v = this.s.visitas; const now = Date.now();
+    if (!v.last){ v.prev = now - 86400000*4; v.total = 6; }   // demostración: la última visita fue hace 4 días
+    else if (now - v.last > 1800000) v.prev = v.last;
+    v.last = now; v.total++; this.save(); },
+  daysAway(){ const v = this.s.visitas; return v.prev ? Math.floor((Date.now()-v.prev)/86400000) : 0; },
+  avisos(){
+    const out = [], p = this.s.avisos.prefs, ses = this.ses;
+    const push = (id, em, t, d, href, tipo) => out.push({ id, em, t, d, href, tipo, leido: this.s.avisos.leidos.includes(id) });
+    const d = this.daysAway();
+    if (p.inactividad && d >= 2) push('inact-'+d, '👋', `Hace ${d} días que no entrabas`, `Te quedaste en "${this.s.lastActivity.t}". Retomar toma menos de 10 minutos.`, this.s.lastActivity.href, 'inactividad');
+    if (p.vencimientos) (BIO.assignments||[]).filter(a => (!ses.year || a.year===ses.year) && (!ses.paralelo || a.paralelo===ses.paralelo)).forEach(a => {
+      const it = BIO.gradeItems.find(i=>i.id===a.item); if (!it || this.s.activities[a.item]?.done) return;
+      const dias = Math.ceil((a.vence - Date.now())/86400000);
+      push('venc-'+a.id, dias<0?'⏰':'📌', dias<0 ? `Pendiente: ${it.t}` : `${it.t} · ${dias<=1?'vence mañana':'vence en '+dias+' días'}`, a.nota, ACT_HREF[a.item] || '#/panel', 'vencimiento');
+    });
+    const reto = ['corazon','cerebro','pulmones'].map(o => ({o, R:(BIO.organs[o]||{}).reto})).find(x => x.R && !this.s.activities['reto-'+x.o]?.done && (this.s.seen[x.o]||[]).length);
+    if (reto){ const got = reto.R.observa.filter(o=>(this.s.seen[reto.o]||[]).includes(o.id)).length;
+      if (got && got < reto.R.observa.length) push('reto-'+reto.o, '🎯', 'Tienes un reto a medias', `Te faltan ${reto.R.observa.length-got} observaciones para desbloquear el reto.`, '#/explorar/'+reto.o, 'reto'); }
+    if (p.logros){ const falt = BIO.badges.filter(b=>!this.s.badges.includes(b.id)).length; if (falt && this.s.xp) push('logro-xp','⭐','Estás cerca del siguiente nivel', `Nivel ${this.level()} · ${400 - this.s.xp%400} XP para el nivel ${this.level()+1}.`, '#/progreso','logro'); }
+    return out;
+  },
+  leerAviso(id){ if (!this.s.avisos.leidos.includes(id)){ this.s.avisos.leidos.push(id); this.save(); } },
+  leerTodos(){ this.s.avisos.leidos = this.avisos().map(a=>a.id); this.save(); },
+  /* ---- calificación del estudiante demo (sobre 10) ---- */
+  gradeOf(id){ const a = this.s.activities[id]; if (!a?.done) return null;
+    if (typeof a.score === 'string'){ const m = a.score.match(/^(\d+)\s*\/\s*(\d+)$/); if (m) return Math.round(+m[1]/+m[2]*100)/10; }
+    const at = a.attempts || 1; return Math.max(6, Math.round((10 - (at-1)*1.2)*10)/10); },
+  /* nota mostrada en el panel docente y en la vista de familia: la real si ya hizo la actividad, si no la de demostración */
+  gradeDemo(id){ const g = this.gradeOf(id); return g!=null ? g : (BIO.demoNotas[id] ?? null); },
   unitProgress(u){
     let p = this.s.unitBase[u] || 0;
     for (const [id,a] of Object.entries(BIO.activities)) if (a.unidad===u && this.s.activities[id]?.done) p += a.peso;
@@ -1315,8 +1666,10 @@ function depthBlock(s, key='n'){
   const body = h('p',{style:'margin-top:8px'});
   const setL = i => { $$('button',tabs).forEach((b,j)=>b.setAttribute('aria-selected', i===j)); body.textContent = levels[i][2]; Store.log('nivel_profundidad',{estructura:s.id,nivel:levels[i][0]}); };
   levels.forEach((l,i)=>tabs.append(h('button',{role:'tab','aria-selected':i===0,onclick:()=>setL(i)},`Nivel ${l[0]} · ${l[1]}`)));
-  body.textContent = levels[0][2];
-  return h('div',{},tabs,body);
+  const start = Math.min((Store.s.a11y.level||1)-1, levels.length-1);
+  body.textContent = levels[start][2];
+  $$('button',tabs).forEach((b,j)=>b.setAttribute('aria-selected', start===j));
+  return h('div',{}, tabs, body, Store.s.a11y.tts ? h('div',{class:'row',style:'margin-top:6px'}, TTS.btn(()=>body.textContent)) : null);
 }
 
 /* Pregunta de opción con retroalimentación específica */
@@ -1355,28 +1708,48 @@ function render(){
   currentView = fn(view, Object.assign(params, r.query)) || {};
   window.scrollTo({top:0, behavior:'instant'});
   updateNav(r.path);
+  if (typeof updateCrumbs === 'function') updateCrumbs(r.path);
+  if (typeof renderBell === 'function') renderBell();
 }
 window.addEventListener('hashchange', render);
 
 /* ---------- NAV ---------- */
-const NAV = [
-  {g:'Estudiante'},
-  {href:'#/', t:'Inicio', ico:'⌂'},
-  {href:'#/panel', t:'Mi panel', ico:'▦'},
-  {g:'Áreas de Ciencias Naturales'},
-  ...BIO.areas.map(a => ({href:'#/area/'+a.id, t:a.n, dot:a.dom, area:a.id})),
-  {g:'Transversal · conecta las áreas'},
-  {href:'#/misiones', t:'Misiones', ico:'◈'},
-  {href:'#/laboratorio', t:'Laboratorios', ico:'⚗'},
-  {href:'#/simuladores', t:'Simuladores', ico:'∿'},
-  {href:'#/microscopio', t:'Microscopio', ico:'◉', tag:'pronto'},
-  {href:'#/evaluacion', t:'Evaluación', ico:'✓'},
-  {g:'Mi espacio'},
-  {href:'#/progreso', t:'Mi progreso', ico:'↗'},
-  {href:'#/cuaderno', t:'Cuaderno', ico:'✎'},
-  {g:'Docente'},
-  {href:'#/docente', t:'Panel docente', ico:'▤'}
-];
+function navItems(){
+  const rol = Store.ses.rol;
+  if (rol === 'familia') return [
+    {g:'Representante'},
+    {href:'#/familia', t:'Avance de mi representado', ico:'▦'},
+    {href:'#/accesibilidad', t:'Accesibilidad', ico:'🅰'},
+    {g:'Conocer la plataforma'},
+    {href:'#/', t:'Inicio', ico:'⌂'},
+    {href:'#/mapa', t:'Mapa', ico:'🗺'}
+  ];
+  const base = [
+    {g:'Estudiante'},
+    {href:'#/', t:'Inicio', ico:'⌂'},
+    {href:'#/panel', t:'Mi panel', ico:'▦'},
+    {href:'#/mapa', t:'Mapa', ico:'🗺'},
+    {g:'Áreas de Ciencias Naturales'},
+    ...BIO.areas.map(a => ({href:'#/area/'+a.id, t:a.n, dot:a.dom, area:a.id, tag: Store.areaStatus(a)==='repaso' ? 'repaso' : Store.areaStatus(a)==='proximo' ? 'luego' : null})),
+    {g:'Transversal · conecta las áreas'},
+    {href:'#/misiones', t:'Misiones', ico:'◈'},
+    {href:'#/laboratorio', t:'Laboratorios', ico:'⚗'},
+    {href:'#/simuladores', t:'Simuladores', ico:'∿'},
+    {href:'#/microscopio', t:'Microscopio', ico:'◉', tag:'pronto'},
+    {href:'#/evaluacion', t:'Evaluación', ico:'✓'},
+    {g:'Mi espacio'},
+    {href:'#/progreso', t:'Mi progreso', ico:'↗'},
+    {href:'#/cuaderno', t:'Cuaderno', ico:'✎'},
+    {href:'#/accesibilidad', t:'Mi forma de aprender', ico:'🅰'}
+  ];
+  if (rol === 'docente') return [
+    {g:'Docente'},
+    {href:'#/docente', t:'Panel docente', ico:'▤'},
+    {href:'#/familia', t:'Vista de familia', ico:'👪'},
+    ...base
+  ];
+  return [...base, {g:'Docente'}, {href:'#/docente', t:'Panel docente', ico:'▤'}];
+}
 /* Qué rutas pertenecen a cada área (para marcar la navegación) */
 const AREA_PATHS = {
   cuerpo:['/explorar/corazon','/explorar/cerebro','/explorar/pulmones','/explorar/organo'],
@@ -1395,11 +1768,14 @@ const ICONS = {
   '✓':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>',
   '↗':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>',
   '✎':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M5 16 16 5l3 3L8 19l-4 1z"/></svg>',
+  '🗺':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 4-6 2v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg>',
+  '🅰':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 10 5l6 15M6.5 15h7"/><path d="M18 11v9M18 8h.01"/></svg>',
+  '👪':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3 20c0-3 2.2-5 5-5s5 2 5 5"/><path d="M14 20c0-2.3 1.4-4 3-4s3 1.7 3 4"/></svg>',
   '▤':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 20v-10"/></svg>'
 };
 function buildNav(){
   const nav = $('#nav-main'); nav.innerHTML='';
-  NAV.forEach(n => { if (n.g) nav.append(h('div',{class:'nav-group'},n.g)); else nav.append(h('a',{href:n.href, 'data-area':n.area||null}, n.dot ? h('span',{class:'ico'}, h('span',{class:'navdot '+n.dot})) : h('span',{class:'ico',html:ICONS[n.ico]}), n.t, n.tag ? h('span',{class:'tag'},n.tag):null)); });
+  navItems().forEach(n => { if (n.g) nav.append(h('div',{class:'nav-group'},n.g)); else nav.append(h('a',{href:n.href, 'data-area':n.area||null}, n.dot ? h('span',{class:'ico'}, h('span',{class:'navdot '+n.dot})) : h('span',{class:'ico',html:ICONS[n.ico]}), n.t, n.tag ? h('span',{class:'tag'},n.tag):null)); });
   const bn = $('#nav-bottom'); bn.innerHTML='';
   [['#/','Inicio','⌂'],['#/explorar','Áreas','◎'],['#/misiones','Misiones','◈'],['#/laboratorio','Lab','⚗'],['#/progreso','Progreso','↗']].forEach(([href,t,i]) => bn.append(h('a',{href}, h('span',{class:'ico',html:ICONS[i],style:'width:20px;height:20px;display:inline-block'}), t)));
 }
@@ -1430,6 +1806,11 @@ function searchIndex(){
   idx.push({k:'Definición', t:'Intercambio gaseoso', d:'Difusión de O₂ y CO₂ entre alvéolos y capilares.', href:'#/mision/globulo-rojo', dom:'anat'});
   idx.push({k:'Definición', t:'Homeostasis', d:'Mantenimiento del equilibrio interno; los sistemas circulatorio y respiratorio la sostienen.', href:'#/simuladores/circulacion', dom:'anat'});
   idx.push({k:'Definición', t:'Hemoglobina', d:'Proteína de los glóbulos rojos que transporta O₂ (cuatro moléculas por hemoglobina).', href:'#/mision/globulo-rojo', dom:'anat'});
+  idx.push({k:'Orientación', t:'Mapa de la plataforma', d:'Dónde estoy, qué áreas me tocan este año y cuál es mi siguiente paso.', href:'#/mapa', dom:''});
+  idx.push({k:'Accesibilidad', t:'Mi forma de aprender', d:'Tamaño de letra, tipografía legible, contraste, voz, ritmo y pistas.', href:'#/accesibilidad', dom:''});
+  idx.push({k:'Docente', t:'Panel docente: calificaciones y reportes', d:'Libro de calificaciones sobre 10, reportes imprimibles, códigos por año y adaptaciones NEE.', href:'#/docente', dom:''});
+  idx.push({k:'Familia', t:'Avance de mi representado', d:'Vista de solo lectura para representantes con pendientes y comentarios.', href:'#/familia', dom:''});
+  BIO.years.forEach(y => idx.push({k:'Año', t:y.n, d:y.d, href:'#/mapa', dom:''}));
   idx.push({k:'Escala', t:'Del ADN a la biosfera', d:'Niveles de organización biológica.', href:'#/?escala=1', dom:''});
   return idx;
 }
@@ -2298,14 +2679,18 @@ function resTile(r, ctxArea){
     r.areas.length>1 ? areaTags(r.areas, ctxArea) : null,
     done ? h('span',{class:'pill ok soon'},'Completado') : r.ok ? h('span',{class:`pill ${dom} soon`},'Disponible') : h('span',{class:'pill soon'},'En construcción'));
 }
+const YEAR_TAG = { actual:'Tu año', repaso:'Repaso', proximo:'Más adelante' };
 function areaTile(a){
-  const rs = areaRes(a.id), ok = rs.filter(r=>r.ok).length, pr = areaPct(a);
-  return h('a',{class:`tile area-tile ${a.dom}`, href:'#/area/'+a.id},
+  const rs = areaRes(a.id), ok = rs.filter(r=>r.ok).length, pr = areaPct(a); const st = Store.areaStatus(a);
+  return h('a',{class:`tile area-tile ${a.dom} ${st}`, href:'#/area/'+a.id},
+    h('span',{class:'yeartag '+st}, YEAR_TAG[st]),
     h('div',{class:'row',style:'justify-content:space-between;align-items:flex-start'}, h('span',{class:'ico'},a.em), h('span',{class:'mono small muted'}, a.unidades.map(u=>'U'+u).join(' · '))),
     h('h3',{},a.n), h('p',{},a.d),
     h('span',{class:'small muted',style:'margin-top:auto'}, `${ok} recurso${ok===1?'':'s'} disponible${ok===1?'':'s'} · ${rs.length-ok} en construcción`),
     h('div',{class:'row',style:'gap:10px;align-items:center'}, h('div',{class:`progress ${a.dom}`,style:'flex:1'}, h('i',{style:`width:${pr}%`})), h('span',{class:'mono small muted'},pr+'%')));
 }
+const ORDEN_ST = { actual:0, repaso:1, proximo:2 };
+const areasOrdenadas = () => BIO.areas.slice().sort((a,b)=>ORDEN_ST[Store.areaStatus(a)]-ORDEN_ST[Store.areaStatus(b)]);
 const TRANSV = [
   ['mis','🎯','Misiones','Casos que cruzan varias áreas: sigue a un glóbulo rojo, salva una célula…','#/misiones',['cuerpo','celular','genetica','biodiversidad']],
   ['lab','🧪','Laboratorios','Hipótesis, variables y datos. La fotosíntesis une célula y ecosistema.','#/laboratorio',['celular','biodiversidad']],
@@ -2360,14 +2745,15 @@ route('/', (view, q) => {
       h('p',{class:'sub'},'Laboratorio Virtual de Biología'),
       h('p',{class:'msg'},'Explora la vida. Desde una molécula hasta un ecosistema.'),
       h('div',{class:'row',style:'margin-top:8px'},
-        h('a',{class:'btn primary lg',href:'#/area/cuerpo'},'Comenzar a explorar'),
+        h('a',{class:'btn primary lg',href:'#/area/'+areasOrdenadas()[0].id},'Comenzar a explorar'),
         h('a',{class:'btn lg',href:'#/mision/globulo-rojo',style:'background:transparent;color:var(--hero-ink);border-color:rgba(159,179,204,.4)'},'Misión: el glóbulo rojo')),
       h('p',{class:'small',style:'color:var(--hero-ink-2)'},'No estudiar Biología solamente. Explorar la vida.')),
     h('div',{class:'hero-3d',id:'hero-3d'}, h('span',{class:'cap'},'corazón · modelo simplificado · arrastra para rotar')));
   view.append(hero);
+  const wb = welcomeBack(view); if (wb) view.append(wb);
   // Áreas
   view.append(h('div',{class:'page-head',style:'margin-bottom:12px'}, h('div',{}, h('span',{class:'eyebrow'},'Áreas de Ciencias Naturales'), h('h2',{},'Cuatro grandes temas, todo el currículo')), h('a',{class:'btn sm',href:'#/explorar'},'Ver todos los recursos')));
-  view.append(h('div',{class:'areas-grid'}, BIO.areas.map(areaTile)));
+  view.append(h('div',{class:'areas-grid'}, areasOrdenadas().map(areaTile)));
   view.append(transversalBand());
   // Progresión
   view.append(h('div',{class:'page-head',style:'margin-bottom:6px'}, h('div',{}, h('span',{class:'eyebrow'},'Cómo se aprende aquí'), h('h2',{},'Primero se explora; después se explica'), h('p',{},'Cada recurso sigue la misma progresión de siete pasos. Toca un paso para ver cómo se vive con el corazón.'))));
@@ -2396,7 +2782,7 @@ function curriculum(){
   const unitRow = u => { const pr = Store.unitProgress(u.n); return h('div',{class:'unit'}, h('span',{class:'n'},'U'+u.n), h('span',{class:'t'},u.t), h('div',{class:'progress'},h('i',{style:`width:${pr}%`})), h('span',{class:'pct'},pr+'%')); };
   const box = h('div',{class:'curr'});
   BIO.areas.forEach(a => box.append(h('div',{class:`curr-area ${a.dom}`},
-    h('a',{class:'curr-head',href:'#/area/'+a.id}, h('span',{class:'navdot '+a.dom}), h('b',{},a.n), h('span',{class:'mono small muted',style:'margin-left:auto'},areaPct(a)+'%')),
+    h('a',{class:'curr-head',href:'#/area/'+a.id}, h('span',{class:'navdot '+a.dom}), h('b',{},a.n), h('span',{class:'pill'}, BIO.year(BIO.yearOfUnit(a.unidades[0])).corto), h('span',{class:'mono small muted',style:'margin-left:auto'},areaPct(a)+'%')),
     BIO.units.filter(u=>a.unidades.includes(u.n)).map(unitRow))));
   box.append(h('div',{class:'curr-area transversal'},
     h('a',{class:'curr-head',href:'#/misiones'}, h('span',{class:'navdot mis'}), h('b',{},'Transversal · problemas contemporáneos'), h('span',{class:'small muted',style:'margin-left:auto'},'misiones · laboratorios · simuladores')),
@@ -2411,11 +2797,13 @@ route('/panel', (view) => {
   const sug = [['reto-corazon','🎯','Reto: dos circulaciones en un corazón','Cuerpo humano y salud · Atlas 3D · 10 min','#/explorar/corazon','anat'],['mision-globulo','🩸','Misión: Sigue al glóbulo rojo','Misión transversal · 15–20 min','#/mision/globulo-rojo','mis'],['reto-celula','🔬','Reto: la fábrica de proteínas','Mundo celular · Célula 3D · 10 min','#/explorar/celula','cell'],['lab-fotosintesis','🧪','Laboratorio: Fotosíntesis','Laboratorio transversal · 20 min','#/laboratorio/fotosintesis','lab'],['reto-genetica','🧬','Reto de genética','Genética y evolución · próximamente','#/area/genetica','gen']];
   const timeMin = s.timeMin + Math.round(s.events.length*0.4) + 186;
   const descubrimientos = Object.values(s.seen).reduce((a,arr)=>a+arr.length,0);
-  view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow'},'Mi panel'), h('h1',{},`${saludo}, ${s.user.nombre.split(' ')[0]}`), h('p',{},'Tu laboratorio te espera. Continúa donde lo dejaste o elige una actividad recomendada.'))));
+  view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow'},'Mi panel'), h('h1',{},`${saludo}, ${s.user.nombre.split(' ')[0]}`), h('p',{},'Tu laboratorio te espera. Continúa donde lo dejaste o elige una actividad recomendada.')),
+    h('div',{class:'row'}, h('span',{class:'pill'}, Store.year() ? BIO.year(Store.year()).corto + (Store.ses.paralelo?' · '+Store.ses.paralelo:'') : 'Sin año'), h('button',{class:'btn sm ghost',onclick:()=>openWizard('anio')},'Cambiar de año o código'))));
+  const wb = welcomeBack(view); if (wb) view.append(wb);
   const left = h('div',{class:'stack'}), right = h('div',{class:'stack'});
   left.append(h('div',{class:'card',style:'display:flex;gap:22px;align-items:center;flex-wrap:wrap'},
     h('div',{class:'ring',style:`--p:${p}`}, h('i',{},p+'%')),
-    h('div',{class:'stack',style:'flex:1;min-width:200px;gap:6px'}, h('span',{class:'eyebrow'},'Biología · progreso general'), h('h3',{},'Área actual: Cuerpo humano y salud'), h('p',{class:'small muted'},`Unidad 6 · Anatomía y fisiología humana · última actividad: ${s.lastActivity.t} · ${timeAgo(s.lastActivity.at)}`), h('a',{class:'btn sm',href:s.lastActivity.href,style:'align-self:flex-start'},'Continuar')),
+    h('div',{class:'stack',style:'flex:1;min-width:200px;gap:6px'}, h('span',{class:'eyebrow'},'Biología · progreso general'), h('h3',{},'Área actual: '+((BIO.areas.filter(a=>Store.areaStatus(a)==='actual')[0]||BIO.areas[1]).n)), h('p',{class:'small muted'},`Unidad 6 · Anatomía y fisiología humana · última actividad: ${s.lastActivity.t} · ${timeAgo(s.lastActivity.at)}`), h('a',{class:'btn sm',href:s.lastActivity.href,style:'align-self:flex-start'},'Continuar')),
     h('div',{class:'grid',style:'grid-template-columns:repeat(3,auto);gap:18px'}, h('div',{class:'stat'},h('span',{class:'v'},s.xp),h('span',{class:'l'},'XP · nivel '+Store.level())), h('div',{class:'stat'},h('span',{class:'v'},fmtMin(timeMin)),h('span',{class:'l'},'tiempo de actividad')), h('div',{class:'stat'},h('span',{class:'v'},descubrimientos),h('span',{class:'l'},'descubrimientos')))));
   left.append(h('h3',{style:'margin-top:8px'},'Actividades sugeridas'));
   sug.forEach(([id,em,t,d,href,dom]) => { const done = s.activities[id]?.done; left.append(h('a',{class:'act',href}, h('span',{class:'ico',style:`background:var(--${dom}-soft)`},em), h('span',{}, h('div',{class:'t'},t), h('div',{class:'d'},d)), done ? h('span',{class:'pill ok',style:'margin-left:auto'},'Completada') : h('span',{class:'go'},'→'))); });
@@ -2423,7 +2811,7 @@ route('/panel', (view) => {
   if (pendientes.length) pendientes.forEach(m => left.append(h('a',{class:'act',href:`#/mision/${m.id}`}, h('span',{class:'ico',style:'background:var(--mis-soft)'},m.em), h('span',{}, h('div',{class:'t'},m.t), h('div',{class:'d'},`${m.dur} · +${m.xp} XP · conecta: ${m.areas.map(i=>areaById(i).n).join(' + ')}`)), h('span',{class:'go'},'→'))));
   else left.append(h('div',{class:'notice ok'},'No tienes misiones pendientes. Nuevas misiones se publicarán en las próximas unidades.'));
   const ab = h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Progreso por área'));
-  BIO.areas.forEach(a => { const pr = areaPct(a); ab.append(h('a',{href:'#/area/'+a.id,style:'text-decoration:none;color:inherit'}, h('div',{class:'row',style:'justify-content:space-between;font-size:.86rem'}, h('span',{class:'row',style:'gap:8px'}, h('span',{class:'navdot '+a.dom}), h('b',{},a.n)), h('span',{class:'mono muted small'},pr+'%')), h('div',{class:`progress ${a.dom}`,style:'margin-top:5px'},h('i',{style:`width:${pr}%`})), h('span',{class:'small muted'}, a.unidades.map(u=>`U${u} ${Store.unitProgress(u)}%`).join(' · ')))); });
+  BIO.areas.forEach(a => { const pr = areaPct(a); ab.append(h('a',{href:'#/area/'+a.id,style:'text-decoration:none;color:inherit'}, h('div',{class:'row',style:'justify-content:space-between;font-size:.86rem'}, h('span',{class:'row',style:'gap:8px'}, h('span',{class:'navdot '+a.dom}), h('b',{},a.n), h('span',{class:'pill'}, YEAR_TAG[Store.areaStatus(a)])), h('span',{class:'mono muted small'},pr+'%')), h('div',{class:`progress ${a.dom}`,style:'margin-top:5px'},h('i',{style:`width:${pr}%`})), h('span',{class:'small muted'}, a.unidades.map(u=>`U${u} ${Store.unitProgress(u)}%`).join(' · ')))); });
   right.append(ab);
   right.append(h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Laboratorio recomendado · transversal'), h('h3',{},'Fotosíntesis: ¿qué limita la producción de oxígeno?'), h('p',{class:'small muted'},'Formula una hipótesis, manipula luz, CO₂, temperatura y agua, y registra datos reales del modelo.'), areaTags(['celular','biodiversidad']), h('a',{class:'btn primary sm',href:'#/laboratorio/fotosintesis',style:'align-self:flex-start'},'Abrir laboratorio')));
   const bd = h('div',{class:'card'}, h('span',{class:'eyebrow'},'Insignias'), h('div',{class:'grid',style:'grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px'}, BIO.badges.slice(0,6).map(b => h('div',{class:'badge-tile'+(s.badges.includes(b.id)?'':' locked'),title:b.d}, h('span',{class:'em'},b.em), h('span',{class:'n'},b.n)))));
@@ -2434,7 +2822,7 @@ route('/panel', (view) => {
 /* ---------- EXPLORAR: vista general de las áreas ---------- */
 route('/explorar', (view) => {
   view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow'},'Áreas de Ciencias Naturales'), h('h1',{},'Todo el laboratorio, por área'), h('p',{},'Cada área reúne sus modelos 3D, animaciones y actividades. Cada recurso tiene un propósito y un reto: sabrás qué observar y qué resolver. Los recursos "en construcción" muestran el alcance previsto.'))));
-  view.append(h('div',{class:'areas-grid',style:'margin-bottom:26px'}, BIO.areas.map(areaTile)));
+  view.append(h('div',{class:'areas-grid',style:'margin-bottom:26px'}, areasOrdenadas().map(areaTile)));
   BIO.areas.forEach(a => {
     const rs = areaRes(a.id).filter(r => r.areas[0]===a.id && !r.transversal && r.tipo!=='Evaluación').sort((x,y)=>(y.ok-x.ok));
     view.append(h('div',{class:'area-sec-head'}, h('span',{class:'navdot '+a.dom}), h('h3',{},a.n), h('span',{class:'mono small muted'},a.unidades.map(u=>'U'+u).join(' · ')), h('a',{class:'btn sm ghost',href:'#/area/'+a.id,style:'margin-left:auto'},'Abrir el área →')));
@@ -2453,6 +2841,9 @@ route('/area/:id', (view, p) => {
   const a = areaById(p.id); if (!a) { navigate('#/explorar'); return; }
   const pr = areaPct(a), rs = areaRes(a.id);
   view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow '+a.dom},`Área de Ciencias Naturales · ${a.unidades.length>1 ? 'Unidades '+a.unidades.slice(0,-1).join(', ')+' y '+a.unidades.slice(-1) : 'Unidad '+a.unidades[0]}`), h('h1',{},`${a.em} ${a.n}`), h('p',{},a.d)), h('div',{class:'ring',style:`--p:${pr}`}, h('i',{},pr+'%'))));
+  const st = Store.areaStatus(a);
+  if (st==='repaso') view.append(h('div',{class:'notice info',style:'margin-bottom:12px'}, h('span',{},`Esta área corresponde a ${BIO.year(BIO.yearOfUnit(a.unidades[0])).n} y la tienes disponible como repaso. Úsala para recordar lo que ya estudiaste.`)));
+  if (st==='proximo') view.append(h('div',{class:'notice warn',style:'margin-bottom:12px'}, h('span',{},`Esta área se estudia en ${BIO.year(BIO.yearOfUnit(a.unidades[0])).n}. Puedes mirarla, pero tu docente aún no la asignó a tu curso.`)));
   view.append(h('div',{class:`guide-q ${a.dom}`}, h('span',{class:'eyebrow'},'Pregunta guía del área'), h('b',{},a.pregunta), h('span',{class:'small muted'},'Cada recurso de esta área tiene un propósito y un reto que te acercan a responderla. Avanza en orden: explora, experimenta, aplica y comprueba.')));
   view.append(h('div',{class:'unit-chips'}, BIO.units.filter(u=>a.unidades.includes(u.n)).map(u => { const up = Store.unitProgress(u.n); return h('div',{class:'unit'}, h('span',{class:'n'},'U'+u.n), h('span',{class:'t'},u.t), h('div',{class:`progress ${a.dom}`},h('i',{style:`width:${up}%`})), h('span',{class:'pct'},up+'%')); })));
   const sec = (n, t, sub, items, empty) => { view.append(h('div',{class:'area-sec-head'}, h('span',{class:'secn '+a.dom},n), h('div',{}, h('h3',{},t), h('span',{class:'small muted'},sub)))); view.append(items.length ? h('div',{class:'grid g3',style:'margin-bottom:26px'}, items) : h('div',{class:'ph',style:'margin-bottom:26px'},empty)); };
@@ -2519,7 +2910,7 @@ function retoBanner(R, seenKey, actId, onObserve){
     else if (!obsOk) rc.append(h('p',{class:'small',style:'font-weight:600'},q), h('div',{class:'notice'},'🔒 Se desbloquea cuando completes las observaciones.'));
     else rc.append(R.pregunta ? quizBlock(R.pregunta, att => { Store.completeActivity(actId,{score: att===1?'1.er intento':`${att} intentos`, attempts:att}); setTimeout(()=>render(true), 2200); }) : ordenBlock(R.orden, att => { Store.completeActivity(actId,{score: att===1?'sin errores':'con errores', attempts:att}); setTimeout(()=>render(true), 2600); }));
     el.append(h('div',{class:'reto-body'},
-      h('div',{class:'reto-col'}, h('span',{class:'eyebrow'},'1 · Propósito'), h('p',{},R.proposito)),
+      h('div',{class:'reto-col'}, h('span',{class:'eyebrow'},'1 · Propósito'), h('p',{},R.proposito), Store.s.a11y.tts ? TTS.btn(R.proposito+'. '+(R.pregunta?R.pregunta.q:'')) : null),
       h('div',{class:'reto-col'}, h('span',{class:'eyebrow'},'2 · Observa'), h('ul',{class:'checks'}, R.observa.map(o => { const ok = seen.includes(o.id); return h('li',{class: ok?'ok':''}, h('span',{class:'ck','aria-hidden':'true'}, ok?'✓':''), h('button',{class:'linklike',onclick:()=>onObserve && onObserve(o.id)}, o.txt)); })), R.pista ? h('p',{class:'small muted'},R.pista) : null),
       rc)); };
   render(true); return { el, render };
@@ -2631,7 +3022,9 @@ function organView(view, q, D, build){
   }
   function guideBox(){
     if (guideDone) return h('div',{class:'guide-step'}, h('b',{},'Exploración guiada completada.'), h('p',{class:'small'},'Puedes continuar con la exploración libre, una misión o la evaluación.'));
-    const st = D.guiada[guideIdx]; const box = h('div',{class:'guide-step stack',style:'gap:8px'}, h('div',{class:'row',style:'justify-content:space-between'}, h('b',{},`Paso ${guideIdx+1} de ${D.guiada.length}`), h('span',{class:'mono small muted'},'guiada')), h('p',{class:'small',html:st.txt}));
+    const st = D.guiada[guideIdx]; const box = h('div',{class:'guide-step stack',style:'gap:8px'}, h('div',{class:'row',style:'justify-content:space-between'}, h('b',{},`Paso ${guideIdx+1} de ${D.guiada.length}`), h('span',{class:'mono small muted'},'guiada')), h('p',{class:'small',html:st.txt}),
+      (Store.s.a11y.hints && st.tipo==='select' && S[st.target]) ? h('div',{class:'notice'}, h('span',{}, h('b',{},'Pista: '), S[st.target].n1)) : null,
+      Store.s.a11y.tts ? TTS.btn(()=>box.textContent) : null);
     if (st.tipo==='text'){ const ta = h('textarea',{placeholder:'Escribe tu explicación…','aria-label':'Explicación'}); box.append(ta, h('button',{class:'btn sm primary',onclick:()=>{ if (ta.value.trim().length<40) return toast('Desarrolla un poco más tu explicación (mínimo 40 caracteres).'); Store.addNote('conclusion',`${D.nombre} · exploración guiada: `+ta.value.trim()); Store.log('respuesta_abierta',{actividad:D.guidedActivity,longitud:ta.value.length}); guideAdvance(); }},'Guardar y terminar')); }
     if (st.tipo==='anim') box.append(h('button',{class:'btn sm',onclick:()=>{ tab='animacion'; renderTab(); }},'Ir a Animación'));
     return box;
@@ -3118,34 +3511,661 @@ route('/cuaderno', (view) => {
     items.forEach(e => list.append(h('div',{class:'entry'}, h('span',{class:'k'},KINDS[e.k]||e.k), h('div',{}, h('div',{class:'t'},new Date(e.at).toLocaleString('es-EC',{dateStyle:'medium',timeStyle:'short'})), h('p',{style:'font-size:.92rem;margin-top:3px'},e.txt), e.img?h('img',{src:e.img,alt:'Captura del modelo 3D'}):null, h('button',{class:'btn sm ghost',style:'margin-top:4px',onclick:()=>{ Store.s.notebook = Store.s.notebook.filter(x=>x.id!==e.id); Store.save(); renderList(); }},'Eliminar'))))); }
   view.append(form, h('div',{style:'height:14px'}), list); renderList();
 });
+</script>
+<script>
+/* =====================================================================
+   BIENVENIDA (rol, año y código, accesibilidad), RECORRIDO GUIADO,
+   MAPA DE ORIENTACIÓN, "MI FORMA DE APRENDER" Y AVISOS
+   ===================================================================== */
 
-/* ---------- PANEL DOCENTE ---------- */
-route('/docente', (view) => {
-  const T = BIO.teacherClass; const me = Store.s; const mateo = { n:me.user.nombre+' (demo en vivo)', p:Store.overall(), act:Object.values(me.activities).filter(a=>a.done).length, t: Math.round(me.events.length*0.4)+186, m: me.activities['mision-globulo']?.done?1:0, l: me.activities['lab-fotosintesis']?.done?1:0, err: me.events.filter(e=>e.tipo==='respuesta'&&e.correcto===false).length };
-  const all = [...T.estudiantes, mateo]; const avg = Math.round(all.reduce((a,b)=>a+b.p,0)/all.length);
+/* ---------- ¿dónde estoy?: ruta de navegación ---------- */
+const CRUMB_NAMES = { explorar:'Áreas', area:'Área', mision:'Misión', misiones:'Misiones', laboratorio:'Laboratorios', simuladores:'Simuladores', evaluacion:'Evaluación', progreso:'Mi progreso', cuaderno:'Cuaderno', docente:'Panel docente', familia:'Familia', panel:'Mi panel', mapa:'Mapa', accesibilidad:'Mi forma de aprender', microscopio:'Microscopio', organo:'Órgano', reporte:'Reporte' };
+function crumbFor(path){
+  const parts = path.split('/').filter(Boolean); if (!parts.length) return [];
+  const out = [{ t:'Inicio', href:'#/' }];
+  const res = BIO.resources.find(r => r.href === '#'+path);
+  const area = parts[0]==='area' && areaById(parts[1]);
+  const organ = (parts[0]==='explorar' && BIO.organs[parts[1]]) || (parts[1]==='celula' ? BIO.cell : null);
+  if (area) out.push({ t:'Áreas', href:'#/explorar' }, { t:area.n });
+  else if (organ){ const a = areaById(organ.id==='celula-animal'||parts[1]==='celula' ? 'celular' : 'cuerpo'); out.push({ t:'Áreas', href:'#/explorar' }, { t:a.n, href:'#/area/'+a.id }, { t: organ.nombre || 'Modelo 3D' }); }
+  else if (parts[0]==='mision' ) out.push({ t:'Misiones', href:'#/misiones' }, { t:(BIO.missions.find(m=>m.id===parts[1])||{}).t || 'Misión' });
+  else if (parts[0]==='docente' && parts.length>1) out.push({ t:'Panel docente', href:'#/docente' }, { t: CRUMB_NAMES[parts[1]] || 'Detalle' });
+  else out.push({ t: CRUMB_NAMES[parts[0]] || (res && res.t) || parts[0], href: parts.length>1 ? '#/'+parts[0] : null }, ...(parts.length>1 ? [{ t:(res && res.t) || CRUMB_NAMES[parts[1]] || parts[1] }] : []));
+  return out;
+}
+function updateCrumbs(path){
+  const el = $('#crumbs'); if (!el) return; el.innerHTML='';
+  const items = crumbFor(path);
+  if (items.length < 2){ el.hidden = true; return; }
+  el.hidden = false;
+  items.forEach((c,i) => { if (i) el.append(h('span',{class:'sep','aria-hidden':'true'},'›'));
+    el.append(c.href ? h('a',{href:c.href},c.t) : h('span',{'aria-current':'page'},c.t)); });
+  el.append(h('a',{class:'crumb-map',href:'#/mapa',title:'Ver el mapa de la plataforma'},'🗺 Mapa'));
+}
+
+/* ---------- Bienvenida ---------- */
+const YEAR_EM = {1:'🌱',2:'🫀',3:'🌎'};
+function openWizard(step){
+  const wz = $('#wizard'), box = $('#wizard-box'); let st = step || 'rol', pend = { year:null };
+  const close = (goHash) => { wz.hidden = true; document.body.style.overflow=''; if (goHash) navigate(goHash); };
+  const head = (eyebrow, title, sub) => h('div',{class:'stack',style:'gap:6px'}, h('span',{class:'eyebrow'},eyebrow), h('h2',{},title), sub?h('p',{class:'muted'},sub):null);
+  function render(){
+    box.innerHTML=''; box.append(h('div',{class:'wz-brand'}, h('span',{class:'logo-mark'},'🧬'), h('b',{},'ANAI BioLab'), h('span',{class:'muted small'},'Laboratorio Virtual de Biología')));
+    if (st==='rol'){
+      box.append(head('Bienvenida','¿Cómo vas a entrar?','Puedes cambiar de vista cuando quieras desde el botón de la esquina superior derecha.'),
+        h('div',{class:'wz-roles'},
+          [['estudiante','🎒','Soy estudiante','Explora tu año de Bachillerato y resuelve los retos.'],
+           ['docente','🧑‍🏫','Soy docente','Calificaciones, reportes, códigos por año y adaptaciones.'],
+           ['familia','👨‍👩‍👧','Soy representante','Mira el avance y lo pendiente de tu representado.']].map(([id,em,t,d]) =>
+            h('button',{class:'wz-role',onclick:()=>{ if (id==='estudiante'){ st='anio'; render(); } else if (id==='docente'){ Store.ses.rol='docente'; Store.ses.onboarded=true; Store.save(); updateChips(); close('#/docente'); } else { st='familia'; render(); } }},
+              h('span',{class:'em'},em), h('b',{},t), h('span',{class:'small muted'},d)))),
+        h('button',{class:'btn ghost sm',onclick:()=>{ Store.ses.onboarded=true; Store.save(); close(); }},'Ahora no, solo quiero mirar'));
+    }
+    else if (st==='anio'){
+      const inp = h('input',{type:'text',placeholder:'Ej.: 2BGU-A-R9TX','aria-label':'Código de acceso',style:'text-transform:uppercase'});
+      const msg = h('div',{class:'notice',style:'display:none'});
+      const tryCode = () => { const r = Store.enroll(inp.value); if (!r.ok){ msg.className='notice warn'; msg.textContent=r.msg; msg.style.display='flex'; return; }
+        updateChips(); toast(`Te matriculaste en ${BIO.year(r.year).n} · paralelo ${r.paralelo}.`); st='aprender'; render(); };
+      box.append(head('Paso 1 de 3','¿En qué año estás?','Elige tu año y escribe el código que te dio tu docente. Así verás el contenido que te corresponde.'),
+        h('div',{class:'wz-years'}, BIO.years.map(y => h('button',{class:'wz-year'+(pend.year===y.id?' on':''),onclick:()=>{ pend.year=y.id; render2(); }},
+          h('span',{class:'em'},YEAR_EM[y.id]), h('b',{},y.corto), h('span',{class:'small muted'},y.d)))),
+        h('div',{class:'stack',style:'gap:8px'}, h('label',{class:'small',style:'font-weight:600'},'Código de tu curso'), h('div',{class:'row'}, inp, h('button',{class:'btn primary',onclick:tryCode},'Entrar')), msg,
+          h('p',{class:'small muted'},'¿No tienes código todavía? Puedes mirar la plataforma como invitado y escribirlo después.')),
+        h('div',{class:'row'}, h('button',{class:'btn sm',onclick:()=>{ Store.guest(pend.year||1); updateChips(); st='aprender'; render(); }},'Explorar como invitado'), h('button',{class:'btn sm ghost',onclick:()=>{ st='rol'; render(); }},'← Atrás')));
+      function render2(){ $$('.wz-year',box).forEach((b,i)=>b.classList.toggle('on', BIO.years[i].id===pend.year)); if (pend.year) inp.value = BIO.accessCodes.filter(c=>c.year===pend.year&&c.activo)[0] ? inp.value : inp.value; inp.focus(); }
+      setTimeout(()=>inp.focus(),50);
+    }
+    else if (st==='familia'){
+      const inp = h('input',{type:'text',placeholder:'Ej.: FAM-2K9P','aria-label':'Código de representante',style:'text-transform:uppercase'});
+      const msg = h('div',{class:'notice',style:'display:none'});
+      box.append(head('Representantes','Código de tu representado','La docente te entrega un código por estudiante. Solo verás el avance de tu representado.'),
+        h('div',{class:'row'}, inp, h('button',{class:'btn primary',onclick:()=>{ if (inp.value.trim().toUpperCase()!==BIO.familyCode){ msg.className='notice warn'; msg.textContent='Ese código no corresponde a ningún estudiante. Revísalo con la docente.'; msg.style.display='flex'; return; }
+          Store.ses.rol='familia'; Store.ses.onboarded=true; Store.save(); updateChips(); close('#/familia'); }},'Entrar')), msg,
+        h('p',{class:'small muted'},`Para la demostración, el código es ${BIO.familyCode}.`),
+        h('button',{class:'btn sm ghost',onclick:()=>{ st='rol'; render(); }},'← Atrás'));
+      setTimeout(()=>inp.focus(),50);
+    }
+    else if (st==='aprender'){
+      const a = Store.s.a11y;
+      const seg = (label, opts, get, set) => h('div',{class:'stack',style:'gap:6px'}, h('span',{class:'small',style:'font-weight:600'},label),
+        h('div',{class:'segbtns'}, opts.map(([v,t]) => h('button',{'aria-pressed':String(get()===v),onclick:function(){ set(v); $$('button',this.parentElement).forEach((b,i)=>b.setAttribute('aria-pressed', String(opts[i][0]===get()))); }},t))));
+      box.append(head('Paso 2 de 3','¿Cómo prefieres leer?','Esto ayuda a quien necesita letra más grande, más contraste o escuchar los textos. Puedes cambiarlo cuando quieras.'),
+        h('div',{class:'stack',style:'gap:14px'},
+          seg('Tamaño de la letra', [[1,'Normal'],[1.15,'Grande'],[1.3,'Muy grande']], ()=>a.text, v=>Store.setA11y({text:v})),
+          seg('Tipografía', [['','Predeterminada'],['hyper','Legible'],['lexend','Fácil lectura']], ()=>a.font, v=>Store.setA11y({font:v})),
+          seg('Contraste', [[false,'Normal'],[true,'Alto contraste']], ()=>!!a.contrast, v=>Store.setA11y({contrast:v})),
+          seg('Lectura en voz alta', [[false,'No'],[true,'Sí, mostrar el botón 🔊']], ()=>!!a.tts, v=>Store.setA11y({tts:v})),
+          seg('Movimiento', [[false,'Normal'],[true,'Menos movimiento']], ()=>!!a.motion, v=>Store.setA11y({motion:v})),
+          h('p',{class:'sample'},'Así se verá el texto de la plataforma: el corazón bombea sangre a todo el cuerpo.')),
+        h('div',{class:'row'}, h('button',{class:'btn primary',onclick:()=>{ st='listo'; render(); }},'Continuar'), h('a',{class:'btn sm ghost',href:'#/accesibilidad',onclick:()=>{ Store.ses.onboarded=true; Store.save(); close(); }},'Ver todas las opciones')));
+    }
+    else {
+      const y = Store.year() || 1;
+      box.append(head('Paso 3 de 3','Listo. Así te vas a mover','Tres lugares para no perderte: tu año, el mapa y el botón de ayuda.'),
+        h('div',{class:'wz-tips'},
+          [['🗂','Tus áreas','Las cuatro áreas de Ciencias Naturales están en el menú de la izquierda; verás primero las de tu año.'],
+           ['🗺','El mapa','Si te pierdes, el mapa te muestra dónde estás y cuál es tu siguiente paso.'],
+           ['❓','Ayuda','El botón de ayuda vuelve a abrir el recorrido cuando lo necesites.']].map(([em,t,d]) => h('div',{class:'wz-tip'}, h('span',{class:'em'},em), h('div',{}, h('b',{},t), h('p',{class:'small muted'},d))))),
+        h('div',{class:'row'},
+          h('button',{class:'btn primary lg',onclick:()=>{ Store.ses.onboarded=true; Store.save(); close('#/'); setTimeout(()=>startTour(), 400); }},'Hacer el recorrido de 1 minuto'),
+          h('button',{class:'btn lg',onclick:()=>{ Store.ses.onboarded=true; Store.save(); close('#/mapa'); }},'Ir al mapa'),
+          h('button',{class:'btn sm ghost',onclick:()=>{ Store.ses.onboarded=true; Store.save(); close('#/'); }},'Empezar sin recorrido')));
+    }
+  }
+  render(); wz.hidden = false; document.body.style.overflow='hidden';
+}
+
+/* ---------- Recorrido guiado (globos sobre la interfaz) ---------- */
+const TOUR = [
+  { sel:'#nav-main', t:'Tus áreas de Ciencias Naturales', d:'Mundo celular, Cuerpo humano y salud, Genética y evolución, Biodiversidad y ecosistemas. Debajo están las actividades transversales.', pos:'right' },
+  { sel:'.areas-grid', t:'Entra por tu área', d:'Cada tarjeta muestra cuántos recursos tienes disponibles y tu avance en ese tema.', pos:'bottom', go:'#/' },
+  { sel:'.prog', t:'Primero se explora; después se explica', d:'Todos los recursos siguen estos 7 pasos. Toca cualquiera para ver cómo se vive con el corazón.', pos:'top' },
+  { sel:'#btn-bell', t:'Tus avisos', d:'Aquí aparecen los recordatorios amables: lo que quedó a medias y lo que está por vencer. Sin alarmas ni castigos.', pos:'bottom' },
+  { sel:'#btn-a11y', t:'Mi forma de aprender', d:'Letra más grande, tipografía legible, alto contraste, menos movimiento y lectura en voz alta.', pos:'bottom' },
+  { sel:'#search-input', t:'Busca cualquier cosa', d:'Escribe "mitocondria", "ventrículo" o "fotosíntesis" y llegas directo.', pos:'bottom' },
+  { sel:'#crumbs, .view', t:'Si te pierdes, mira el mapa', d:'Arriba siempre sabrás dónde estás y tendrás un enlace al mapa de la plataforma.', pos:'bottom' }
+];
+function startTour(i){
+  const coach = $('#coach'), hole = $('#coach-hole'), card = $('#coach-card');
+  let idx = i || 0;
+  const end = () => { coach.hidden = true; Store.ses.tour = true; Store.save(); window.removeEventListener('resize', place); window.removeEventListener('scroll', place); };
+  function place(){
+    const st = TOUR[idx]; const el = st.sel.split(',').map(s=>$(s.trim())).find(Boolean);
+    if (!el) return next();
+    const r = el.getBoundingClientRect();
+    const pad = 6, top = Math.max(4, r.top-pad), left = Math.max(4, r.left-pad);
+    Object.assign(hole.style, { top:top+'px', left:left+'px', width:(r.width+pad*2)+'px', height:(r.height+pad*2)+'px' });
+    const cw = Math.min(340, window.innerWidth-24);
+    let ct = r.bottom + 14, cl = Math.min(Math.max(12, r.left), window.innerWidth-cw-12);
+    if (st.pos==='right' && window.innerWidth>900){ ct = Math.max(12, r.top+16); cl = Math.min(r.right+16, window.innerWidth-cw-12); }
+    if (st.pos==='top' || ct + 190 > window.innerHeight) ct = Math.max(12, r.top - 180);
+    Object.assign(card.style, { top:ct+'px', left:cl+'px', width:cw+'px' });
+  }
+  function render(){
+    const st = TOUR[idx];
+    if (st.go && !location.hash.startsWith(st.go.replace('#',''))) { if (location.hash !== st.go) { navigate(st.go); } }
+    card.innerHTML='';
+    card.append(h('span',{class:'eyebrow'},`Paso ${idx+1} de ${TOUR.length}`), h('h3',{},st.t), h('p',{},st.d),
+      h('div',{class:'row',style:'justify-content:space-between;margin-top:6px'},
+        h('button',{class:'btn sm ghost',onclick:end},'Saltar'),
+        h('div',{class:'row',style:'gap:6px'},
+          idx>0 ? h('button',{class:'btn sm',onclick:()=>{ idx--; render(); }},'←') : null,
+          h('button',{class:'btn sm primary',onclick:next}, idx===TOUR.length-1 ? 'Terminar' : 'Siguiente →'))));
+    const el = TOUR[idx].sel.split(',').map(s=>$(s.trim())).find(Boolean);
+    if (el) el.scrollIntoView({ block:'center', behavior: Store.s.a11y.motion ? 'auto':'smooth' });
+    setTimeout(place, 220);
+  }
+  function next(){ if (idx >= TOUR.length-1) return end(); idx++; render(); }
+  coach.hidden = false; render();
+  window.addEventListener('resize', place); window.addEventListener('scroll', place, { passive:true });
+  coach.onclick = e => { if (e.target === coach) end(); };
+  document.addEventListener('keydown', function esc(e){ if (e.key==='Escape'){ end(); document.removeEventListener('keydown', esc); } });
+}
+
+/* ---------- Avisos (campana) ---------- */
+function renderBell(){
+  const panel = $('#bell-panel'), dot = $('#bell-dot'); const items = Store.avisos();
+  const nuevos = items.filter(a=>!a.leido).length;
+  dot.hidden = !nuevos; $('#btn-bell').setAttribute('aria-label', nuevos ? `Avisos: ${nuevos} sin leer` : 'Avisos');
+  panel.innerHTML='';
+  panel.append(h('div',{class:'bell-head'}, h('b',{},'Avisos'), h('button',{class:'btn sm ghost',onclick:()=>{ Store.leerTodos(); renderBell(); }},'Marcar como leídos')));
+  if (!items.length) panel.append(h('div',{class:'bell-empty'},'Todo al día. Cuando algo quede a medias o se acerque una fecha, aparecerá aquí.'));
+  items.forEach(a => panel.append(h('a',{class:'bell-item'+(a.leido?' leido':''),href:a.href,onclick:()=>{ Store.leerAviso(a.id); setTimeout(renderBell,50); closeBell(); }},
+    h('span',{class:'em'},a.em), h('span',{}, h('b',{},a.t), h('span',{class:'small muted'},a.d)))));
+  panel.append(h('a',{class:'bell-foot',href:'#/accesibilidad'},'Ajustar mis avisos y preferencias'));
+}
+function closeBell(){ $('#bell-panel').classList.remove('open'); $('#btn-bell').setAttribute('aria-expanded','false'); }
+
+/* ---------- Banner amable de reencuentro ---------- */
+function welcomeBack(view){
+  const d = Store.daysAway(); const pend = Store.avisos().filter(a=>a.tipo==='vencimiento');
+  if (d < 2 && !pend.length) return null;
+  const el = h('section',{class:'welcome'},
+    h('span',{class:'em'},'👋'),
+    h('div',{class:'stack',style:'gap:4px;flex:1;min-width:200px'},
+      h('b',{}, d>=2 ? `Hace ${d} días que no entrabas, ${Store.s.user.nombre.split(' ')[0]}` : `Hola de nuevo, ${Store.s.user.nombre.split(' ')[0]}`),
+      h('span',{class:'small'}, d>=2 ? `Te quedaste en "${Store.s.lastActivity.t}". Puedes retomar justo ahí; nada se perdió.` : 'Tienes actividades por entregar esta semana.'),
+      pend.length ? h('span',{class:'small muted'}, pend.slice(0,2).map(p=>p.t).join(' · ')) : null),
+    h('div',{class:'row'}, h('a',{class:'btn primary sm',href:Store.s.lastActivity.href},'Retomar'), h('button',{class:'btn sm ghost',onclick:()=>el.remove()},'Ahora no')));
+  return el;
+}
+
+/* ---------- MAPA DE ORIENTACIÓN ---------- */
+route('/mapa', (view) => {
+  const y = Store.year(); const mine = BIO.areas.filter(a => Store.areaStatus(a)==='actual');
+  view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow'},'Mapa de la plataforma'), h('h1',{},'¿Dónde estoy y qué sigue?'), h('p',{},'Todo BioLab en una sola pantalla: tus áreas, lo transversal y tu espacio personal. Lo resaltado es lo que te toca este año.')),
+    h('a',{class:'btn sm',href:'#/',onclick:()=>setTimeout(startTour,300)},'Repetir el recorrido')));
+  // siguiente paso sugerido
+  const next = nextStep();
+  view.append(h('section',{class:'nextstep'}, h('span',{class:'em'},next.em),
+    h('div',{class:'stack',style:'gap:4px;flex:1;min-width:220px'}, h('span',{class:'eyebrow'},'Tu siguiente paso'), h('b',{},next.t), h('span',{class:'small muted'},next.d)),
+    h('a',{class:'btn primary',href:next.href},'Continuar')));
+  const mapEl = h('div',{class:'map'});
+  BIO.areas.forEach(a => {
+    const st = Store.areaStatus(a), pr = areaPct(a), rs = areaRes(a.id).filter(r=>r.ok).length;
+    mapEl.append(h('a',{class:`map-area ${a.dom} ${st}`,href:'#/area/'+a.id},
+      h('span',{class:'ico'},a.em), h('b',{},a.n),
+      h('span',{class:'small muted'}, a.unidades.map(u=>'U'+u).join(' · ') + ' · ' + rs + ' disponibles'),
+      h('div',{class:`progress ${a.dom}`},h('i',{style:`width:${pr}%`})),
+      h('span',{class:'map-tag'}, st==='actual' ? 'Tu año' : st==='repaso' ? 'Repaso' : 'Más adelante')));
+  });
+  view.append(h('h3',{style:'margin:6px 0 10px'},'Las cuatro áreas'), mapEl);
+  view.append(h('h3',{style:'margin:24px 0 10px'},'Transversal: conecta las áreas'), h('div',{class:'map-row'},
+    [['#/misiones','🎯','Misiones'],['#/laboratorio','🧪','Laboratorios'],['#/simuladores','∿','Simuladores'],['#/evaluacion','✓','Evaluación']].map(([href,em,t]) =>
+      h('a',{class:'map-chip',href}, h('span',{},em), t))));
+  view.append(h('h3',{style:'margin:24px 0 10px'},'Mi espacio'), h('div',{class:'map-row'},
+    [['#/panel','▦','Mi panel'],['#/progreso','↗','Mi progreso'],['#/cuaderno','✎','Cuaderno de campo'],['#/accesibilidad','🅰','Mi forma de aprender']].map(([href,em,t]) =>
+      h('a',{class:'map-chip',href}, h('span',{},em), t))));
+  view.append(h('h3',{style:'margin:24px 0 10px'},'Cómo se aprende aquí'),
+    h('div',{class:'map-path'}, PROG.map((p,i) => h('a',{class:'map-step',href:p.href}, h('span',{class:'n'},String(i+1)), h('b',{},p.v)))));
+  if (y) view.append(h('p',{class:'small muted',style:'margin-top:20px'}, `Estás matriculado en ${BIO.year(y).n}${Store.ses.paralelo?' · paralelo '+Store.ses.paralelo:''}. Los temas de años anteriores quedan disponibles como repaso.`));
+});
+/* sugerencia de siguiente paso: primero lo vencido, luego el reto a medias, luego lo no empezado */
+function nextStep(){
+  const av = Store.avisos();
+  const venc = av.find(a=>a.tipo==='vencimiento'); if (venc) return { em:'📌', t:venc.t, d:venc.d || 'Tarea asignada por tu docente.', href:venc.href };
+  const reto = av.find(a=>a.tipo==='reto'); if (reto) return { em:'🎯', t:reto.t, d:reto.d, href:reto.href };
+  const mine = BIO.areas.filter(a=>Store.areaStatus(a)==='actual');
+  const res = mine.flatMap(a=>areaRes(a.id)).find(r => r.ok && r.act && !Store.s.activities[r.act]?.done);
+  if (res) return { em:res.em, t:res.t, d:res.reto || res.d, href:res.href };
+  return { em:'🗺', t:'Explora tu área', d:'Abre un modelo 3D y cumple su reto.', href: mine[0] ? '#/area/'+mine[0].id : '#/explorar' };
+}
+
+/* ---------- MI FORMA DE APRENDER (accesibilidad) ---------- */
+route('/accesibilidad', (view) => {
+  const a = Store.s.a11y;
+  view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow'},'Accesibilidad'), h('h1',{},'Mi forma de aprender'), h('p',{},'Ajusta la plataforma a como tú lees y te concentras mejor. Se guarda en este dispositivo y se aplica a todas las pantallas. Si tienes una adaptación asignada por tu docente, aparecerá activada.'))));
+  const adapt = (Store.s.docente.adapt||{})[Store.s.user.id] || [];
+  if (adapt.length) view.append(h('div',{class:'notice ok',style:'margin-bottom:14px'}, h('span',{},'Tu docente activó para ti: '+adapt.map(k=>BIO.adaptaciones[k]).join(', ')+'.')));
+  const card = (t, d, ctrl) => h('div',{class:'a11y-card'}, h('h3',{},t), h('p',{class:'small'},d), ctrl);
+  const seg = (opts, get, set) => { const row = h('div',{class:'segbtns'}, opts.map(([v,txt]) => h('button',{'aria-pressed':String(get()===v),onclick:()=>{ set(v); $$('button',row).forEach((b,i)=>b.setAttribute('aria-pressed', String(opts[i][0]===get()))); }},txt))); return row; };
+  view.append(h('div',{class:'a11y-grid'},
+    card('Tamaño de la letra','Aumenta el texto de toda la plataforma sin romper el diseño.', seg([[1,'Normal'],[1.15,'Grande'],[1.3,'Muy grande'],[1.45,'Máximo']], ()=>a.text, v=>Store.setA11y({text:v}))),
+    card('Tipografía','"Legible" (Atkinson Hyperlegible) distingue mejor letras parecidas; "Fácil lectura" (Lexend) ayuda a leer de corrido.', seg([['','Predeterminada'],['hyper','Legible'],['lexend','Fácil lectura']], ()=>a.font||'', v=>Store.setA11y({font:v}))),
+    card('Espacio entre líneas','Más aire entre renglones para no perder la línea al leer.', seg([[0,'Normal'],[0.25,'Amplio'],[0.5,'Muy amplio']], ()=>a.spacing||0, v=>Store.setA11y({spacing:v}))),
+    card('Contraste','Colores más fuertes y bordes más marcados.', seg([[false,'Normal'],[true,'Alto contraste']], ()=>!!a.contrast, v=>Store.setA11y({contrast:v}))),
+    card('Movimiento','Reduce animaciones y transiciones. Los modelos 3D se pueden pausar con el botón de la barra superior.', seg([[false,'Normal'],[true,'Menos movimiento']], ()=>!!a.motion, v=>Store.setA11y({motion:v}))),
+    card('Modo enfoque','Oculta el menú lateral para dejar solo el contenido.', seg([[false,'Desactivado'],[true,'Activado']], ()=>!!a.focus, v=>Store.setA11y({focus:v}))),
+    card('Lectura en voz alta','Muestra un botón 🔊 en las fichas y los retos para escuchar el texto con la voz del navegador.', seg([[false,'Desactivada'],[true,'Activada']], ()=>!!a.tts, v=>Store.setA11y({tts:v}))),
+    card('Nivel de explicación','Con qué profundidad se abren las fichas: en 30 segundos, comprender o profundizar.', seg([[1,'Nivel 1'],[2,'Nivel 2'],[3,'Nivel 3']], ()=>a.level||1, v=>Store.setA11y({level:v}))),
+    card('Pistas','Mantén visibles las pistas de los retos y las exploraciones guiadas.', seg([[false,'Al fallar'],[true,'Siempre visibles']], ()=>!!a.hints, v=>Store.setA11y({hints:v})))));
+  view.append(h('div',{class:'card stack',style:'margin-top:18px'}, h('span',{class:'eyebrow'},'Prueba de lectura'),
+    h('p',{class:'sample'},'El ventrículo izquierdo tiene la pared más gruesa porque debe impulsar la sangre hacia todo el cuerpo, mientras que el derecho solo la envía a los pulmones.'),
+    h('div',{class:'row'}, TTS.btn('El ventrículo izquierdo tiene la pared más gruesa porque debe impulsar la sangre hacia todo el cuerpo, mientras que el derecho solo la envía a los pulmones.','Escuchar el ejemplo'), h('button',{class:'btn sm ghost',onclick:()=>TTS.stop()},'Detener'))));
+  // avisos
+  const p = Store.s.avisos.prefs;
+  const chk = (k, t, d) => h('label',{class:'toggle'}, h('input',{type:'checkbox',checked:p[k],onchange:e=>{ p[k]=e.target.checked; Store.save(); renderBell(); }}), h('span',{}, h('b',{},t), h('span',{class:'small muted',style:'display:block'},d)));
+  view.append(h('div',{class:'card stack',style:'margin-top:18px'}, h('span',{class:'eyebrow'},'Mis avisos'),
+    h('p',{class:'small muted'},'Avisos amables dentro de la plataforma: nunca más de uno por tema y sin rachas que presionen.'),
+    chk('inactividad','Recordarme si llevo días sin entrar','Aparece un saludo con el punto donde te quedaste.'),
+    chk('vencimientos','Avisarme de las tareas por vencer','Solo las que asignó tu docente para tu curso.'),
+    chk('logros','Avisarme de mis logros','Insignias y niveles alcanzados.')));
+  view.append(h('div',{class:'card stack',style:'margin-top:18px'}, h('span',{class:'eyebrow'},'Atajos de teclado'),
+    h('ul',{class:'checks plain'}, [['Tab / Shift+Tab','Moverse entre elementos'],['Flechas','Rotar el modelo 3D'],['+ / −','Acercar y alejar'],['0','Restablecer la vista'],['Esc','Cerrar ventanas y el recorrido']].map(([k,d]) => h('li',{}, h('b',{class:'mono'},k), ' — ', d)))));
+});
+</script>
+<script>
+/* =====================================================================
+   PANEL DOCENTE: resumen, libro de calificaciones, estudiantes,
+   códigos por año y paralelo, adaptaciones NEE, seguimiento y reportes
+   ===================================================================== */
+const DOC = {
+  year: 2, par: 'A',
+  codes(){ return Store.s.docente.codes || BIO.accessCodes; },
+  /* fila del estudiante de demostración con su actividad real en este navegador */
+  demoRow(){ const notas = {}; BIO.gradeItems.forEach(i => { const g = Store.gradeDemo(i.id); if (g!=null) notas[i.id] = g; });
+    return { id:Store.s.user.id, nombre:Store.s.user.nombre+' (demo en vivo)', year:2, paralelo:'A', email:'mateo.andrade@anai.edu.ec',
+      rep:'Sra. Andrade', repTel:'0998765432', notas, dias:Store.daysAway(), min: Store.s.timeMin + Math.round(Store.s.events.length*0.4) + 186,
+      adapt:(Store.s.docente.adapt||{})[Store.s.user.id] || [], demo:true }; },
+  roster(){ const r = BIO.rosterOf(DOC.year, DOC.par).map(e => Object.assign({}, e, { adapt:(Store.s.docente.adapt||{})[e.id] || e.adapt }));
+    if (DOC.year===2 && DOC.par==='A') r.push(DOC.demoRow()); return r; },
+  items(){ return BIO.gradeItemsOf(DOC.year); },
+  prom(e){ const its = DOC.items().filter(i => e.notas[i.id]!=null); if (!its.length) return null;
+    const w = its.reduce((a,i)=>a+i.peso,0); return Math.round(its.reduce((a,i)=>a+e.notas[i.id]*i.peso,0)/w*10)/10; },
+  entregadas(e){ return DOC.items().filter(i => e.notas[i.id]!=null).length; },
+  tareasVencidas(e){ return BIO.assignments.filter(a => a.year===e.year && a.paralelo===e.paralelo && a.vence < Date.now() && e.notas[a.item]==null).length; }
+};
+const notaClass = n => n==null ? 'na' : n>=8 ? 'ok' : n>=6 ? 'mid' : 'low';
+const fmtNota = n => n==null ? '–' : n.toFixed(1).replace('.0','');
+const diasTxt = d => d===0 ? 'hoy' : d===1 ? 'ayer' : `hace ${d} días`;
+
+route('/docente', (view, q) => {
   view.classList.add('wide');
-  view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow'},'Panel docente · '+T.curso), h('h1',{},'Biología · 1.º BGU A'), h('p',{},'Datos de demostración ficticios, salvo la fila del estudiante demo, que refleja la actividad real registrada en este navegador.')), h('div',{class:'row'}, ['Asignar actividad','Crear grupo','Publicar reto','Establecer fechas'].map(t=>h('button',{class:'btn sm',disabled:true,title:'Fase 2'},t)))));
-  const top = h('div',{class:'grid g4'}); [[all.length,'estudiantes'],[avg+'%','progreso grupal medio'],[all.reduce((a,b)=>a+b.act,0),'actividades completadas'],[all.filter(x=>x.m).length+'/'+all.length,'misión del glóbulo rojo']].forEach(([v,l])=>top.append(h('div',{class:'card stat'}, h('span',{class:'v'},String(v)), h('span',{class:'l'},l)))); view.append(top, h('div',{style:'height:16px'}));
-  const g = h('div',{class:'grid g2'});
-  const errs = h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Preguntas con mayor porcentaje de error'), h('div',{class:'bars'}, T.preguntasError.map(q => h('div',{class:'bar'}, h('span',{title:q.q,style:'overflow:hidden;text-overflow:ellipsis;white-space:nowrap'},q.q), h('div',{class:'track'},h('i',{class:q.err>=35?'bad':'',style:`width:${q.err}%`})), h('span',{class:'v'},q.err+'%')))));
-  const concepts = {}; T.preguntasError.forEach(q => concepts[q.concepto] = Math.max(concepts[q.concepto]||0, q.err));
-  errs.append(h('span',{class:'eyebrow',style:'margin-top:6px'},'Conceptos con mayores dificultades'), h('div',{class:'row'}, Object.entries(concepts).sort((a,b)=>b[1]-a[1]).map(([c,e]) => h('span',{class:'pill '+(e>=35?'bad':e>=25?'warn':'')},`${c} · ${e}%`))));
-  const units = h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Progreso grupal por unidad'), h('div',{class:'bars'}, T.unidades.map(u => h('div',{class:'bar'}, h('span',{},`U${u.u} · ${BIO.units[u.u-1].t}`), h('div',{class:'track'},h('i',{style:`width:${u.p}%`})), h('span',{class:'v'},u.p+'%')))), h('div',{class:'notice',style:'margin-top:6px'},'Sugerencia automática: la unidad 3 (metabolismo) y el concepto "arteria vs. vena" concentran los errores. Considera asignar el laboratorio de fotosíntesis y la misión del glóbulo rojo como refuerzo.'));
-  g.append(errs, units); view.append(g, h('div',{style:'height:16px'}));
-  const tbl = h('table',{class:'data'}, h('thead',{},h('tr',{},h('th',{},'Estudiante'),h('th',{},'Progreso'),h('th',{},'Actividades'),h('th',{},'Tiempo'),h('th',{},'Misiones'),h('th',{},'Laboratorios'),h('th',{},'Errores'),h('th',{},''))), h('tbody',{}, all.sort((a,b)=>b.p-a.p).map(e => h('tr',{}, h('td',{},h('b',{},e.n)), h('td',{}, h('div',{class:'row',style:'gap:8px'}, h('div',{class:'progress',style:'width:90px'},h('i',{style:`width:${e.p}%`})), h('span',{class:'mono small'},e.p+'%'))), h('td',{class:'num'},e.act), h('td',{class:'num'},fmtMin(e.t)), h('td',{class:'num'},e.m), h('td',{class:'num'},e.l), h('td',{class:'num'},e.err), h('td',{},h('button',{class:'btn sm ghost',onclick:()=>toast('Revisión de respuestas abiertas: fase 2.')},'Revisar'))))));
-  view.append(h('div',{class:'card'}, h('span',{class:'eyebrow'},'Estudiantes'), h('div',{class:'tablewrap',style:'margin-top:8px'},tbl)));
-  view.append(h('div',{style:'height:16px'}), h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Analítica educativa'), h('p',{class:'small'},'Cada interacción genera un evento estructurado: usuario, actividad, modelo explorado, estructura seleccionada, fecha, duración, intentos, resultado. En producción los eventos se almacenan en PostgreSQL (Supabase) y se exponen por API/vistas para Power BI. Aquí puedes ver la estructura exportable desde "Mi progreso → Exportar datos".'), h('div',{class:'row'}, h('a',{class:'btn sm',href:'#/progreso'},'Ver eventos del estudiante demo'))));
+  let tab = q.t || 'resumen';
+  const head = h('div',{class:'page-head'},
+    h('div',{}, h('span',{class:'eyebrow'},'Panel docente · '+BIO.school.institucion), h('h1',{},'Biología · Bachillerato'),
+      h('p',{},'Datos de demostración ficticios, salvo la fila del estudiante demo, que refleja la actividad real registrada en este navegador.')),
+    h('div',{class:'row'}, h('a',{class:'btn sm',href:'#/familia'},'Ver como familia'), h('a',{class:'btn sm ghost',href:'#/panel'},'Ver como estudiante')));
+  const picker = h('div',{class:'row',style:'gap:8px;flex-wrap:wrap;margin-bottom:14px'},
+    h('span',{class:'small muted'},'Curso:'),
+    ...BIO.years.map(y => h('button',{class:'chip'+(DOC.year===y.id?' picked':''),onclick:()=>{ DOC.year=y.id; const ps=[...new Set(BIO.rosterOf(y.id).map(e=>e.paralelo))]; if (!ps.includes(DOC.par)) DOC.par=ps[0]||'A'; render(); }}, y.corto)),
+    h('span',{class:'small muted',style:'margin-left:8px'},'Paralelo:'),
+    h('span',{id:'pars',class:'row',style:'gap:6px'}));
+  const tabs = h('div',{class:'tabs',role:'tablist'});
+  [['resumen','Resumen'],['calificaciones','Calificaciones'],['estudiantes','Estudiantes'],['seguimiento','Seguimiento'],['codigos','Códigos y años'],['nee','Adaptaciones NEE']]
+    .forEach(([id,t]) => tabs.append(h('button',{role:'tab','aria-selected':String(id===tab),onclick:()=>{ tab=id; render(); }},t)));
+  const body = h('div',{class:'stack'});
+  view.append(head, picker, tabs, h('div',{style:'height:14px'}), body);
+
+  function render(){
+    $$('button',tabs).forEach(b => b.setAttribute('aria-selected', String(b.textContent === ({resumen:'Resumen',calificaciones:'Calificaciones',estudiantes:'Estudiantes',seguimiento:'Seguimiento',codigos:'Códigos y años',nee:'Adaptaciones NEE'})[tab])));
+    $$('.chip',picker).forEach((c,i) => { if (i < BIO.years.length) c.classList.toggle('picked', BIO.years[i].id===DOC.year); });
+    const pars = $('#pars'); pars.innerHTML='';
+    [...new Set(BIO.rosterOf(DOC.year).map(e=>e.paralelo))].forEach(p => pars.append(h('button',{class:'chip'+(DOC.par===p?' picked':''),onclick:()=>{ DOC.par=p; render(); }}, p)));
+    body.innerHTML='';
+    ({ resumen:tabResumen, calificaciones:tabNotas, estudiantes:tabEstudiantes, seguimiento:tabSeguimiento, codigos:tabCodigos, nee:tabNEE })[tab](body, render);
+    Store.log('docente_tab',{tab, year:DOC.year, paralelo:DOC.par});
+  }
+  render();
 });
 
-/* ---------- INICIO DE LA APLICACIÓN ---------- */
+/* ---------- Resumen ---------- */
+function tabResumen(body){
+  const r = DOC.roster(), items = DOC.items();
+  const proms = r.map(DOC.prom).filter(x=>x!=null);
+  const avg = proms.length ? Math.round(proms.reduce((a,b)=>a+b,0)/proms.length*10)/10 : 0;
+  const inact = r.filter(e=>e.dias>=4), riesgo = r.filter(e=>(DOC.prom(e)??0) < 7 || DOC.prom(e)==null);
+  const entregas = r.reduce((a,e)=>a+DOC.entregadas(e),0), total = r.length*items.length;
+  const top = h('div',{class:'grid g4'});
+  [[r.length,'estudiantes'],[avg.toFixed(1).replace('.0',''),'promedio del curso (sobre 10)'],[Math.round(entregas/Math.max(1,total)*100)+' %','actividades entregadas'],[inact.length,'sin entrar hace 4+ días']]
+    .forEach(([v,l]) => top.append(h('div',{class:'card stat'}, h('span',{class:'v'},String(v)), h('span',{class:'l'},l))));
+  body.append(top);
+  const g = h('div',{class:'grid g2',style:'margin-top:16px'});
+  // promedio por actividad
+  const porItem = h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Promedio por actividad'),
+    h('div',{class:'bars'}, items.map(i => { const ns = r.map(e=>e.notas[i.id]).filter(x=>x!=null); const m = ns.length ? ns.reduce((a,b)=>a+b,0)/ns.length : 0;
+      return h('div',{class:'bar'}, h('span',{title:i.t},i.corto), h('div',{class:'track'},h('i',{class: m<6?'bad':'', style:`width:${m*10}%`})), h('span',{class:'v'}, m?m.toFixed(1):'–')); })),
+    h('p',{class:'small muted'},'Las actividades sin entregar no promedian. Toca "Calificaciones" para ver estudiante por estudiante.'));
+  // dificultades
+  const T = BIO.teacherClass;
+  const errs = h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Preguntas con mayor porcentaje de error'),
+    h('div',{class:'bars'}, T.preguntasError.slice(0,5).map(q => h('div',{class:'bar'}, h('span',{title:q.q,style:'overflow:hidden;text-overflow:ellipsis;white-space:nowrap'},q.q), h('div',{class:'track'},h('i',{class:q.err>=35?'bad':'',style:`width:${q.err}%`})), h('span',{class:'v'},q.err+'%')))),
+    h('span',{class:'eyebrow',style:'margin-top:6px'},'Conceptos que conviene retomar'),
+    h('div',{class:'row'}, [...new Set(T.preguntasError.map(q=>q.concepto))].slice(0,5).map(c => h('span',{class:'pill'},c))));
+  g.append(porItem, errs); body.append(g);
+  // acompañamiento
+  const list = h('div',{class:'card stack',style:'margin-top:16px'}, h('span',{class:'eyebrow'},'Necesitan acompañamiento'),
+    h('p',{class:'small muted'},'Promedio bajo 7, tareas vencidas sin entregar o varios días sin entrar.'));
+  const sev = e => (DOC.prom(e)==null?3:0) + ((DOC.prom(e)??10)<7?2:0) + (e.dias>=7?2:e.dias>=4?1:0) + (DOC.tareasVencidas(e)>=2?1:0);
+  const need = r.filter(e => sev(e) > 0).sort((a,b)=>sev(b)-sev(a) || (DOC.prom(a)??0)-(DOC.prom(b)??0)).slice(0,6);
+  if (!need.length) list.append(h('div',{class:'notice ok'},'Ningún estudiante en esta situación. Buen momento para proponer un reto adicional.'));
+  need.forEach(e => list.append(h('div',{class:'act'}, h('span',{class:'ico',style:'background:var(--bg-3)'}, e.nombre[0]),
+    h('span',{}, h('div',{class:'t'},e.nombre), h('div',{class:'d'},`Promedio ${fmtNota(DOC.prom(e))} · ${DOC.tareasVencidas(e)} tarea(s) vencida(s) · última conexión ${diasTxt(e.dias)}`)),
+    h('div',{class:'row',style:'margin-left:auto;gap:6px'}, h('a',{class:'btn sm',href:'#/docente/reporte/'+e.id},'Reporte'), h('button',{class:'btn sm ghost',onclick:()=>msgModal(e)},'Escribir')))));
+  body.append(list);
+}
+
+/* ---------- Libro de calificaciones ---------- */
+function tabNotas(body, rerender){
+  const r = DOC.roster(), items = DOC.items();
+  body.append(h('div',{class:'row',style:'justify-content:space-between;flex-wrap:wrap;gap:8px'},
+    h('div',{class:'stack',style:'gap:2px'}, h('b',{},`Libro de calificaciones · ${BIO.year(DOC.year).corto} ${DOC.par}`), h('span',{class:'small muted'},'Escala sobre 10. El promedio pondera cada actividad según su peso (entre paréntesis en el encabezado).')),
+    h('div',{class:'row',style:'gap:6px'},
+      h('button',{class:'btn sm primary',onclick:()=>copiarCSV(r,items)},'Copiar para Excel/Sheets'),
+      h('button',{class:'btn sm',onclick:()=>descargarCSV(r,items)},'Descargar CSV'),
+      h('button',{class:'btn sm ghost',onclick:()=>window.print()},'Imprimir'))));
+  const thead = h('tr',{}, h('th',{class:'sticky'},'Estudiante'), ...items.map(i => h('th',{class:'rot',title:`${i.t} · peso ${i.peso}`}, i.corto, h('span',{class:'small muted'},` (${i.peso})`))), h('th',{},'Entregadas'), h('th',{},'Promedio'));
+  const rows = r.slice().sort((a,b)=>a.nombre.localeCompare(b.nombre)).map(e => h('tr',{},
+    h('td',{class:'sticky'}, h('a',{href:'#/docente/reporte/'+e.id}, e.nombre), e.adapt.length ? h('span',{class:'pill',style:'margin-left:6px',title:'Adaptaciones: '+e.adapt.map(k=>BIO.adaptaciones[k]).join(', ')},'NEE') : null),
+    ...items.map(i => { const n = e.notas[i.id];
+      return h('td',{class:'nota '+notaClass(n),title:`${e.nombre} · ${i.t}`,onclick:()=>notaModal(e,i,n,rerender)}, fmtNota(n)); }),
+    h('td',{class:'mono'}, DOC.entregadas(e)+'/'+items.length),
+    h('td',{class:'mono '+notaClass(DOC.prom(e)),style:'font-weight:700'}, fmtNota(DOC.prom(e)))));
+  const prom = items.map(i => { const ns = r.map(e=>e.notas[i.id]).filter(x=>x!=null); return ns.length ? Math.round(ns.reduce((a,b)=>a+b,0)/ns.length*10)/10 : null; });
+  const foot = h('tr',{class:'foot'}, h('td',{class:'sticky'},'Promedio del curso'), ...prom.map(p => h('td',{class:'mono '+notaClass(p)}, fmtNota(p))), h('td',{}), h('td',{}));
+  body.append(h('div',{class:'tablewrap'}, h('table',{class:'data grades'}, h('thead',{},thead), h('tbody',{},rows), h('tfoot',{},foot))));
+  body.append(h('p',{class:'small muted',style:'margin-top:10px'},'Toca cualquier nota para ver el detalle o registrarla a mano. Con el servidor de la fase 2, estas notas se sincronizan entre dispositivos y se pueden exportar al sistema de calificaciones del colegio.'));
+}
+function notaModal(e, item, n, rerender){
+  const inp = h('input',{type:'number',min:'0',max:'10',step:'0.1',value:n!=null?n:'','aria-label':'Nota sobre 10',style:'max-width:120px'});
+  openModal(h('div',{class:'stack'}, h('span',{class:'eyebrow'},e.nombre), h('h3',{},item.t),
+    h('p',{class:'small muted'},`Unidad ${item.unidad} · ${item.tipo} · peso ${item.peso} · ${BIO.year(DOC.year).corto} ${DOC.par}`),
+    n==null ? h('div',{class:'notice warn'},'Sin entregar. Puedes registrar una nota manualmente o recordarle al estudiante.') : h('div',{class:'notice ok'},`Registrada: ${fmtNota(n)} sobre 10.`),
+    h('div',{class:'row'}, inp, h('button',{class:'btn primary sm',onclick:()=>{ const v = parseFloat(inp.value); if (isNaN(v)) return toast('Escribe una nota entre 0 y 10.');
+      const nn = Store.s.docente.notas; (nn[e.id] = nn[e.id] || {})[item.id] = Math.max(0,Math.min(10,v)); Store.save();
+      const st = BIO.getRoster().find(x=>x.id===e.id); if (st) st.notas[item.id] = Math.max(0,Math.min(10,v));
+      closeModal(); rerender(); toast('Nota registrada.'); }},'Guardar nota')),
+    h('div',{class:'row'}, h('a',{class:'btn sm',href:'#/docente/reporte/'+e.id,onclick:closeModal},'Ver reporte del estudiante'), h('button',{class:'btn sm ghost',onclick:closeModal},'Cerrar'))));
+}
+function csvOf(r, items){
+  const head = ['Estudiante','Correo', ...items.map(i=>i.corto), 'Entregadas','Promedio'];
+  const lines = [head.join(';')];
+  r.forEach(e => lines.push([e.nombre, e.email, ...items.map(i => e.notas[i.id]!=null ? String(e.notas[i.id]).replace('.',',') : ''), DOC.entregadas(e), DOC.prom(e)!=null?String(DOC.prom(e)).replace('.',','):''].join(';')));
+  return lines.join('\n');
+}
+function copiarCSV(r, items){ const t = csvOf(r,items); navigator.clipboard?.writeText(t).then(()=>toast('Copiado. Pégalo en Excel o en Google Sheets.'), ()=>openModal(h('div',{class:'stack'}, h('h3',{},'Copia manualmente'), h('textarea',{style:'min-height:240px',readonly:true},t)))); }
+function descargarCSV(r, items){
+  const blob = new Blob(['﻿'+csvOf(r,items)], {type:'text/csv;charset=utf-8'});
+  const a = h('a',{href:URL.createObjectURL(blob), download:`calificaciones-${BIO.year(DOC.year).corto.replace(/\W/g,'')}-${DOC.par}.csv`});
+  document.body.append(a); a.click(); a.remove(); toast('CSV descargado.');
+}
+
+/* ---------- Estudiantes ---------- */
+function tabEstudiantes(body, rerender){
+  const r = DOC.roster().sort((a,b)=>a.nombre.localeCompare(b.nombre));
+  body.append(h('p',{class:'small muted'},`${r.length} estudiantes en ${BIO.year(DOC.year).corto} paralelo ${DOC.par}. Toca un nombre para abrir su reporte imprimible.`));
+  const tbl = h('table',{class:'data'},
+    h('thead',{},h('tr',{},h('th',{},'Estudiante'),h('th',{},'Promedio'),h('th',{},'Entregadas'),h('th',{},'Tiempo'),h('th',{},'Última conexión'),h('th',{},'Adaptaciones'),h('th',{},''))),
+    h('tbody',{}, r.map(e => h('tr',{},
+      h('td',{}, h('a',{href:'#/docente/reporte/'+e.id}, h('b',{},e.nombre)), h('div',{class:'small muted'},e.email)),
+      h('td',{class:'mono '+notaClass(DOC.prom(e))}, fmtNota(DOC.prom(e))),
+      h('td',{class:'mono'}, DOC.entregadas(e)+'/'+DOC.items().length),
+      h('td',{class:'mono'}, fmtMin(e.min)),
+      h('td',{}, h('span',{class:'pill '+(e.dias>=7?'bad':e.dias>=4?'warn':'ok')}, diasTxt(e.dias))),
+      h('td',{}, e.adapt.length ? e.adapt.map(k=>h('span',{class:'pill'},BIO.adaptaciones[k])) : h('span',{class:'small muted'},'—')),
+      h('td',{}, h('div',{class:'row',style:'gap:6px'}, h('a',{class:'btn sm',href:'#/docente/reporte/'+e.id},'Reporte'), h('button',{class:'btn sm ghost',onclick:()=>msgModal(e)},'Escribir')))))));
+  body.append(h('div',{class:'tablewrap'}, tbl));
+}
+
+/* ---------- Seguimiento y mensajes ---------- */
+function tabSeguimiento(body){
+  const r = DOC.roster(); const inact = r.filter(e=>e.dias>=4).sort((a,b)=>b.dias-a.dias);
+  const venc = BIO.assignments.filter(a=>a.year===DOC.year && a.paralelo===DOC.par);
+  body.append(h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Tareas asignadas a este curso'),
+    venc.length ? h('div',{class:'stack',style:'gap:8px'}, venc.map(a => { const it = BIO.gradeItems.find(i=>i.id===a.item); const d = Math.ceil((a.vence-Date.now())/86400000);
+      const faltan = r.filter(e=>e.notas[a.item]==null).length;
+      return h('div',{class:'act'}, h('span',{class:'ico',style:'background:var(--bg-3)'}, d<0?'⏰':'📌'),
+        h('span',{}, h('div',{class:'t'},it.t), h('div',{class:'d'}, (d<0?`venció ${diasTxt(-d)}`:d===0?'vence hoy':`vence en ${d} días`)+` · faltan ${faltan} de ${r.length}`)),
+        h('span',{class:'pill '+(d<0?'bad':d<=2?'warn':'')}, new Date(a.vence).toLocaleDateString('es-EC',{day:'2-digit',month:'short'}))); }))
+      : h('p',{class:'small muted'},'Sin tareas asignadas a este curso.'),
+    h('p',{class:'small muted'},'Las fechas de entrega alimentan los avisos suaves del estudiante y el resumen de la familia.')));
+  const box = h('div',{class:'card stack',style:'margin-top:16px'}, h('span',{class:'eyebrow'},'Sin entrar hace 4 días o más'),
+    h('p',{class:'small muted'},'Sin costo: la plataforma prepara el mensaje y tú lo envías por WhatsApp o correo desde tu propio teléfono o cuenta.'));
+  if (!inact.length) box.append(h('div',{class:'notice ok'},'Todo el curso se conectó en los últimos días.'));
+  inact.forEach(e => box.append(h('div',{class:'act'}, h('span',{class:'ico',style:'background:var(--warn-soft,var(--bg-3))'},'👋'),
+    h('span',{}, h('div',{class:'t'},e.nombre), h('div',{class:'d'},`Última conexión ${diasTxt(e.dias)} · promedio ${fmtNota(DOC.prom(e))} · representante: ${e.rep}`)),
+    h('div',{class:'row',style:'margin-left:auto;gap:6px'}, h('button',{class:'btn sm primary',onclick:()=>msgModal(e)},'Preparar mensaje')))));
+  body.append(box);
+  body.append(h('div',{class:'card stack',style:'margin-top:16px'}, h('span',{class:'eyebrow'},'Con el servidor de la fase 2'),
+    h('p',{class:'small'},'Se puede programar un resumen semanal automático por correo para estudiantes y representantes, sin costo, usando la cuenta institucional. Hoy, el envío lo haces tú desde aquí en dos toques.')));
+}
+function msgModal(e){
+  const item = BIO.assignments.filter(a=>a.year===e.year && a.paralelo===e.paralelo && e.notas[a.item]==null)[0];
+  const it = item && BIO.gradeItems.find(i=>i.id===item.item);
+  const txt = `Hola ${e.nombre.split(' ')[0]}, te saluda tu docente de Biología. Vi que hace ${e.dias} días no entras a ANAI BioLab${it?` y que aún tienes pendiente "${it.t}"`:''}. ¿Necesitas ayuda con algo? Puedes retomar desde donde te quedaste: son 10 minutos. Un abrazo.`;
+  const ta = h('textarea',{style:'min-height:130px'}, txt);
+  const wa = () => `https://wa.me/593${e.repTel.replace(/^0/,'')}?text=${encodeURIComponent(ta.value)}`;
+  openModal(h('div',{class:'stack'}, h('span',{class:'eyebrow'},'Mensaje para '+e.nombre), h('h3',{},'Acompañamiento'),
+    h('p',{class:'small muted'},`Representante: ${e.rep} · ${e.repTel} · ${e.email}`),
+    ta,
+    h('div',{class:'row'},
+      h('a',{class:'btn primary sm',href:wa(),target:'_blank',rel:'noopener',onclick:()=>{ Store.log('mensaje_docente',{canal:'whatsapp'}); }},'Enviar por WhatsApp'),
+      h('a',{class:'btn sm',href:`mailto:${e.email}?subject=${encodeURIComponent('Biología · ANAI BioLab')}&body=${encodeURIComponent(txt)}`,onclick:()=>{ Store.log('mensaje_docente',{canal:'correo'}); }},'Enviar por correo'),
+      h('button',{class:'btn sm ghost',onclick:()=>{ navigator.clipboard?.writeText(ta.value).then(()=>toast('Mensaje copiado.')); }},'Copiar'),
+      h('button',{class:'btn sm ghost',onclick:closeModal},'Cerrar'))));
+}
+
+/* ---------- Códigos y años ---------- */
+function tabCodigos(body, rerender){
+  const codes = DOC.codes();
+  body.append(h('div',{class:'notice info'}, h('span',{},'En esta versión de demostración los códigos se validan en el propio navegador: sirven para organizar, no para restringir. Cuando conectemos el servidor gratuito, el código matriculará de verdad al estudiante y quedará ligado a su cuenta institucional.')));
+  const gen = () => { const y = DOC.year, p = DOC.par; const rnd = Math.random().toString(36).toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,4);
+    const nuevo = { code:`${y}BGU-${p}-${rnd}`, year:y, paralelo:p, activo:true, usos:0 };
+    const list = (Store.s.docente.codes || BIO.accessCodes.slice()).map(c => (c.year===y && c.paralelo===p) ? Object.assign({},c,{activo:false}) : c);
+    list.unshift(nuevo); Store.s.docente.codes = list; Store.save(); toast('Código nuevo generado. El anterior quedó inactivo.'); rerender(); };
+  body.append(h('div',{class:'row',style:'justify-content:space-between;margin:14px 0 8px;flex-wrap:wrap;gap:8px'},
+    h('b',{},`Códigos de acceso · ${BIO.year(DOC.year).corto} ${DOC.par}`),
+    h('div',{class:'row',style:'gap:6px'}, h('button',{class:'btn sm primary',onclick:gen},'Generar código nuevo'),
+      h('button',{class:'btn sm ghost',onclick:()=>{ Store.s.docente.codes = null; Store.save(); toast('Códigos restablecidos.'); rerender(); }},'Restablecer'))));
+  const tbl = h('table',{class:'data'}, h('thead',{},h('tr',{},h('th',{},'Código'),h('th',{},'Año'),h('th',{},'Paralelo'),h('th',{},'Estado'),h('th',{},'Usos'),h('th',{},''))),
+    h('tbody',{}, codes.map(c => h('tr',{},
+      h('td',{}, h('b',{class:'mono'},c.code)), h('td',{}, BIO.year(c.year).corto), h('td',{},c.paralelo),
+      h('td',{}, h('span',{class:'pill '+(c.activo?'ok':'')}, c.activo?'Activo':'Inactivo')), h('td',{class:'mono'},String(c.usos)),
+      h('td',{}, h('div',{class:'row',style:'gap:6px'},
+        h('button',{class:'btn sm ghost',onclick:()=>{ navigator.clipboard?.writeText(c.code).then(()=>toast('Código copiado. Compártelo con tu curso.')); }},'Copiar'),
+        h('button',{class:'btn sm ghost',onclick:()=>{ const list = (Store.s.docente.codes || BIO.accessCodes.slice()).map(x => x.code===c.code ? Object.assign({},x,{activo:!x.activo}) : x); Store.s.docente.codes = list; Store.save(); rerender(); }}, c.activo?'Desactivar':'Activar')))))));
+  body.append(h('div',{class:'tablewrap'}, tbl));
+  body.append(h('div',{class:'card stack',style:'margin-top:18px'}, h('span',{class:'eyebrow'},'Código para representantes'),
+    h('p',{class:'small muted'},'Un código por estudiante da acceso de solo lectura a su familia.'),
+    h('div',{class:'row'}, h('b',{class:'mono'},BIO.familyCode), h('span',{class:'small muted'},'· Mateo Andrade (demostración)'),
+      h('button',{class:'btn sm ghost',onclick:()=>{ navigator.clipboard?.writeText(BIO.familyCode).then(()=>toast('Código copiado.')); }},'Copiar'))));
+  // plan del año
+  const plan = h('div',{class:'card stack',style:'margin-top:18px'}, h('span',{class:'eyebrow'},'Plan del año: qué unidades ve cada año'),
+    h('p',{class:'small muted'},'Toca una unidad para moverla de año. Los estudiantes ven las unidades de su año y las de años anteriores como repaso.'));
+  const yu = Store.yearUnits();
+  BIO.years.forEach(y => {
+    const row = h('div',{class:'row',style:'gap:6px;flex-wrap:wrap;align-items:center'}, h('b',{style:'min-width:76px'},y.corto));
+    BIO.units.forEach(u => { const on = (yu[y.id]||[]).includes(u.n);
+      row.append(h('button',{class:'chip'+(on?' picked':''),title:u.t,onclick:()=>{ const map = JSON.parse(JSON.stringify(Store.yearUnits()));
+        BIO.years.forEach(z => map[z.id] = (map[z.id]||[]).filter(x=>x!==u.n)); map[y.id] = [...(map[y.id]||[]), u.n].sort((a,b)=>a-b);
+        Store.s.yearUnits = map; Store.save(); toast(`Unidad ${u.n} asignada a ${y.corto}.`); rerender(); }}, 'U'+u.n)); });
+    plan.append(row);
+  });
+  plan.append(h('button',{class:'btn sm ghost',style:'align-self:flex-start',onclick:()=>{ Store.s.yearUnits=null; Store.save(); toast('Plan restablecido.'); rerender(); }},'Restablecer plan sugerido'));
+  body.append(plan);
+}
+
+/* ---------- Adaptaciones NEE ---------- */
+function tabNEE(body, rerender){
+  body.append(h('div',{class:'notice info'}, h('span',{},'Se registran únicamente las adaptaciones de acceso (cómo lee y trabaja el estudiante), nunca diagnósticos ni información médica. La información sensible se maneja en el DECE.')));
+  const r = DOC.roster().sort((a,b)=>a.nombre.localeCompare(b.nombre));
+  const tbl = h('table',{class:'data'}, h('thead',{},h('tr',{},h('th',{},'Estudiante'), ...Object.values(BIO.adaptaciones).map(t=>h('th',{class:'rot'},t)))),
+    h('tbody',{}, r.map(e => h('tr',{}, h('td',{},e.nombre), ...Object.keys(BIO.adaptaciones).map(k => h('td',{style:'text-align:center'},
+      h('input',{type:'checkbox',checked:e.adapt.includes(k),'aria-label':`${BIO.adaptaciones[k]} para ${e.nombre}`,onchange:ev=>{
+        const map = Store.s.docente.adapt; const cur = new Set(map[e.id] || e.adapt);
+        ev.target.checked ? cur.add(k) : cur.delete(k); map[e.id] = [...cur]; Store.save();
+        if (e.demo){ const a = Store.s.a11y; if (k==='letra-grande') Store.setA11y({text: ev.target.checked?1.15:1});
+          if (k==='tipografia') Store.setA11y({font: ev.target.checked?'hyper':''});
+          if (k==='voz') Store.setA11y({tts: ev.target.checked}); if (k==='menos-movimiento') Store.setA11y({motion: ev.target.checked});
+          if (k==='pistas') Store.setA11y({hints: ev.target.checked}); }
+        toast('Adaptación actualizada.'); }})))))));
+  body.append(h('div',{class:'tablewrap'}, tbl));
+  body.append(h('p',{class:'small muted',style:'margin-top:10px'},'Al activar una adaptación del estudiante de demostración, la plataforma se ajusta de inmediato en este navegador para que puedas ver el efecto.'));
+}
+
+/* ---------- Reporte individual imprimible ---------- */
+route('/docente/reporte/:id', (view, p) => {
+  const e = (p.id===Store.s.user.id) ? DOC.demoRow() : BIO.getRoster().find(x=>x.id===p.id);
+  if (!e){ view.append(h('div',{class:'ph'},'No se encontró ese estudiante.')); return; }
+  const items = BIO.gradeItemsOf(e.year);
+  view.append(h('div',{class:'row noprint',style:'gap:8px;margin-bottom:12px'}, h('a',{class:'btn sm',href:'#/docente'},'← Volver al panel'),
+    h('button',{class:'btn sm primary',onclick:()=>window.print()},'Imprimir o guardar en PDF'),
+    h('button',{class:'btn sm ghost',onclick:()=>msgModal(e)},'Escribir a la familia')));
+  const prom = items.filter(i=>e.notas[i.id]!=null); const w = prom.reduce((a,i)=>a+i.peso,0);
+  const promedio = prom.length ? Math.round(prom.reduce((a,i)=>a+e.notas[i.id]*i.peso,0)/w*10)/10 : null;
+  view.append(h('div',{class:'report'},
+    h('div',{class:'report-head'}, h('div',{}, h('span',{class:'eyebrow'},`${BIO.school.institucion} · Biología · ${BIO.year(e.year).n} "${e.paralelo}"`), h('h1',{},e.nombre), h('p',{class:'small muted'},`${e.email} · representante: ${e.rep} · informe generado el ${new Date().toLocaleDateString('es-EC',{day:'2-digit',month:'long',year:'numeric'})}`)),
+      h('div',{class:'ring',style:`--p:${(promedio||0)*10}`}, h('i',{}, fmtNota(promedio)))),
+    h('div',{class:'grid g4',style:'margin:14px 0'},
+      [[fmtNota(promedio),'promedio (sobre 10)'],[prom.length+'/'+items.length,'actividades entregadas'],[fmtMin(e.min),'tiempo en la plataforma'],[diasTxt(e.dias),'última conexión']]
+        .map(([v,l]) => h('div',{class:'card stat'}, h('span',{class:'v'},String(v)), h('span',{class:'l'},l)))),
+    h('h3',{},'Detalle por actividad'),
+    h('table',{class:'data'}, h('thead',{},h('tr',{},h('th',{},'Actividad'),h('th',{},'Tipo'),h('th',{},'Unidad'),h('th',{},'Peso'),h('th',{},'Nota'))),
+      h('tbody',{}, items.map(i => h('tr',{}, h('td',{},i.t), h('td',{},i.tipo), h('td',{},'U'+i.unidad), h('td',{class:'mono'},String(i.peso)), h('td',{class:'mono '+notaClass(e.notas[i.id])}, fmtNota(e.notas[i.id])))))),
+    e.adapt.length ? h('div',{class:'stack',style:'margin-top:14px'}, h('h3',{},'Adaptaciones activas'), h('div',{class:'row'}, e.adapt.map(k=>h('span',{class:'pill'},BIO.adaptaciones[k])))) : null,
+    h('div',{class:'stack',style:'margin-top:14px'}, h('h3',{},'Observaciones'),
+      h('p',{class:'small'}, promedio==null ? 'Aún no registra actividades calificadas. Conviene acompañar su primer ingreso.' :
+        promedio>=8 ? 'Desempeño sólido: comprende las relaciones entre estructura y función, y argumenta con evidencia. Puede avanzar a retos de mayor profundidad.' :
+        promedio>=6 ? 'Avance adecuado. Conviene reforzar los retos donde necesitó varios intentos y retomar las observaciones antes de responder.' :
+        'Requiere acompañamiento cercano: sugerimos repetir la exploración guiada y resolver el reto junto a un compañero o en tutoría.'),
+      h('p',{class:'small muted'},'Informe generado automáticamente por ANAI BioLab con la actividad registrada en la plataforma.'))));
+});
+</script>
+<script>
+/* =====================================================================
+   VISTA DE FAMILIA / REPRESENTANTE (solo lectura, lenguaje sencillo)
+   ===================================================================== */
+route('/familia', (view) => {
+  if (Store.ses.rol !== 'familia'){ famGate(view); return; }
+  const s = Store.s, p = Store.overall(), year = Store.year() || 2;
+  const nombre = s.user.nombre, primer = nombre.split(' ')[0];
+  const items = BIO.gradeItemsOf(year);
+  const notas = items.map(i => ({ i, n: Store.gradeDemo(i.id) }));
+  const hechas = notas.filter(x=>x.n!=null);
+  const prom = hechas.length ? Math.round(hechas.reduce((a,x)=>a+x.n*x.i.peso,0)/hechas.reduce((a,x)=>a+x.i.peso,0)*10)/10 : null;
+  const pend = BIO.assignments.filter(a => a.year===year && !s.activities[a.item]?.done)
+    .map(a => ({ a, it: BIO.gradeItems.find(i=>i.id===a.item), dias: Math.ceil((a.vence-Date.now())/86400000) })).sort((x,y)=>x.dias-y.dias);
+  const semana = Math.max(0, Math.min(180, 45 + Math.round(s.events.length*0.6)));
+
+  view.append(h('div',{class:'page-head noprint'}, h('div',{}, h('span',{class:'eyebrow'},'Vista de representante · solo lectura'), h('h1',{},`Avance de ${primer}`),
+      h('p',{},`${nombre} · ${BIO.year(year).n} · Biología · ${BIO.school.institucion}. Aquí ve lo que su representado está aprendiendo, lo que tiene pendiente y cómo acompañarlo en casa.`)),
+    h('div',{class:'row'}, h('button',{class:'btn sm',onclick:()=>window.print()},'Imprimir'), h('button',{class:'btn sm ghost',onclick:()=>{ Store.ses.rol='estudiante'; Store.save(); updateChips(); navigate('#/'); }},'Salir'))));
+
+  const cards = h('div',{class:'grid g4'});
+  [[p+' %','del curso completado'],[prom!=null?fmtNota(prom):'–','promedio (sobre 10)'],[fmtMin(semana),'esta semana en la plataforma'],[pend.length,'actividades pendientes']]
+    .forEach(([v,l]) => cards.append(h('div',{class:'card stat'}, h('span',{class:'v'},String(v)), h('span',{class:'l'},l))));
+  view.append(cards);
+
+  // Qué está aprendiendo
+  const areas = BIO.areas.filter(a => Store.areaStatus(a)==='actual');
+  const learn = h('div',{class:'card stack',style:'margin-top:16px'}, h('span',{class:'eyebrow'},'Qué está estudiando ahora'),
+    h('div',{class:'grid g2'}, areas.map(a => h('div',{class:'stack',style:'gap:6px'},
+      h('div',{class:'row',style:'gap:8px'}, h('span',{},a.em), h('b',{},a.n)),
+      h('p',{class:'small muted'},a.pregunta),
+      h('div',{class:`progress ${a.dom}`},h('i',{style:`width:${areaPct(a)}%`})),
+      h('span',{class:'small muted'}, areaPct(a)+' % de avance en esta área')))));
+  view.append(learn);
+
+  // Pendientes
+  const pb = h('div',{class:'card stack',style:'margin-top:16px'}, h('span',{class:'eyebrow'},'Lo que tiene pendiente'));
+  if (!pend.length) pb.append(h('div',{class:'notice ok'},'No tiene actividades pendientes. Todo lo asignado está entregado.'));
+  pend.forEach(({a,it,dias}) => pb.append(h('div',{class:'act'},
+    h('span',{class:'ico',style:'background:var(--bg-3)'}, dias<0?'⏰':'📌'),
+    h('span',{}, h('div',{class:'t'},it.t), h('div',{class:'d'}, (dias<0?`Se venció hace ${-dias} día(s)`:dias===0?'Vence hoy':`Faltan ${dias} días`) + ' · ' + a.nota)),
+    h('span',{class:'pill '+(dias<0?'bad':dias<=2?'warn':'')}, new Date(a.vence).toLocaleDateString('es-EC',{day:'2-digit',month:'short'})))));
+  view.append(pb);
+
+  // Logros y comentarios
+  const g2 = h('div',{class:'grid g2',style:'margin-top:16px'});
+  g2.append(h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Logros de este periodo'),
+    h('div',{class:'row'}, BIO.badges.filter(b=>s.badges.includes(b.id)).map(b => h('span',{class:'pill ok'},`${b.em} ${b.n}`))),
+    s.badges.length ? null : h('p',{class:'small muted'},'Todavía no obtiene insignias. Se consiguen al terminar exploraciones, misiones y laboratorios.'),
+    h('p',{class:'small muted'},`Última actividad: ${s.lastActivity.t}, ${timeAgo(s.lastActivity.at)}.`)));
+  g2.append(h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Comentarios de la docente'),
+    BIO.comentarios.map(c => h('div',{class:'stack',style:'gap:2px'}, h('span',{class:'small muted'}, new Date(c.at).toLocaleDateString('es-EC',{day:'2-digit',month:'long'})), h('p',{class:'small'},c.txt))),
+    h('a',{class:'btn sm',style:'align-self:flex-start',href:`mailto:${BIO.school.docente.email}?subject=${encodeURIComponent('Consulta sobre '+nombre)}`},'Escribir a la docente')));
+  view.append(g2);
+
+  // Cómo acompañar
+  view.append(h('div',{class:'card stack',style:'margin-top:16px'}, h('span',{class:'eyebrow'},'Cómo acompañar en casa (sin ser experto en Biología)'),
+    h('div',{class:'grid g3'},
+      [['🗣','Pregúntele qué exploró','"¿Qué parte del corazón viste hoy? ¿Para qué sirve?" Explicar en voz alta consolida lo aprendido.'],
+       ['⏱','20 minutos bastan','Es mejor entrar tres veces por semana un rato corto que una sola vez por mucho tiempo.'],
+       ['🎯','Revise el reto','Cada recurso plantea un reto. Pregúntele si ya lo resolvió y qué respondió.']]
+      .map(([em,t,d]) => h('div',{class:'stack',style:'gap:4px'}, h('span',{style:'font-size:1.4rem'},em), h('b',{},t), h('p',{class:'small muted'},d))))));
+
+  view.append(h('div',{class:'notice info noprint',style:'margin-top:16px'}, h('span',{},'Con el servidor de la fase 2, este mismo resumen puede llegarle por correo una vez por semana, sin costo. Usted decide si lo quiere recibir.')));
+  view.append(h('p',{class:'small muted',style:'margin-top:14px'},'Vista de solo lectura: el representante no puede modificar calificaciones ni actividades. Los datos mostrados corresponden al estudiante de demostración de este navegador.'));
+});
+
+function famGate(view){
+  const inp = h('input',{type:'text',placeholder:'FAM-2K9P','aria-label':'Código de representante',style:'text-transform:uppercase;max-width:220px'});
+  const msg = h('div',{class:'notice',style:'display:none'});
+  view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow'},'Representantes'), h('h1',{},'Avance de su representado'),
+    h('p',{},'Escriba el código que le entregó la docente. Verá únicamente el avance del estudiante a su cargo: qué está estudiando, qué tiene pendiente y cómo acompañarlo.'))));
+  view.append(h('div',{class:'card stack',style:'max-width:560px'},
+    h('div',{class:'row'}, inp, h('button',{class:'btn primary',onclick:()=>{
+      if (inp.value.trim().toUpperCase() !== BIO.familyCode){ msg.className='notice warn'; msg.textContent='Ese código no corresponde a ningún estudiante. Consúltelo con la docente.'; msg.style.display='flex'; return; }
+      Store.ses.rol='familia'; Store.ses.onboarded=true; Store.save(); updateChips(); toast('Bienvenida. Vista de representante activada.'); render(); }},'Entrar')),
+    msg, h('p',{class:'small muted'},`Para la demostración, el código es ${BIO.familyCode}. Cada estudiante tendrá el suyo.`)));
+}
+</script>
+<script>
+/* =====================================================================
+   INICIO DE LA APLICACIÓN: barra superior, roles, avisos y bienvenida
+   ===================================================================== */
+function updateChips(){
+  const rol = Store.ses.rol, y = Store.year();
+  const nom = $('#chip-nombre'), cur = $('#chip-curso'), chip = $('#userchip');
+  if (rol === 'docente'){ nom.textContent = BIO.school.docente.nombre; cur.textContent = 'Vista docente'; chip.setAttribute('href','#/docente'); $('.avatar').textContent = 'DB'; }
+  else if (rol === 'familia'){ nom.textContent = 'Representante'; cur.textContent = Store.s.user.nombre; chip.setAttribute('href','#/familia'); $('.avatar').textContent = '👪'; }
+  else { nom.textContent = Store.s.user.nombre; cur.textContent = (y ? BIO.year(y).n : 'Sin año asignado') + (Store.ses.paralelo ? ' · '+Store.ses.paralelo : '') + (Store.ses.invitado ? ' · invitado' : ''); chip.setAttribute('href','#/progreso'); $('.avatar').textContent = Store.s.user.iniciales; }
+  buildNav(); updateNav(parseHash().path);
+}
+function roleModal(){
+  const opt = (rol, em, t, d, go) => h('button',{class:'wz-role',onclick:()=>{ Store.ses.rol = rol; if (rol==='estudiante' && !Store.year()) Store.guest(2); Store.save(); updateChips(); closeModal(); navigate(go); toast(`Vista de ${t.toLowerCase()} activada.`); }},
+    h('span',{class:'em'},em), h('b',{},t), h('span',{class:'small muted'},d));
+  openModal(h('div',{class:'stack'}, h('span',{class:'eyebrow'},'Cambiar de vista'), h('h3',{},'¿Cómo quieres ver la plataforma?'),
+    h('p',{class:'small muted'},'En la versión con servidor, cada persona entra con su propia cuenta y solo ve lo que le corresponde. Aquí puedes alternar para conocer las tres vistas.'),
+    h('div',{class:'wz-roles'}, opt('estudiante','🎒','Estudiante','Tu año, tus retos y tu progreso.','#/'), opt('docente','🧑‍🏫','Docente','Calificaciones, reportes, códigos y adaptaciones.','#/docente'), opt('familia','👨‍👩‍👧','Representante','Avance y pendientes de tu representado.','#/familia')),
+    h('div',{class:'row'}, h('button',{class:'btn sm ghost',onclick:()=>{ closeModal(); openWizard('rol'); }},'Volver a la bienvenida'), h('button',{class:'btn sm ghost',onclick:closeModal},'Cancelar'))));
+}
 (function init(){
-  buildNav();
+  applyA11y(); Store.touchVisit();
+  buildNav(); updateChips();
   $('#btn-home').addEventListener('click', ()=>navigate('#/'));
   const mb = $('#btn-motion'); const syncMotion = () => mb.setAttribute('aria-pressed', !Store.s.settings.motion); syncMotion();
-  mb.addEventListener('click', ()=>{ Store.s.settings.motion = !Store.s.settings.motion; Store.save(); syncMotion(); toast(Store.s.settings.motion?'Animaciones activadas.':'Animaciones pausadas.'); });
-  $('#btn-role').addEventListener('click', ()=>{ const isT = location.hash.startsWith('#/docente'); navigate(isT?'#/panel':'#/docente'); });
+  mb.addEventListener('click', ()=>{ Store.s.settings.motion = !Store.s.settings.motion; Store.save(); syncMotion(); applyA11y(); toast(Store.s.settings.motion?'Animaciones activadas.':'Animaciones pausadas.'); });
+  $('#btn-role').addEventListener('click', roleModal);
+  $('#btn-a11y').addEventListener('click', ()=>navigate('#/accesibilidad'));
+  $('#btn-help').addEventListener('click', ()=>{
+    openModal(h('div',{class:'stack'}, h('span',{class:'eyebrow'},'Ayuda'), h('h3',{},'¿Necesitas orientarte?'),
+      h('div',{class:'wz-tips'},
+        h('button',{class:'wz-tip',onclick:()=>{ closeModal(); navigate('#/'); setTimeout(()=>startTour(),400); }}, h('span',{class:'em'},'🧭'), h('div',{}, h('b',{},'Recorrido guiado de 1 minuto'), h('p',{class:'small muted'},'Te muestro dónde está cada cosa.'))),
+        h('button',{class:'wz-tip',onclick:()=>{ closeModal(); navigate('#/mapa'); }}, h('span',{class:'em'},'🗺'), h('div',{}, h('b',{},'Mapa de la plataforma'), h('p',{class:'small muted'},'Dónde estás y cuál es tu siguiente paso.'))),
+        h('button',{class:'wz-tip',onclick:()=>{ closeModal(); navigate('#/accesibilidad'); }}, h('span',{class:'em'},'🅰'), h('div',{}, h('b',{},'Mi forma de aprender'), h('p',{class:'small muted'},'Letra, contraste, voz y ritmo.'))),
+        h('button',{class:'wz-tip',onclick:()=>{ closeModal(); openWizard('rol'); }}, h('span',{class:'em'},'🔁'), h('div',{}, h('b',{},'Volver a empezar la bienvenida'), h('p',{class:'small muted'},'Cambiar de rol, de año o de código.')))),
+      h('button',{class:'btn sm ghost',style:'align-self:flex-start',onclick:closeModal},'Cerrar')));
+  });
+  // avisos
+  const bell = $('#btn-bell'), panel = $('#bell-panel');
+  bell.addEventListener('click', e => { e.stopPropagation(); const open = panel.classList.toggle('open'); bell.setAttribute('aria-expanded', String(open)); if (open) renderBell(); });
+  document.addEventListener('click', e => { if (!e.target.closest('.bell-wrap')) closeBell(); });
+  renderBell();
+  document.addEventListener('keydown', e => { if (e.key==='Escape') closeBell(); });
   if (!location.hash) location.hash = '#/';
   render();
+  if (!Store.ses.onboarded) setTimeout(()=>openWizard(), 600);
 })();
 </script>
 </body>
