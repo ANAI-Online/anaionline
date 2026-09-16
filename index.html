@@ -144,7 +144,7 @@ input,select,textarea{font:inherit;color:inherit}
 .btn[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
 .card{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r);padding:18px}
 .card.pad-l{padding:24px}
-.pill{display:inline-flex;align-items:center;gap:6px;font-size:.74rem;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--bg-3);color:var(--ink-2)}
+.pill{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;font-size:.74rem;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--bg-3);color:var(--ink-2)}
 .pill.anat{background:var(--anat-soft);color:var(--anat)} .pill.cell{background:var(--cell-soft);color:var(--cell)} .pill.gen{background:var(--gen-soft);color:var(--gen)} .pill.eco{background:var(--eco-soft);color:var(--eco)} .pill.lab{background:var(--lab-soft);color:var(--lab)} .pill.mis{background:var(--mis-soft);color:var(--mis)}
 .pill.ok{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok)} .pill.warn{background:color-mix(in srgb,var(--warn) 18%,transparent);color:var(--warn)} .pill.bad{background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)}
 .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
@@ -588,12 +588,24 @@ th.rot{font-size:.68rem;white-space:normal}
 .report-head{display:flex;gap:18px;align-items:center;justify-content:space-between;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:14px}
 .report h3{margin:14px 0 8px}
 
+/* ============ CREDENCIALES ============ */
+.cred-box{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:12px 14px;border-radius:12px;background:var(--bg-3)}
+.cred-box b{display:block;font-size:.95rem;word-break:break-all}
+.cred-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.cred-card{border:1px dashed var(--line-2);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:6px;background:var(--bg-2);break-inside:avoid}
+.cred-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;border-bottom:1px solid var(--line);padding-bottom:6px}
+.cred-name{font-family:var(--font-d);font-weight:700;font-size:.98rem}
+.cred-row{display:flex;flex-direction:column}
+.cred-row b{font-size:.9rem;word-break:break-all}
+
 /* ============ IMPRESIÓN ============ */
 @media print{
   .sidebar,.topbar,.bottomnav,.crumbs,.noprint,.bell-panel,.coach,.wizard,.toast{display:none!important}
   #app{grid-template-columns:1fr}
   .view{padding:0;max-width:none}
   .card,.report,.tablewrap{break-inside:avoid;box-shadow:none}
+  .cred-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .cred-card{border:1px dashed #999}
   body{background:#fff;font-size:12px}
   a{color:inherit;text-decoration:none}
 }
@@ -645,6 +657,7 @@ th.rot{font-size:.68rem;white-space:normal}
   .stage{min-height:400px}
   .userchip .n,.userchip .c{display:none}
   .curr{grid-template-columns:1fr}
+  .cred-grid{grid-template-columns:1fr}
   .crumbs{padding:8px 16px 0}
   .wz-roles,.wz-years{grid-template-columns:1fr}
   .map{grid-template-columns:1fr}
@@ -693,7 +706,7 @@ th.rot{font-size:.68rem;white-space:normal}
       <span><b>ANAI BioLab</b><span class="sub">Laboratorio virtual</span></span>
     </a>
     <nav class="nav" id="nav-main"></nav>
-    <div class="sidebar-foot">Prototipo MVP · ANAI Online<br><span class="mono">v0.5 · Ciencias Naturales · Biología BGU</span></div>
+    <div class="sidebar-foot">Prototipo MVP · ANAI Online<br><span class="mono">v0.6 · Ciencias Naturales · Biología BGU</span></div>
   </aside>
   <div class="main">
     <header class="topbar">
@@ -1537,6 +1550,7 @@ const DEFAULT_STATE = () => ({
   a11y: { text:1, font:"", spacing:0, contrast:false, motion:false, focus:false, tts:false, level:1, hints:false },
   visitas: { last:null, prev:null, total:0 },
   avisos: { leidos:[], prefs:{ inactividad:true, vencimientos:true, logros:true } },
+  usuarios: {},             // listado cargado por la docente: código → usuario, contraseña temporal (hash) y curso
   yearUnits: null,          // reasignación de unidades por año hecha por la docente
   docente: { adapt:{}, notas:{}, codes:null },
   xp: 740,
@@ -1849,6 +1863,177 @@ function lineChart(canvas, opts){
     canvas.addEventListener('mousemove', e => { const o = canvas._opts; if (!o) return; const r = canvas.getBoundingClientRect(); const mx = e.clientX-r.left; let best=null; o.series.forEach(s=>s.pts.forEach(p=>{ const d=Math.abs(o.X(p.x)-mx); if(!best||d<best.d) best={d,p,s}; })); if (best && best.d<24){ tip.style.display='block'; tip.style.left=(o.X(best.p.x)+10)+'px'; tip.style.top=(o.Y(best.p.y)-28)+'px'; tip.textContent = `${best.s.label||''} ${o.xfmt?o.xfmt(best.p.x):best.p.x} → ${o.yfmt?o.yfmt(best.p.y):Math.round(best.p.y*10)/10}`; } else tip.style.display='none'; });
     canvas.addEventListener('mouseleave', ()=> tip.style.display='none'); }
   canvas._opts = Object.assign({}, opts, {X, Y});
+}
+</script>
+<script>
+/* =====================================================================
+   USUARIOS: carga del listado de estudiantes, generación de correos y
+   contraseñas temporales, entrega de credenciales e inicio de sesión.
+   En el prototipo todo ocurre en el navegador; los CSV generados sirven
+   para crear las cuentas reales (Google Workspace o Microsoft 365).
+   ===================================================================== */
+const DOMINIO_EST = 'estudiantes.anai.edu.ec';
+const DOMINIO_DOC = 'anai.edu.ec';
+
+/* ---------- utilidades de texto ---------- */
+const capital = s => String(s||'').toLowerCase().replace(/(^|[\s'-])([a-záéíóúñü])/g, (m,a,b)=>a+b.toUpperCase()).trim();
+const sinTildes = s => String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'');
+/* Separa un texto tabular (CSV con , o ; , o pegado desde Excel con tabulaciones) */
+function parseTabular(txt){
+  const lineas = String(txt||'').split(/\r?\n/).filter(l => l.trim().length);
+  if (!lineas.length) return [];
+  const conteo = s => ({ ';': (s.match(/;/g)||[]).length, ',': (s.match(/,/g)||[]).length, '\t': (s.match(/\t/g)||[]).length });
+  const c = conteo(lineas[0]); const sep = c['\t'] >= Math.max(c[';'],c[',']) && c['\t']>0 ? '\t' : c[';'] >= c[','] ? ';' : ',';
+  return lineas.map(l => {
+    const out = []; let cur = '', q = false;
+    for (let i=0;i<l.length;i++){ const ch = l[i];
+      if (ch === '"'){ if (q && l[i+1] === '"'){ cur += '"'; i++; } else q = !q; }
+      else if (ch === sep && !q){ out.push(cur); cur = ''; }
+      else cur += ch; }
+    out.push(cur); return out.map(x => x.trim());
+  });
+}
+/* Reconoce las columnas por su encabezado, en cualquier orden */
+const COLS = {
+  codigo:['codigo','código','cod','cedula','cédula','id','matricula','matrícula','codigo de alumno','código de alumno','codigo del estudiante'],
+  nombres:['nombres','nombre','nombres del estudiante','first name','primer nombre'],
+  apellidos:['apellidos','apellido','last name','apellidos del estudiante'],
+  nombre_completo:['estudiante','nombre completo','apellidos y nombres','nombres y apellidos','alumno'],
+  year:['año','ano','anio','curso','nivel','year','grado'],
+  paralelo:['paralelo','par','seccion','sección'],
+  rep:['representante','correo representante','email representante','correo del representante','contacto'],
+  tel:['telefono','teléfono','celular','whatsapp','tel']
+};
+function mapearEncabezado(fila){
+  const map = {}; fila.forEach((h0,i) => { const k = sinTildes(String(h0).toLowerCase()).trim();
+    for (const [campo,alias] of Object.entries(COLS)) if (alias.some(a => sinTildes(a) === k)) { if (map[campo]===undefined) map[campo] = i; } });
+  return map;
+}
+const yearDe = v => { const s = sinTildes(String(v||'').toLowerCase()); if (/3|tercero|tercer/.test(s)) return 3; if (/2|segundo/.test(s)) return 2; if (/1|primero|primer/.test(s)) return 1; return null; };
+
+/* ---------- contraseñas ---------- */
+const PWORDS = ['Celula','Neurona','Mitocondria','Alveolo','Ribosoma','Cloroplasto','Enzima','Nucleo','Arteria','Sinapsis','Genoma','Manglar','Paramo','Galapagos','Osmosis','Cromosoma','Bosque','Nectar','Polen','Coral'];
+function generarPass(){ const w = PWORDS[Math.floor(Math.random()*PWORDS.length)]; const n = 100 + Math.floor(Math.random()*900); return `${w}${n}`; }
+async function hashPass(p){
+  try { const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('anai::'+p));
+    return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join(''); }
+  catch(e){ let h = 5381; const s = 'anai::'+p; for (let i=0;i<s.length;i++) h = ((h*33) ^ s.charCodeAt(i)) >>> 0; return 'x'+h.toString(16); }
+}
+
+/* ---------- API de usuarios ---------- */
+const Users = {
+  all(){ return Object.values(Store.s.usuarios || {}); },
+  get(codigo){ return (Store.s.usuarios||{})[String(codigo)]; },
+  byEmail(email){ const e = String(email||'').trim().toLowerCase(); return this.all().find(u => u.email.toLowerCase() === e || String(u.codigo) === e); },
+  ofCourse(year, par){ return this.all().filter(u => u.year===year && (!par || u.paralelo===par)).sort((a,b)=>a.nombre.localeCompare(b.nombre)); },
+  years(){ return [...new Set(this.all().map(u=>u.year))].sort(); },
+  emailOf(codigo){ return `${String(codigo).trim()}@${DOMINIO_EST}`; },
+  /* Revisa un listado pegado o cargado y devuelve filas listas + errores */
+  revisar(txt, yearPorDefecto, parPorDefecto){
+    const filas = parseTabular(txt); if (!filas.length) return { ok:[], errores:[{ fila:0, msg:'El listado está vacío.' }] };
+    let map = mapearEncabezado(filas[0]); let inicio = 1;
+    if (map.codigo === undefined && map.nombre_completo === undefined && map.nombres === undefined){ map = { codigo:0, nombre_completo:1, year:2, paralelo:3 }; inicio = 0; }
+    const ok = [], errores = [], vistos = new Set();
+    for (let i = inicio; i < filas.length; i++){
+      const f = filas[i]; if (!f.join('').trim()) continue;
+      const codigo = String(f[map.codigo] ?? '').trim();
+      let nombres = map.nombres!==undefined ? f[map.nombres] : '', apellidos = map.apellidos!==undefined ? f[map.apellidos] : '';
+      if ((!nombres || !apellidos) && map.nombre_completo!==undefined){ const partes = String(f[map.nombre_completo]||'').trim().split(/\s+/);
+        if (partes.length >= 3){ apellidos = partes.slice(0,2).join(' '); nombres = partes.slice(2).join(' '); }
+        else { apellidos = partes[0]||''; nombres = partes.slice(1).join(' '); } }
+      const year = yearDe(map.year!==undefined ? f[map.year] : '') || yearPorDefecto;
+      const paralelo = String((map.paralelo!==undefined ? f[map.paralelo] : '') || parPorDefecto || 'A').trim().toUpperCase().slice(0,2);
+      const fila = i+1;
+      if (!codigo) { errores.push({ fila, msg:'Falta el código del estudiante.' }); continue; }
+      if (!/^[A-Za-z0-9._-]{3,14}$/.test(codigo)) { errores.push({ fila, msg:`Código "${codigo}" no válido (usa 3 a 14 letras o números, sin espacios).` }); continue; }
+      if (!nombres && !apellidos) { errores.push({ fila, msg:`Sin nombre para el código ${codigo}.` }); continue; }
+      if (!year) { errores.push({ fila, msg:`No se reconoce el año del estudiante ${codigo}. Usa 1, 2 o 3.` }); continue; }
+      if (vistos.has(codigo)) { errores.push({ fila, msg:`Código repetido en el archivo: ${codigo}.` }); continue; }
+      vistos.add(codigo);
+      ok.push({ codigo, nombres:capital(nombres), apellidos:capital(apellidos), nombre:(capital(apellidos)+' '+capital(nombres)).trim(), year, paralelo,
+        rep: map.rep!==undefined ? String(f[map.rep]||'').trim() : '', tel: map.tel!==undefined ? String(f[map.tel]||'').trim() : '',
+        existe: !!Users.get(codigo) });
+    }
+    return { ok, errores };
+  },
+  /* Crea o actualiza los usuarios y genera contraseñas temporales para los nuevos */
+  async importar(filas, opts={}){
+    const u = Store.s.usuarios = Store.s.usuarios || {}; let nuevos = 0, actualizados = 0;
+    for (const f of filas){
+      const prev = u[f.codigo];
+      if (prev && !opts.regenerar){ Object.assign(prev, { nombres:f.nombres, apellidos:f.apellidos, nombre:f.nombre, year:f.year, paralelo:f.paralelo, rep:f.rep||prev.rep, tel:f.tel||prev.tel }); actualizados++; continue; }
+      const pass = generarPass();
+      u[f.codigo] = { codigo:f.codigo, nombres:f.nombres, apellidos:f.apellidos, nombre:f.nombre, year:f.year, paralelo:f.paralelo,
+        email: Users.emailOf(f.codigo), rep:f.rep||'', tel:f.tel||'', temp:pass, hash: await hashPass(pass), cambiar:true, entregada:false,
+        creado: Date.now(), ultimoAcceso:null, notas:(prev&&prev.notas)||{}, adapt:(prev&&prev.adapt)||[] };
+      prev ? actualizados++ : nuevos++;
+    }
+    Store.save(); Store.log('usuarios_importados', { nuevos, actualizados, total:Object.keys(u).length });
+    return { nuevos, actualizados };
+  },
+  async resetPass(codigo){ const u = Users.get(codigo); if (!u) return null; const p = generarPass(); u.temp = p; u.hash = await hashPass(p); u.cambiar = true; u.entregada = false; Store.save(); Store.log('password_restablecida',{codigo}); return p; },
+  async cambiarPass(codigo, nueva){ const u = Users.get(codigo); if (!u) return false; u.hash = await hashPass(nueva); u.temp = null; u.cambiar = false; Store.save(); Store.log('password_cambiada',{codigo}); return true; },
+  entregar(codigo, v=true){ const u = Users.get(codigo); if (u){ u.entregada = v; Store.save(); } },
+  borrarTodo(){ Store.s.usuarios = {}; Store.save(); },
+  /* inicio de sesión */
+  async login(usuario, pass){
+    const id = String(usuario||'').trim().toLowerCase();
+    if (id === BIO.school.docente.email || id === 'docente'){
+      if (pass !== (Store.s.docentePass || 'BioLab2026')) return { ok:false, msg:'La contraseña de la docente no coincide.' };
+      Store.ses.rol = 'docente'; Store.ses.onboarded = true; Store.save(); return { ok:true, rol:'docente' };
+    }
+    const u = Users.byEmail(id);
+    if (!u) return { ok:false, msg:'No encontramos ese usuario. Revisa tu correo institucional o pídeselo a tu docente.' };
+    if (await hashPass(pass) !== u.hash) return { ok:false, msg:'La contraseña no coincide. Si la olvidaste, tu docente puede restablecerla.' };
+    u.ultimoAcceso = Date.now();
+    Object.assign(Store.ses, { rol:'estudiante', year:u.year, paralelo:u.paralelo, code:null, invitado:false, userId:u.codigo });
+    const display = ((u.nombres||'') + ' ' + (u.apellidos||'')).trim() || u.nombre;
+    const ini = ((u.nombres||u.nombre)[0] || 'E') + ((u.apellidos||'')[0] || '');
+    Store.s.user = Object.assign({}, Store.s.user, { id:u.codigo, nombre:display, iniciales:ini.toUpperCase(), curso:BIO.year(u.year).n });
+    /* si la docente le asignó adaptaciones, se activan al entrar */
+    const ad = (Store.s.docente.adapt||{})[u.codigo] || u.adapt || [];
+    if (ad.length){ const a = {}; if (ad.includes('letra-grande')) a.text = 1.15; if (ad.includes('tipografia')) a.font = 'hyper';
+      if (ad.includes('voz')) a.tts = true; if (ad.includes('menos-movimiento')) a.motion = true; if (ad.includes('pistas')) a.hints = true;
+      Object.assign(Store.s.a11y, a); applyA11y(); }
+    Store.save(); Store.log('inicio_sesion',{codigo:u.codigo, year:u.year});
+    return { ok:true, rol:'estudiante', cambiar:u.cambiar, user:u };
+  },
+  logout(){ Object.assign(Store.ses, { rol:'estudiante', userId:null, invitado:true }); Store.save(); },
+  /* ---------- exportaciones ---------- */
+  csvCredenciales(list){
+    const l = ['Codigo;Estudiante;Curso;Usuario;Contrasena temporal;Entregada'];
+    list.forEach(u => l.push([u.codigo, u.nombre, `${BIO.year(u.year).corto} ${u.paralelo}`, u.email, u.temp || '(ya la cambió)', u.entregada?'si':'no'].join(';')));
+    return l.join('\n');
+  },
+  csvGoogle(list){   /* formato de carga masiva de la consola de administración de Google Workspace */
+    const l = ['First Name [Required],Last Name [Required],Email Address [Required],Password [Required],Org Unit Path [Required],Change Password at Next Sign-In'];
+    list.forEach(u => l.push([`"${u.nombres||u.nombre}"`, `"${u.apellidos||'Estudiante'}"`, u.email, u.temp || '', `"/Estudiantes/${u.year}BGU"`, 'True'].join(',')));
+    return l.join('\n');
+  },
+  csvMicrosoft(list){ /* formato de carga masiva de Microsoft 365 */
+    const l = ['Username,First name,Last name,Display name,Job title,Department,Office number,Office phone,Mobile phone,Fax,Alternate email address,Address,City,State or province,ZIP or postal code,Country or region'];
+    list.forEach(u => l.push([u.email, u.nombres, u.apellidos, u.nombre, 'Estudiante', `${BIO.year(u.year).corto} ${u.paralelo}`, '', '', u.tel||'', '', u.rep||'', '', '', '', '', 'EC'].join(',')));
+    return l.join('\n');
+  },
+  plantillaCSV(){ return 'codigo;apellidos;nombres;año;paralelo;correo representante\n215444;Andrade Mora;Mateo Sebastián;2;A;familia.andrade@gmail.com\n215445;Cobo Vera;Valentina;2;A;\n215446;Ríos Salas;Sebastián;2;B;'; },
+  ejemplo(){ return `codigo;apellidos;nombres;año;paralelo;correo representante
+215444;Andrade Mora;Mateo Sebastián;2;A;familia.andrade@gmail.com
+215445;Cobo Vera;Valentina Isabel;2;A;m.cobo@gmail.com
+215446;Ríos Salas;Sebastián Andrés;2;A;
+215447;Ortiz Palacios;Camila Doménica;2;A;ortiz.familia@gmail.com
+215448;Paredes Jaramillo;Nicolás;2;A;
+215449;Mora Cedeño;Isabella;2;A;
+215450;Vaca Espinoza;Emilio José;2;A;
+215451;Salas Noboa;Doménica;2;A;`; }
+};
+function descargarTexto(nombre, texto, tipo='text/csv;charset=utf-8'){
+  const blob = new Blob(['﻿'+texto], { type:tipo });
+  const a = h('a',{ href:URL.createObjectURL(blob), download:nombre }); document.body.append(a); a.click(); a.remove();
+  toast('Archivo descargado: '+nombre);
+}
+function copiarTexto(t, msg='Copiado al portapapeles.'){
+  if (navigator.clipboard) navigator.clipboard.writeText(t).then(()=>toast(msg), ()=>openModal(h('div',{class:'stack'}, h('h3',{},'Copia manualmente'), h('textarea',{style:'min-height:240px',readonly:true},t))));
+  else openModal(h('div',{class:'stack'}, h('h3',{},'Copia manualmente'), h('textarea',{style:'min-height:240px',readonly:true},t)));
 }
 </script>
 <script>
@@ -3519,7 +3704,7 @@ route('/cuaderno', (view) => {
    ===================================================================== */
 
 /* ---------- ¿dónde estoy?: ruta de navegación ---------- */
-const CRUMB_NAMES = { explorar:'Áreas', area:'Área', mision:'Misión', misiones:'Misiones', laboratorio:'Laboratorios', simuladores:'Simuladores', evaluacion:'Evaluación', progreso:'Mi progreso', cuaderno:'Cuaderno', docente:'Panel docente', familia:'Familia', panel:'Mi panel', mapa:'Mapa', accesibilidad:'Mi forma de aprender', microscopio:'Microscopio', organo:'Órgano', reporte:'Reporte' };
+const CRUMB_NAMES = { explorar:'Áreas', area:'Área', mision:'Misión', misiones:'Misiones', laboratorio:'Laboratorios', simuladores:'Simuladores', evaluacion:'Evaluación', progreso:'Mi progreso', cuaderno:'Cuaderno', docente:'Panel docente', familia:'Familia', panel:'Mi panel', mapa:'Mapa', accesibilidad:'Mi forma de aprender', microscopio:'Microscopio', organo:'Órgano', reporte:'Reporte', credenciales:'Credenciales' };
 function crumbFor(path){
   const parts = path.split('/').filter(Boolean); if (!parts.length) return [];
   const out = [{ t:'Inicio', href:'#/' }];
@@ -3546,8 +3731,9 @@ function updateCrumbs(path){
 /* ---------- Bienvenida ---------- */
 const YEAR_EM = {1:'🌱',2:'🫀',3:'🌎'};
 function openWizard(step){
-  const wz = $('#wizard'), box = $('#wizard-box'); let st = step || 'rol', pend = { year:null };
+  const wz = $('#wizard'), box = $('#wizard-box'); let st = step || 'rol', pend = { year:null, codigo:null };
   const close = (goHash) => { wz.hidden = true; document.body.style.overflow=''; if (goHash) navigate(goHash); };
+  pend.codigo = null;
   const head = (eyebrow, title, sub) => h('div',{class:'stack',style:'gap:6px'}, h('span',{class:'eyebrow'},eyebrow), h('h2',{},title), sub?h('p',{class:'muted'},sub):null);
   function render(){
     box.innerHTML=''; box.append(h('div',{class:'wz-brand'}, h('span',{class:'logo-mark'},'🧬'), h('b',{},'ANAI BioLab'), h('span',{class:'muted small'},'Laboratorio Virtual de Biología')));
@@ -3557,9 +3743,49 @@ function openWizard(step){
           [['estudiante','🎒','Soy estudiante','Explora tu año de Bachillerato y resuelve los retos.'],
            ['docente','🧑‍🏫','Soy docente','Calificaciones, reportes, códigos por año y adaptaciones.'],
            ['familia','👨‍👩‍👧','Soy representante','Mira el avance y lo pendiente de tu representado.']].map(([id,em,t,d]) =>
-            h('button',{class:'wz-role',onclick:()=>{ if (id==='estudiante'){ st='anio'; render(); } else if (id==='docente'){ Store.ses.rol='docente'; Store.ses.onboarded=true; Store.save(); updateChips(); close('#/docente'); } else { st='familia'; render(); } }},
+            h('button',{class:'wz-role',onclick:()=>{ if (id==='estudiante'){ st='acceso'; render(); } else if (id==='docente'){ Store.ses.rol='docente'; Store.ses.onboarded=true; Store.save(); updateChips(); close('#/docente'); } else { st='familia'; render(); } }},
               h('span',{class:'em'},em), h('b',{},t), h('span',{class:'small muted'},d)))),
         h('button',{class:'btn ghost sm',onclick:()=>{ Store.ses.onboarded=true; Store.save(); close(); }},'Ahora no, solo quiero mirar'));
+    }
+    else if (st==='acceso'){
+      box.append(head('Estudiantes','¿Cómo vas a entrar?','Si tu docente ya te entregó tu usuario institucional, entra con él. Si todavía no lo tienes, puedes usar el código del curso.'),
+        h('div',{class:'wz-roles',style:'grid-template-columns:repeat(2,1fr)'},
+          h('button',{class:'wz-role',onclick:()=>{ st='login'; render(); }}, h('span',{class:'em'},'🔑'), h('b',{},'Tengo usuario y contraseña'), h('span',{class:'small muted'},`Tu correo institucional, por ejemplo 215444@${DOMINIO_EST}.`)),
+          h('button',{class:'wz-role',onclick:()=>{ st='anio'; render(); }}, h('span',{class:'em'},'🎫'), h('b',{},'Tengo el código del curso'), h('span',{class:'small muted'},'El código que la docente comparte con todo el paralelo.'))),
+        h('button',{class:'btn ghost sm',onclick:()=>{ st='rol'; render(); }},'← Atrás'));
+    }
+    else if (st==='login'){
+      const usr = h('input',{type:'text',placeholder:`215444@${DOMINIO_EST}`,'aria-label':'Usuario','autocomplete':'username'});
+      const pas = h('input',{type:'password',placeholder:'Tu contraseña','aria-label':'Contraseña','autocomplete':'current-password'});
+      const msg = h('div',{class:'notice',style:'display:none'});
+      const entrar = async () => { msg.style.display='none'; const r = await Users.login(usr.value, pas.value);
+        if (!r.ok){ msg.className='notice warn'; msg.textContent = r.msg; msg.style.display='flex'; return; }
+        updateChips();
+        if (r.rol==='docente'){ Store.ses.onboarded = true; Store.save(); toast('Bienvenida, docente.'); close('#/docente'); return; }
+        toast(`Hola, ${Store.s.user.nombre.split(' ')[0]}.`);
+        if (r.cambiar){ pend.codigo = r.user.codigo; st='nueva-pass'; } else st='aprender';
+        render(); };
+      box.append(head('Iniciar sesión','Entra con tu usuario institucional','Tu usuario es tu código de estudiante seguido de @'+DOMINIO_EST+'. La primera vez usarás la contraseña temporal que te entregó tu docente.'),
+        h('div',{class:'stack',style:'gap:8px;max-width:420px'}, usr, pas, msg,
+          h('button',{class:'btn primary',onclick:entrar},'Entrar')),
+        h('p',{class:'small muted'},'¿Olvidaste tu contraseña? Tu docente puede restablecerla desde su panel.'),
+        h('div',{class:'row'}, h('button',{class:'btn sm ghost',onclick:()=>{ st='anio'; render(); }},'Entrar con el código del curso'), h('button',{class:'btn sm ghost',onclick:()=>{ st='acceso'; render(); }},'← Atrás')));
+      pas.addEventListener('keydown', e => { if (e.key==='Enter') entrar(); });
+      setTimeout(()=>usr.focus(),50);
+    }
+    else if (st==='nueva-pass'){
+      const p1 = h('input',{type:'password',placeholder:'Nueva contraseña (mínimo 8 caracteres)','aria-label':'Nueva contraseña','autocomplete':'new-password'});
+      const p2 = h('input',{type:'password',placeholder:'Repite la nueva contraseña','aria-label':'Repetir contraseña','autocomplete':'new-password'});
+      const msg = h('div',{class:'notice',style:'display:none'});
+      box.append(head('Seguridad','Crea tu propia contraseña','Estás usando la contraseña temporal que te dio tu docente. Cámbiala por una que solo tú conozcas.'),
+        h('div',{class:'stack',style:'gap:8px;max-width:420px'}, p1, p2, msg,
+          h('div',{class:'row'},
+            h('button',{class:'btn primary',onclick:async()=>{ const a = p1.value.trim();
+              if (a.length < 8){ msg.className='notice warn'; msg.textContent='Usa al menos 8 caracteres.'; msg.style.display='flex'; return; }
+              if (a !== p2.value.trim()){ msg.className='notice warn'; msg.textContent='Las dos contraseñas no coinciden.'; msg.style.display='flex'; return; }
+              await Users.cambiarPass(pend.codigo, a); toast('Contraseña actualizada.'); st='aprender'; render(); }},'Guardar contraseña'),
+            h('button',{class:'btn sm ghost',onclick:()=>{ st='aprender'; render(); }},'Ahora no'))));
+      setTimeout(()=>p1.focus(),50);
     }
     else if (st==='anio'){
       const inp = h('input',{type:'text',placeholder:'Ej.: 2BGU-A-R9TX','aria-label':'Código de acceso',style:'text-transform:uppercase'});
@@ -3777,7 +4003,21 @@ const DOC = {
     return { id:Store.s.user.id, nombre:Store.s.user.nombre+' (demo en vivo)', year:2, paralelo:'A', email:'mateo.andrade@anai.edu.ec',
       rep:'Sra. Andrade', repTel:'0998765432', notas, dias:Store.daysAway(), min: Store.s.timeMin + Math.round(Store.s.events.length*0.4) + 186,
       adapt:(Store.s.docente.adapt||{})[Store.s.user.id] || [], demo:true }; },
-  roster(){ const r = BIO.rosterOf(DOC.year, DOC.par).map(e => Object.assign({}, e, { adapt:(Store.s.docente.adapt||{})[e.id] || e.adapt }));
+  /* Si la docente cargó su listado, ese curso reemplaza al de demostración */
+  importados(){ return Users.ofCourse(DOC.year, DOC.par); },
+  roster(){
+    const imp = DOC.importados();
+    if (imp.length) return imp.map(u => {
+      const vivo = Store.ses.userId === u.codigo;
+      const notas = Object.assign({}, u.notas || {}, (Store.s.docente.notas||{})[u.codigo] || {});
+      if (vivo) BIO.gradeItems.forEach(i => { const g = Store.gradeOf(i.id); if (g!=null) notas[i.id] = g; });
+      const dias = vivo ? Store.daysAway() : (u.ultimoAcceso ? Math.floor((Date.now()-u.ultimoAcceso)/86400000) : null);
+      return { id:u.codigo, nombre:u.nombre + (vivo?' (en vivo)':''), year:u.year, paralelo:u.paralelo, email:u.email,
+        rep:u.rep || 'Representante', repTel:(u.tel||'0990000000').replace(/\D/g,'') || '0990000000',
+        notas, dias, min: vivo ? Store.s.timeMin + Math.round(Store.s.events.length*0.4) + 186 : 0,
+        adapt:(Store.s.docente.adapt||{})[u.codigo] || u.adapt || [], demo:vivo, real:true };
+    });
+    const r = BIO.rosterOf(DOC.year, DOC.par).map(e => Object.assign({}, e, { adapt:(Store.s.docente.adapt||{})[e.id] || e.adapt }));
     if (DOC.year===2 && DOC.par==='A') r.push(DOC.demoRow()); return r; },
   items(){ return BIO.gradeItemsOf(DOC.year); },
   prom(e){ const its = DOC.items().filter(i => e.notas[i.id]!=null); if (!its.length) return null;
@@ -3802,18 +4042,18 @@ route('/docente', (view, q) => {
     h('span',{class:'small muted',style:'margin-left:8px'},'Paralelo:'),
     h('span',{id:'pars',class:'row',style:'gap:6px'}));
   const tabs = h('div',{class:'tabs',role:'tablist'});
-  [['resumen','Resumen'],['calificaciones','Calificaciones'],['estudiantes','Estudiantes'],['seguimiento','Seguimiento'],['codigos','Códigos y años'],['nee','Adaptaciones NEE']]
+  [['resumen','Resumen'],['calificaciones','Calificaciones'],['estudiantes','Estudiantes'],['usuarios','Usuarios y contraseñas'],['seguimiento','Seguimiento'],['codigos','Códigos y años'],['nee','Adaptaciones NEE']]
     .forEach(([id,t]) => tabs.append(h('button',{role:'tab','aria-selected':String(id===tab),onclick:()=>{ tab=id; render(); }},t)));
   const body = h('div',{class:'stack'});
   view.append(head, picker, tabs, h('div',{style:'height:14px'}), body);
 
   function render(){
-    $$('button',tabs).forEach(b => b.setAttribute('aria-selected', String(b.textContent === ({resumen:'Resumen',calificaciones:'Calificaciones',estudiantes:'Estudiantes',seguimiento:'Seguimiento',codigos:'Códigos y años',nee:'Adaptaciones NEE'})[tab])));
+    $$('button',tabs).forEach(b => b.setAttribute('aria-selected', String(b.textContent === ({resumen:'Resumen',calificaciones:'Calificaciones',estudiantes:'Estudiantes',usuarios:'Usuarios y contraseñas',seguimiento:'Seguimiento',codigos:'Códigos y años',nee:'Adaptaciones NEE'})[tab])));
     $$('.chip',picker).forEach((c,i) => { if (i < BIO.years.length) c.classList.toggle('picked', BIO.years[i].id===DOC.year); });
     const pars = $('#pars'); pars.innerHTML='';
     [...new Set(BIO.rosterOf(DOC.year).map(e=>e.paralelo))].forEach(p => pars.append(h('button',{class:'chip'+(DOC.par===p?' picked':''),onclick:()=>{ DOC.par=p; render(); }}, p)));
     body.innerHTML='';
-    ({ resumen:tabResumen, calificaciones:tabNotas, estudiantes:tabEstudiantes, seguimiento:tabSeguimiento, codigos:tabCodigos, nee:tabNEE })[tab](body, render);
+    ({ resumen:tabResumen, calificaciones:tabNotas, estudiantes:tabEstudiantes, usuarios:tabUsuarios, seguimiento:tabSeguimiento, codigos:tabCodigos, nee:tabNEE })[tab](body, render);
     Store.log('docente_tab',{tab, year:DOC.year, paralelo:DOC.par});
   }
   render();
@@ -4013,6 +4253,134 @@ function tabNEE(body, rerender){
   body.append(h('p',{class:'small muted',style:'margin-top:10px'},'Al activar una adaptación del estudiante de demostración, la plataforma se ajusta de inmediato en este navegador para que puedas ver el efecto.'));
 }
 
+/* ---------- Usuarios y contraseñas ---------- */
+function tabUsuarios(body, rerender){
+  const lista = Users.ofCourse(DOC.year, DOC.par), todos = Users.all();
+  let revision = null;
+  body.append(h('div',{class:'notice info'}, h('span',{}, h('b',{},'Cómo funciona. '),
+    'Cargas el listado del curso, la plataforma arma el usuario de cada estudiante con su código y el dominio institucional (por ejemplo ',
+    h('b',{class:'mono'},'215444@'+DOMINIO_EST), ') y genera una contraseña temporal. Con el CSV que se descarga aquí, TIC crea las cuentas reales en un solo paso.')));
+
+  /* --- Paso 1: cargar --- */
+  const ta = h('textarea',{placeholder:'Pega aquí el listado (puedes copiarlo directamente desde Excel)…',style:'min-height:130px;font-family:var(--font-m);font-size:.8rem'});
+  const file = h('input',{type:'file',accept:'.csv,.txt,text/csv',style:'display:none',onchange:e=>{ const f = e.target.files[0]; if (!f) return; const rd = new FileReader(); rd.onload = () => { ta.value = rd.result; toast(`Archivo "${f.name}" cargado. Revisa el listado.`); }; rd.readAsText(f, 'utf-8'); }});
+  const paso1 = h('div',{class:'card stack',style:'margin-top:16px'},
+    h('span',{class:'eyebrow'},'Paso 1 · Cargar el listado del curso'),
+    h('p',{class:'small muted'},'Columnas reconocidas: código, apellidos, nombres (o "estudiante" con el nombre completo), año, paralelo y correo del representante. El año y el paralelo se toman del curso seleccionado arriba si el archivo no los trae.'),
+    h('div',{class:'row',style:'gap:8px;flex-wrap:wrap'},
+      h('button',{class:'btn sm',onclick:()=>file.click()},'Subir archivo CSV'), file,
+      h('button',{class:'btn sm ghost',onclick:()=>descargarTexto('plantilla-estudiantes.csv', Users.plantillaCSV())},'Descargar plantilla'),
+      h('button',{class:'btn sm ghost',onclick:()=>{ ta.value = Users.ejemplo(); toast('Ejemplo cargado: 8 estudiantes de 2.º A.'); }},'Cargar un ejemplo')),
+    ta,
+    h('div',{class:'row',style:'gap:8px'},
+      h('button',{class:'btn primary',onclick:()=>{ revision = Users.revisar(ta.value, DOC.year, DOC.par); pintarRevision(); }},'Revisar listado'),
+      h('span',{class:'small muted'},`Se cargará en ${BIO.year(DOC.year).corto} paralelo ${DOC.par} si el archivo no indica otro.`)));
+  body.append(paso1);
+
+  /* --- Paso 2: revisión --- */
+  const paso2 = h('div',{class:'stack',style:'margin-top:16px'});
+  body.append(paso2);
+  function pintarRevision(){
+    paso2.innerHTML='';
+    if (!revision) return;
+    const { ok, errores } = revision;
+    const box = h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Paso 2 · Revisión'),
+      h('div',{class:'row'}, h('span',{class:'pill ok'},`${ok.length} estudiantes listos`), errores.length ? h('span',{class:'pill bad'},`${errores.length} con problemas`) : null,
+        ok.filter(x=>x.existe).length ? h('span',{class:'pill warn'},`${ok.filter(x=>x.existe).length} ya existían (se actualizan)`) : null));
+    if (errores.length) box.append(h('div',{class:'notice warn'}, h('span',{}, h('b',{},'Revisa estas filas: '), errores.slice(0,6).map(e => `fila ${e.fila}: ${e.msg}`).join(' · '))));
+    if (ok.length){
+      box.append(h('div',{class:'tablewrap'}, h('table',{class:'data'},
+        h('thead',{},h('tr',{},h('th',{},'Código'),h('th',{},'Estudiante'),h('th',{},'Curso'),h('th',{},'Usuario que se creará'),h('th',{},'Estado'))),
+        h('tbody',{}, ok.slice(0,60).map(f => h('tr',{}, h('td',{class:'mono'},f.codigo), h('td',{},f.nombre), h('td',{},`${BIO.year(f.year).corto} ${f.paralelo}`),
+          h('td',{class:'mono'},Users.emailOf(f.codigo)), h('td',{}, f.existe ? h('span',{class:'pill warn'},'Ya existe') : h('span',{class:'pill ok'},'Nuevo'))))))));
+      if (ok.length > 60) box.append(h('p',{class:'small muted'},`Se muestran los primeros 60 de ${ok.length}.`));
+      box.append(h('div',{class:'row',style:'gap:8px'},
+        h('button',{class:'btn primary',onclick:async function(){ this.disabled = true; const r = await Users.importar(ok);
+          toast(`${r.nuevos} usuarios creados y ${r.actualizados} actualizados.`); revision = null; rerender(); }},'Generar usuarios y contraseñas'),
+        h('button',{class:'btn ghost',onclick:()=>{ revision = null; paso2.innerHTML=''; }},'Cancelar')));
+    }
+    paso2.append(box);
+  }
+
+  /* --- Paso 3: credenciales --- */
+  const paso3 = h('div',{class:'stack',style:'margin-top:16px'});
+  body.append(paso3);
+  function pintarLista(){
+    paso3.innerHTML='';
+    const l = Users.ofCourse(DOC.year, DOC.par);
+    if (!l.length){ paso3.append(h('div',{class:'ph'}, h('b',{},'Todavía no hay usuarios en este curso. '), 'Carga el listado arriba: en menos de un minuto tendrás el usuario y la contraseña de cada estudiante, listos para entregar.')); return; }
+    paso3.append(h('div',{class:'row',style:'justify-content:space-between;flex-wrap:wrap;gap:8px'},
+      h('div',{class:'stack',style:'gap:2px'}, h('b',{},`Credenciales · ${BIO.year(DOC.year).corto} ${DOC.par}`),
+        h('span',{class:'small muted'},`${l.length} usuarios · ${l.filter(u=>u.entregada).length} entregadas · dominio ${DOMINIO_EST}`)),
+      h('div',{class:'row',style:'gap:6px;flex-wrap:wrap'},
+        h('button',{class:'btn sm primary',onclick:()=>descargarTexto(`credenciales-${BIO.year(DOC.year).corto.replace(/\W/g,'')}-${DOC.par}.csv`, Users.csvCredenciales(l))},'Credenciales CSV'),
+        h('button',{class:'btn sm',onclick:()=>descargarTexto('usuarios-google-workspace.csv', Users.csvGoogle(l), 'text/csv')},'CSV para Google Workspace'),
+        h('button',{class:'btn sm',onclick:()=>descargarTexto('usuarios-microsoft365.csv', Users.csvMicrosoft(l), 'text/csv')},'CSV para Microsoft 365'),
+        h('a',{class:'btn sm',href:`#/docente/credenciales/${DOC.year}/${DOC.par}`},'Fichas para imprimir'))));
+    let visible = false;
+    const tabla = h('div',{class:'tablewrap'});
+    const pintarTabla = () => { tabla.innerHTML='';
+      tabla.append(h('table',{class:'data'},
+        h('thead',{},h('tr',{},h('th',{},'Código'),h('th',{},'Estudiante'),h('th',{},'Usuario'),h('th',{},'Contraseña temporal'),h('th',{},'Estado'),h('th',{},''))),
+        h('tbody',{}, l.map(u => h('tr',{},
+          h('td',{class:'mono'},u.codigo),
+          h('td',{}, h('b',{},u.nombre), u.rep ? h('div',{class:'small muted'},'Rep.: '+u.rep) : null),
+          h('td',{class:'mono small'},u.email),
+          h('td',{class:'mono'}, u.temp ? (visible ? u.temp : '••••••••') : h('span',{class:'small muted'},'la cambió el estudiante')),
+          h('td',{}, u.entregada ? h('span',{class:'pill ok'},'Entregada') : h('span',{class:'pill warn'},'Por entregar'),
+            u.ultimoAcceso ? h('div',{class:'small muted'},'Ingresó '+timeAgo(u.ultimoAcceso)) : h('div',{class:'small muted'},'Sin ingresar')),
+          h('td',{style:'white-space:nowrap'}, h('div',{class:'row',style:'gap:6px;flex-wrap:nowrap'},
+            h('button',{class:'btn sm ghost',onclick:()=>credModal(u, pintarLista)},'Entregar'),
+            h('button',{class:'btn sm ghost',onclick:async()=>{ const p = await Users.resetPass(u.codigo); toast('Nueva contraseña: '+p); pintarLista(); }},'Restablecer')))))))); };
+    paso3.append(h('div',{class:'row',style:'gap:8px;margin:10px 0'},
+      h('button',{class:'btn sm ghost',onclick:function(){ visible = !visible; this.textContent = visible ? 'Ocultar contraseñas' : 'Mostrar contraseñas'; pintarTabla(); }},'Mostrar contraseñas'),
+      h('button',{class:'btn sm ghost',onclick:()=>{ l.forEach(u=>Users.entregar(u.codigo,true)); toast('Todas marcadas como entregadas.'); pintarLista(); }},'Marcar todas como entregadas'),
+      h('button',{class:'btn sm ghost',onclick:()=>{ if (confirm(`¿Borrar los ${Users.all().length} usuarios cargados? Esta acción no se puede deshacer.`)){ Users.borrarTodo(); rerender(); toast('Listado borrado.'); } }},'Borrar listado completo')));
+    pintarTabla(); paso3.append(tabla);
+    paso3.append(h('div',{class:'notice warn',style:'margin-top:12px'}, h('span',{}, h('b',{},'Sobre la seguridad. '),
+      'En esta versión de demostración las contraseñas viven solo en este navegador y sirven para probar la experiencia. Las cuentas reales se crean con el CSV en Google Workspace o Microsoft 365; a partir de ahí, la contraseña la administra el colegio y la plataforma nunca la guarda.')));
+    paso3.append(h('p',{class:'small muted',style:'margin-top:10px'},`Usuarios cargados en total: ${Users.all().length} (${Users.years().map(y=>BIO.year(y).corto+': '+Users.ofCourse(y).length).join(' · ') || 'ninguno'}).`));
+  }
+  pintarLista();
+  /* acceso de la docente */
+  const pInp = h('input',{type:'text',value:Store.s.docentePass || 'BioLab2026','aria-label':'Contraseña de la docente',style:'max-width:200px'});
+  body.append(h('div',{class:'card stack',style:'margin-top:16px'}, h('span',{class:'eyebrow'},'Acceso de la docente'),
+    h('p',{class:'small muted'},'Con estos datos entras desde la pantalla de inicio de sesión, en cualquier computador.'),
+    h('div',{class:'cred-box'}, h('div',{}, h('span',{class:'small muted'},'Usuario'), h('b',{class:'mono'},BIO.school.docente.email)), h('div',{}, h('span',{class:'small muted'},'Contraseña'), h('b',{class:'mono'}, Store.s.docentePass || 'BioLab2026'))),
+    h('div',{class:'row'}, pInp, h('button',{class:'btn sm',onclick:()=>{ if (pInp.value.trim().length<8) return toast('Usa al menos 8 caracteres.'); Store.s.docentePass = pInp.value.trim(); Store.save(); toast('Contraseña de la docente actualizada.'); rerender(); }},'Cambiar contraseña'))));
+}
+function credModal(u, rerender){
+  const txt = `Hola ${u.nombres||u.nombre}. Estos son tus datos para entrar a ANAI BioLab (Biología):\n\nUsuario: ${u.email}\nContraseña temporal: ${u.temp || '(ya la cambiaste)'}\n\nEntra a ${location.origin}${location.pathname} y cambia tu contraseña la primera vez. Guarda este mensaje.`;
+  const ta = h('textarea',{style:'min-height:140px'}, txt);
+  openModal(h('div',{class:'stack'}, h('span',{class:'eyebrow'},'Entregar credenciales'), h('h3',{},u.nombre),
+    h('div',{class:'cred-box'}, h('div',{}, h('span',{class:'small muted'},'Usuario'), h('b',{class:'mono'},u.email)), h('div',{}, h('span',{class:'small muted'},'Contraseña temporal'), h('b',{class:'mono'},u.temp||'—'))),
+    ta,
+    h('div',{class:'row',style:'flex-wrap:wrap;gap:6px'},
+      u.tel ? h('a',{class:'btn primary sm',target:'_blank',rel:'noopener',href:`https://wa.me/593${String(u.tel).replace(/\D/g,'').replace(/^0/,'')}?text=${encodeURIComponent(ta.value)}`,onclick:()=>{ Users.entregar(u.codigo); }},'Enviar por WhatsApp') : null,
+      u.rep && u.rep.includes('@') ? h('a',{class:'btn sm',href:`mailto:${u.rep}?subject=${encodeURIComponent('Acceso a ANAI BioLab · '+u.nombre)}&body=${encodeURIComponent(ta.value)}`,onclick:()=>{ Users.entregar(u.codigo); }},'Enviar al representante') : null,
+      h('button',{class:'btn sm',onclick:()=>{ copiarTexto(ta.value); Users.entregar(u.codigo); }},'Copiar'),
+      h('button',{class:'btn sm ghost',onclick:()=>{ Users.entregar(u.codigo, !u.entregada); rerender && rerender(); closeModal(); }}, u.entregada ? 'Marcar como no entregada' : 'Marcar como entregada'),
+      h('button',{class:'btn sm ghost',onclick:closeModal},'Cerrar'))));
+}
+
+/* ---------- Fichas de credenciales para imprimir y recortar ---------- */
+route('/docente/credenciales/:year/:par', (view, p) => {
+  const year = +p.year, par = p.par; const l = Users.ofCourse(year, par);
+  view.classList.add('wide');
+  view.append(h('div',{class:'row noprint',style:'gap:8px;margin-bottom:12px'},
+    h('a',{class:'btn sm',href:'#/docente'},'← Volver al panel'),
+    h('button',{class:'btn sm primary',onclick:()=>window.print()},'Imprimir fichas'),
+    h('button',{class:'btn sm ghost',onclick:()=>{ l.forEach(u=>Users.entregar(u.codigo,true)); toast('Marcadas como entregadas.'); }},'Marcar todas como entregadas')));
+  if (!l.length){ view.append(h('div',{class:'ph'},'Este curso todavía no tiene usuarios cargados.')); return; }
+  view.append(h('div',{class:'page-head noprint'}, h('div',{}, h('span',{class:'eyebrow'},'Credenciales para recortar'), h('h1',{},`${BIO.year(year).corto} · Paralelo ${par}`), h('p',{},'Una ficha por estudiante. Imprime, recorta y entrega. Cada estudiante debe cambiar su contraseña la primera vez que entre.'))));
+  view.append(h('div',{class:'cred-grid'}, l.map(u => h('div',{class:'cred-card'},
+    h('div',{class:'cred-head'}, h('b',{},'ANAI BioLab'), h('span',{class:'small muted'},'Biología · '+BIO.year(u.year).corto+' '+u.paralelo)),
+    h('div',{class:'cred-name'}, u.nombre),
+    h('div',{class:'cred-row'}, h('span',{class:'small muted'},'Usuario'), h('b',{class:'mono'},u.email)),
+    h('div',{class:'cred-row'}, h('span',{class:'small muted'},'Contraseña temporal'), h('b',{class:'mono'},u.temp || '(ya la cambió)')),
+    h('p',{class:'small muted'},'Entra a la plataforma, escribe estos datos y crea tu propia contraseña. No la compartas con nadie.')))));
+});
+
 /* ---------- Reporte individual imprimible ---------- */
 route('/docente/reporte/:id', (view, p) => {
   const e = (p.id===Store.s.user.id) ? DOC.demoRow() : BIO.getRoster().find(x=>x.id===p.id);
@@ -4138,7 +4506,11 @@ function roleModal(){
   openModal(h('div',{class:'stack'}, h('span',{class:'eyebrow'},'Cambiar de vista'), h('h3',{},'¿Cómo quieres ver la plataforma?'),
     h('p',{class:'small muted'},'En la versión con servidor, cada persona entra con su propia cuenta y solo ve lo que le corresponde. Aquí puedes alternar para conocer las tres vistas.'),
     h('div',{class:'wz-roles'}, opt('estudiante','🎒','Estudiante','Tu año, tus retos y tu progreso.','#/'), opt('docente','🧑‍🏫','Docente','Calificaciones, reportes, códigos y adaptaciones.','#/docente'), opt('familia','👨‍👩‍👧','Representante','Avance y pendientes de tu representado.','#/familia')),
-    h('div',{class:'row'}, h('button',{class:'btn sm ghost',onclick:()=>{ closeModal(); openWizard('rol'); }},'Volver a la bienvenida'), h('button',{class:'btn sm ghost',onclick:closeModal},'Cancelar'))));
+    h('div',{class:'row'},
+      h('button',{class:'btn sm ghost',onclick:()=>{ closeModal(); openWizard('rol'); }},'Volver a la bienvenida'),
+      h('button',{class:'btn sm ghost',onclick:()=>{ closeModal(); openWizard('login'); }},'Iniciar sesión con usuario'),
+      Store.ses.userId ? h('button',{class:'btn sm ghost',onclick:()=>{ Users.logout(); Store.s.user = Object.assign({}, Store.s.user, { id:'demo-mateo', nombre:'Mateo Andrade', iniciales:'MA' }); Store.save(); updateChips(); closeModal(); toast('Sesión cerrada.'); navigate('#/'); }},'Cerrar sesión') : null,
+      h('button',{class:'btn sm ghost',onclick:closeModal},'Cancelar'))));
 }
 (function init(){
   applyA11y(); Store.touchVisit();
