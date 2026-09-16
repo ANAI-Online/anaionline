@@ -99,8 +99,9 @@ input,select,textarea{font:inherit;color:inherit}
 .logo b{font-family:var(--font-d);font-weight:800;font-size:1.05rem;letter-spacing:-.01em;display:block;line-height:1.1}
 .logo .sub{font-size:.68rem;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
 .nav-group{font-size:.66rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);padding:10px 10px 3px;line-height:1.3;font-family:var(--font-d)}
-.nav a{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;color:var(--ink-2);text-decoration:none!important;font-weight:500;font-size:.9rem;line-height:1.25}
-.nav a:hover{background:var(--bg-3);color:var(--ink)}
+.nav a,.nav .navout{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;color:var(--ink-2);text-decoration:none!important;font-weight:500;font-size:.9rem;line-height:1.25}
+.nav a:hover,.nav .navout:hover{background:var(--bg-3);color:var(--ink)}
+.nav .navout{width:100%;border:0;background:none;text-align:left;font-family:inherit}
 .nav a[aria-current="page"]{background:var(--accent-soft);color:var(--ink);font-weight:600}
 .nav a .ico{width:18px;height:18px;flex:none;display:inline-grid;place-items:center;color:var(--ink-3)}
 .nav a[aria-current="page"] .ico{color:var(--accent)}
@@ -1736,7 +1737,8 @@ function navItems(){
     {href:'#/accesibilidad', t:'Accesibilidad', ico:'🅰'},
     {g:'Conocer la plataforma'},
     {href:'#/', t:'Inicio', ico:'⌂'},
-    {href:'#/mapa', t:'Mapa', ico:'🗺'}
+    {href:'#/mapa', t:'Mapa', ico:'🗺'},
+    {g:'Sesión'}, {action:'logout', t:'Cerrar sesión', ico:'⎋'}
   ];
   const base = [
     {g:'Estudiante'},
@@ -1756,13 +1758,14 @@ function navItems(){
     {href:'#/cuaderno', t:'Cuaderno', ico:'✎'},
     {href:'#/accesibilidad', t:'Mi forma de aprender', ico:'🅰'}
   ];
+  const salir = [{g:'Sesión'}, {action:'logout', t:'Cerrar sesión', ico:'⎋'}];
   if (rol === 'docente') return [
     {g:'Docente'},
     {href:'#/docente', t:'Panel docente', ico:'▤'},
     {href:'#/familia', t:'Vista de familia', ico:'👪'},
-    ...base
+    ...base, ...salir
   ];
-  return [...base, {g:'Docente'}, {href:'#/docente', t:'Panel docente', ico:'▤'}];
+  return [...base, {g:'Docente'}, {href:'#/docente', t:'Panel docente', ico:'▤'}, ...salir];
 }
 /* Qué rutas pertenecen a cada área (para marcar la navegación) */
 const AREA_PATHS = {
@@ -1782,6 +1785,7 @@ const ICONS = {
   '✓':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>',
   '↗':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>',
   '✎':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M5 16 16 5l3 3L8 19l-4 1z"/></svg>',
+  '⎋':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 20H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4"/><path d="m15 16 4-4-4-4"/><path d="M19 12H10"/></svg>',
   '🗺':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 4-6 2v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg>',
   '🅰':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 10 5l6 15M6.5 15h7"/><path d="M18 11v9M18 8h.01"/></svg>',
   '👪':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3 20c0-3 2.2-5 5-5s5 2 5 5"/><path d="M14 20c0-2.3 1.4-4 3-4s3 1.7 3 4"/></svg>',
@@ -1789,7 +1793,9 @@ const ICONS = {
 };
 function buildNav(){
   const nav = $('#nav-main'); nav.innerHTML='';
-  navItems().forEach(n => { if (n.g) nav.append(h('div',{class:'nav-group'},n.g)); else nav.append(h('a',{href:n.href, 'data-area':n.area||null}, n.dot ? h('span',{class:'ico'}, h('span',{class:'navdot '+n.dot})) : h('span',{class:'ico',html:ICONS[n.ico]}), n.t, n.tag ? h('span',{class:'tag'},n.tag):null)); });
+  navItems().forEach(n => { if (n.g) nav.append(h('div',{class:'nav-group'},n.g));
+    else if (n.action === 'logout') nav.append(h('button',{class:'navout',onclick:()=>cerrarSesion()}, h('span',{class:'ico',html:ICONS[n.ico]}), n.t));
+    else nav.append(h('a',{href:n.href, 'data-area':n.area||null}, n.dot ? h('span',{class:'ico'}, h('span',{class:'navdot '+n.dot})) : h('span',{class:'ico',html:ICONS[n.ico]}), n.t, n.tag ? h('span',{class:'tag'},n.tag):null)); });
   const bn = $('#nav-bottom'); bn.innerHTML='';
   [['#/','Inicio','⌂'],['#/explorar','Áreas','◎'],['#/misiones','Misiones','◈'],['#/laboratorio','Lab','⚗'],['#/progreso','Progreso','↗']].forEach(([href,t,i]) => bn.append(h('a',{href}, h('span',{class:'ico',html:ICONS[i],style:'width:20px;height:20px;display:inline-block'}), t)));
 }
@@ -1998,7 +2004,9 @@ const Users = {
     Store.save(); Store.log('inicio_sesion',{codigo:u.codigo, year:u.year});
     return { ok:true, rol:'estudiante', cambiar:u.cambiar, user:u };
   },
-  logout(){ Object.assign(Store.ses, { rol:'estudiante', userId:null, invitado:true }); Store.save(); },
+  logout(){ Object.assign(Store.ses, { rol:'estudiante', userId:null, invitado:false, year:null, paralelo:null, code:null, onboarded:false });
+    Store.s.user = Object.assign({}, Store.s.user, { id:'demo-mateo', nombre:'Mateo Andrade', iniciales:'MA', curso:'2.º de Bachillerato' });
+    Store.save(); Store.log('cierre_sesion',{}); },
   /* ---------- exportaciones ---------- */
   csvCredenciales(list){
     const l = ['Codigo;Estudiante;Curso;Usuario;Contrasena temporal;Entregada'];
@@ -4035,7 +4043,7 @@ route('/docente', (view, q) => {
   const head = h('div',{class:'page-head'},
     h('div',{}, h('span',{class:'eyebrow'},'Panel docente · '+BIO.school.institucion), h('h1',{},'Biología · Bachillerato'),
       h('p',{},'Datos de demostración ficticios, salvo la fila del estudiante demo, que refleja la actividad real registrada en este navegador.')),
-    h('div',{class:'row'}, h('a',{class:'btn sm',href:'#/familia'},'Ver como familia'), h('a',{class:'btn sm ghost',href:'#/panel'},'Ver como estudiante')));
+    h('div',{class:'row'}, h('a',{class:'btn sm',href:'#/familia'},'Ver como familia'), h('a',{class:'btn sm ghost',href:'#/panel'},'Ver como estudiante'), h('button',{class:'btn sm ghost',onclick:cerrarSesion},'Cerrar sesión')));
   const picker = h('div',{class:'row',style:'gap:8px;flex-wrap:wrap;margin-bottom:14px'},
     h('span',{class:'small muted'},'Curso:'),
     ...BIO.years.map(y => h('button',{class:'chip'+(DOC.year===y.id?' picked':''),onclick:()=>{ DOC.year=y.id; const ps=[...new Set(BIO.rosterOf(y.id).map(e=>e.paralelo))]; if (!ps.includes(DOC.par)) DOC.par=ps[0]||'A'; render(); }}, y.corto)),
@@ -4427,7 +4435,7 @@ route('/familia', (view) => {
 
   view.append(h('div',{class:'page-head noprint'}, h('div',{}, h('span',{class:'eyebrow'},'Vista de representante · solo lectura'), h('h1',{},`Avance de ${primer}`),
       h('p',{},`${nombre} · ${BIO.year(year).n} · Biología · ${BIO.school.institucion}. Aquí ve lo que su representado está aprendiendo, lo que tiene pendiente y cómo acompañarlo en casa.`)),
-    h('div',{class:'row'}, h('button',{class:'btn sm',onclick:()=>window.print()},'Imprimir'), h('button',{class:'btn sm ghost',onclick:()=>{ Store.ses.rol='estudiante'; Store.save(); updateChips(); navigate('#/'); }},'Salir'))));
+    h('div',{class:'row'}, h('button',{class:'btn sm',onclick:()=>window.print()},'Imprimir'), h('button',{class:'btn sm ghost',onclick:cerrarSesion},'Cerrar sesión'))));
 
   const cards = h('div',{class:'grid g4'});
   [[p+' %','del curso completado'],[prom!=null?fmtNota(prom):'–','promedio (sobre 10)'],[fmtMin(semana),'esta semana en la plataforma'],[pend.length,'actividades pendientes']]
@@ -4500,6 +4508,11 @@ function updateChips(){
   else { nom.textContent = Store.s.user.nombre; cur.textContent = (y ? BIO.year(y).n : 'Sin año asignado') + (Store.ses.paralelo ? ' · '+Store.ses.paralelo : '') + (Store.ses.invitado ? ' · invitado' : ''); chip.setAttribute('href','#/progreso'); $('.avatar').textContent = Store.s.user.iniciales; }
   buildNav(); updateNav(parseHash().path);
 }
+function cerrarSesion(){
+  Users.logout(); updateChips(); closeModal(); closeBell();
+  toast('Sesión cerrada.'); navigate('#/');
+  setTimeout(()=>openWizard('rol'), 350);
+}
 function roleModal(){
   const opt = (rol, em, t, d, go) => h('button',{class:'wz-role',onclick:()=>{ Store.ses.rol = rol; if (rol==='estudiante' && !Store.year()) Store.guest(2); Store.save(); updateChips(); closeModal(); navigate(go); toast(`Vista de ${t.toLowerCase()} activada.`); }},
     h('span',{class:'em'},em), h('b',{},t), h('span',{class:'small muted'},d));
@@ -4509,7 +4522,7 @@ function roleModal(){
     h('div',{class:'row'},
       h('button',{class:'btn sm ghost',onclick:()=>{ closeModal(); openWizard('rol'); }},'Volver a la bienvenida'),
       h('button',{class:'btn sm ghost',onclick:()=>{ closeModal(); openWizard('login'); }},'Iniciar sesión con usuario'),
-      Store.ses.userId ? h('button',{class:'btn sm ghost',onclick:()=>{ Users.logout(); Store.s.user = Object.assign({}, Store.s.user, { id:'demo-mateo', nombre:'Mateo Andrade', iniciales:'MA' }); Store.save(); updateChips(); closeModal(); toast('Sesión cerrada.'); navigate('#/'); }},'Cerrar sesión') : null,
+      h('button',{class:'btn sm',onclick:cerrarSesion},'Cerrar sesión'),
       h('button',{class:'btn sm ghost',onclick:closeModal},'Cancelar'))));
 }
 (function init(){
@@ -4519,6 +4532,7 @@ function roleModal(){
   const mb = $('#btn-motion'); const syncMotion = () => mb.setAttribute('aria-pressed', !Store.s.settings.motion); syncMotion();
   mb.addEventListener('click', ()=>{ Store.s.settings.motion = !Store.s.settings.motion; Store.save(); syncMotion(); applyA11y(); toast(Store.s.settings.motion?'Animaciones activadas.':'Animaciones pausadas.'); });
   $('#btn-role').addEventListener('click', roleModal);
+  $('#userchip').addEventListener('click', e => { e.preventDefault(); roleModal(); });
   $('#btn-a11y').addEventListener('click', ()=>navigate('#/accesibilidad'));
   $('#btn-help').addEventListener('click', ()=>{
     openModal(h('div',{class:'stack'}, h('span',{class:'eyebrow'},'Ayuda'), h('h3',{},'¿Necesitas orientarte?'),
