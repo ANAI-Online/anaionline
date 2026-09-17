@@ -8,6 +8,8 @@
 <title>ANAI BioLab</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230E1F33'/%3E%3Cpath d='M20 10c0 10 24 14 24 30a12 12 0 0 1-24 0c0-16 24-20 24-30' fill='none' stroke='%233FC1D3' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
 <style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<script>window.ANAI_CONFIG = window.ANAI_CONFIG || {};</script>
+<script src="config.js"></script>
 </head>
 <body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -707,7 +709,7 @@ th.rot{font-size:.68rem;white-space:normal}
       <span><b id="marca-n">ANAI BioLab</b><span class="sub" id="marca-sub">Laboratorio virtual</span></span>
     </a>
     <nav class="nav" id="nav-main"></nav>
-    <div class="sidebar-foot">Prototipo MVP · ANAI Online<br><span class="mono">v0.7 · Ciencias Naturales EGB + Biología BGU</span></div>
+    <div class="sidebar-foot">Prototipo MVP · ANAI Online<br><span class="mono">v0.8 · Ciencias Naturales EGB + Biología BGU</span></div>
   </aside>
   <div class="main">
     <header class="topbar">
@@ -1593,6 +1595,11 @@ const Store = {
     this.log('actividad_completada', { actividad:id, resultado:extra.score ?? null, intentos: extra.attempts ?? null });
     if (first) this.addXP(a.xp, a.t);
     this.save();
+    if (typeof Cloud !== 'undefined' && Cloud.on && this.ses.rol === 'estudiante' && Cloud.ses){
+      const nota = this.gradeOf(id);
+      Cloud.pushNota(Cloud.ses.uid, id, nota, { intentos: extra.attempts ?? null, resultado: extra.score != null ? String(extra.score) : null, origen:'plataforma' }).catch(e => console.warn('nota', e));
+      Cloud.evento('actividad_completada', { actividad:id, resultado:extra.score ?? null });
+    }
   },
   markSeen(model, id){
     const arr = this.s.seen[model] = this.s.seen[model] || [];
@@ -2018,6 +2025,14 @@ const Users = {
   /* Crea o actualiza los usuarios y genera contraseñas temporales para los nuevos */
   async importar(filas, opts={}){
     const u = Store.s.usuarios = Store.s.usuarios || {}; let nuevos = 0, actualizados = 0;
+    if (Cloud.on){
+      const r = await Cloud.crearEstudiantes(filas);
+      r.creados.forEach(c => { const f = filas.find(x => String(x.codigo)===String(c.codigo)); if (!f) return;
+        if (c.actualizado){ const prev = u[f.codigo]; if (prev) Object.assign(prev, { nombres:f.nombres, apellidos:f.apellidos, nombre:f.nombre, year:f.year, paralelo:f.paralelo }); actualizados++; return; }
+        u[f.codigo] = { id:f.codigo, uid:c.id, codigo:f.codigo, nombres:f.nombres, apellidos:f.apellidos, nombre:f.nombre, year:f.year, paralelo:f.paralelo, email:c.email, rep:f.rep||'', tel:f.tel||'', temp:c.temp, hash:null, cambiar:true, entregada:false, creado:Date.now(), ultimoAcceso:null, notas:{}, adapt:[] }; nuevos++; });
+      if (r.errores && r.errores.length) toast(`${r.errores.length} fila(s) no se pudieron crear: ${r.errores[0].codigo} (${r.errores[0].msg})`);
+      Store.save(); Store.log('usuarios_importados', { nuevos, actualizados, servidor:true }); return { nuevos, actualizados, errores:r.errores };
+    }
     for (const f of filas){
       const prev = u[f.codigo];
       if (prev && !opts.regenerar){ Object.assign(prev, { nombres:f.nombres, apellidos:f.apellidos, nombre:f.nombre, year:f.year, paralelo:f.paralelo, rep:f.rep||prev.rep, tel:f.tel||prev.tel }); actualizados++; continue; }
@@ -2030,16 +2045,32 @@ const Users = {
     Store.save(); Store.log('usuarios_importados', { nuevos, actualizados, total:Object.keys(u).length });
     return { nuevos, actualizados };
   },
-  async resetPass(codigo){ const u = Users.get(codigo); if (!u) return null; const p = generarPass(); u.temp = p; u.hash = await hashPass(p); u.cambiar = true; u.entregada = false; Store.save(); Store.log('password_restablecida',{codigo}); return p; },
+  async resetPass(codigo){ const u = Users.get(codigo); if (!u) return null;
+    if (Cloud.on){ const t = await Cloud.resetPassword(u.uid); u.temp = t; u.cambiar = true; u.entregada = false; Store.save(); return t; }
+    const p = generarPass(); u.temp = p; u.hash = await hashPass(p); u.cambiar = true; u.entregada = false; Store.save(); Store.log('password_restablecida',{codigo}); return p; },
   async cambiarPass(codigo, nueva){
+    if (Cloud.on){ try { await Cloud.setPassword(nueva); } catch(e){ toast('No se pudo cambiar la contraseña: '+e.message); return false; }
+      const u = Users.get(codigo); if (u){ u.cambiar=false; u.temp=null; } const d = (Store.s.docentes||{})[codigo]; if (d){ d.cambiar=false; d.temp=null; } Store.save(); return true; }
     const doc = (Store.s.docentes||{})[codigo];
     if (doc){ doc.hash = await hashPass(nueva); doc.temp = null; doc.cambiar = false; Store.save(); Store.log('password_cambiada',{rol:'docente'}); return true; }
     const u = Users.get(codigo); if (!u) return false; u.hash = await hashPass(nueva); u.temp = null; u.cambiar = false; Store.save(); Store.log('password_cambiada',{codigo}); return true; },
-  entregar(codigo, v=true){ const u = Users.get(codigo); if (u){ u.entregada = v; Store.save(); } },
+  entregar(codigo, v=true){ const u = Users.get(codigo); if (u){ u.entregada = v; Store.save(); if (Cloud.on && u.uid) Cloud.entregada(u.uid, v).catch(e=>toast('No se guardó en el servidor: '+e.message)); } },
   borrarTodo(){ Store.s.usuarios = {}; Store.save(); },
   /* inicio de sesión */
   async login(usuario, pass){
     const id = String(usuario||'').trim().toLowerCase();
+    /* modo servidor: Supabase valida usuario y contraseña */
+    if (Cloud.on){
+      const email = id.includes('@') ? id : (/^[a-z0-9._-]+$/.test(id) ? `${id}@${DOMINIO_EST}` : id);
+      const r = await Cloud.login(email, pass); if (!r.ok) return r;
+      const p = r.perfil; Cloud.aplicarPerfil(p);
+      try { await Cloud.pull(); } catch(e){ console.warn('pull', e); toast('Sesión iniciada, pero no se pudieron descargar todos los datos: '+e.message); }
+      Store.log('inicio_sesion',{rol:p.rol, prog:p.prog||null}); Cloud.evento('inicio_sesion',{rol:p.rol});
+      const out = { ok:true, rol:p.rol, cambiar:!!p.cambiar };
+      if (p.rol==='docente') out.docente = Store.s.docentes[p.id] || { id:p.id, nombre:p.nombre };
+      if (p.rol==='estudiante') out.user = Store.s.usuarios[p.codigo] || { codigo:p.codigo, nombre:p.nombre };
+      return out;
+    }
     /* administración */
     if (id === 'admin@anai.edu.ec' || id === 'admin'){
       if (pass !== (Store.s.adminPass || 'AnaiAdmin2026')) return { ok:false, msg:'La contraseña de administración no coincide.' };
@@ -2079,7 +2110,7 @@ const Users = {
     Store.save(); Store.log('inicio_sesion',{codigo:u.codigo, year:u.year});
     return { ok:true, rol:'estudiante', cambiar:u.cambiar, user:u };
   },
-  logout(){ Object.assign(Store.ses, { rol:'estudiante', userId:null, docenteId:null, programa:null, nivel:null, invitado:false, year:null, paralelo:null, code:null, onboarded:false });
+  logout(){ if (Cloud.on) Cloud.logout(); Object.assign(Store.ses, { rol:'estudiante', userId:null, docenteId:null, programa:null, nivel:null, invitado:false, year:null, paralelo:null, code:null, onboarded:false });
     Store.s.user = Object.assign({}, Store.s.user, { id:'demo-mateo', nombre:'Mateo Andrade', iniciales:'MA', curso:'2.º de Bachillerato' });
     Store.save(); Store.log('cierre_sesion',{}); },
   /* ---------- exportaciones ---------- */
@@ -2118,6 +2149,117 @@ function copiarTexto(t, msg='Copiado al portapapeles.'){
   if (navigator.clipboard) navigator.clipboard.writeText(t).then(()=>toast(msg), ()=>openModal(h('div',{class:'stack'}, h('h3',{},'Copia manualmente'), h('textarea',{style:'min-height:240px',readonly:true},t))));
   else openModal(h('div',{class:'stack'}, h('h3',{},'Copia manualmente'), h('textarea',{style:'min-height:240px',readonly:true},t)));
 }
+</script>
+<script>
+/* =====================================================================
+   MODO SERVIDOR (Supabase): inicio de sesión real, cursos, usuarios,
+   docentes, notas y progreso sincronizados entre dispositivos.
+   Si no hay configuración (window.ANAI_CONFIG vacío) todo sigue en modo local.
+   Estrategia: caché de paso. Al iniciar sesión se descargan los datos a
+   Store.s (usuarios, docentes, cursos, notas) y cada cambio se escribe en
+   el servidor y en la caché, de modo que las vistas existentes no cambian.
+   ===================================================================== */
+const Cloud = {
+  cfg: (typeof window !== 'undefined' && window.ANAI_CONFIG) || {},
+  get on(){ return !!(this.cfg.supabaseUrl && this.cfg.supabaseAnonKey); },
+  get url(){ return String(this.cfg.supabaseUrl||'').replace(/\/$/,''); },
+  ses: null,                       // { access_token, refresh_token, uid, email, exp }
+  perfil: null,
+  KEY: 'anai-cloud-session',
+  init(){ try { this.ses = JSON.parse(localStorage.getItem(this.KEY) || 'null'); } catch(e){ this.ses = null; } },
+  saveSes(s){ this.ses = s; try { s ? localStorage.setItem(this.KEY, JSON.stringify(s)) : localStorage.removeItem(this.KEY); } catch(e){} },
+
+  /* ---------- HTTP ---------- */
+  headers(auth=true){ const hd = { 'apikey': this.cfg.supabaseAnonKey, 'Content-Type':'application/json' };
+    hd['Authorization'] = 'Bearer ' + ((auth && this.ses && this.ses.access_token) || this.cfg.supabaseAnonKey); return hd; },
+  async req(path, opts={}, retry=true){
+    const r = await fetch(this.url + path, { method: opts.method || 'GET', headers: Object.assign(this.headers(opts.auth!==false), opts.headers||{}), body: opts.body ? JSON.stringify(opts.body) : undefined });
+    if (r.status === 401 && retry && this.ses && this.ses.refresh_token){ const ok = await this.refresh(); if (ok) return this.req(path, opts, false); }
+    const txt = await r.text(); let data = null; try { data = txt ? JSON.parse(txt) : null; } catch(e){ data = txt; }
+    if (!r.ok){ const msg = (data && (data.msg || data.message || data.error_description || data.error)) || `Error ${r.status}`; const err = new Error(msg); err.status = r.status; err.data = data; throw err; }
+    return data;
+  },
+  rest(table, q='', opts={}){ return this.req(`/rest/v1/${table}${q?'?'+q:''}`, Object.assign({ headers:{ 'Prefer': opts.prefer || 'return=representation' } }, opts)); },
+  async fn(accion, payload={}){ return this.req('/functions/v1/admin-usuarios', { method:'POST', body: Object.assign({ accion }, payload) }); },
+
+  /* ---------- autenticación ---------- */
+  async login(email, password){
+    let d; try { d = await this.req('/auth/v1/token?grant_type=password', { method:'POST', auth:false, body:{ email:String(email).trim().toLowerCase(), password } }); }
+    catch(e){ return { ok:false, msg: /invalid/i.test(e.message) ? 'Usuario o contraseña incorrectos.' : 'No se pudo conectar con el servidor: '+e.message }; }
+    this.saveSes({ access_token:d.access_token, refresh_token:d.refresh_token, uid:d.user.id, email:d.user.email, exp: Date.now() + (d.expires_in||3600)*1000 });
+    const p = await this.miPerfil(); if (!p) return { ok:false, msg:'Tu cuenta existe pero no tiene perfil asignado. Pide a administración que lo revise.' };
+    return { ok:true, perfil:p };
+  },
+  async refresh(){ try { const d = await this.req('/auth/v1/token?grant_type=refresh_token', { method:'POST', auth:false, body:{ refresh_token:this.ses.refresh_token } }, false);
+    this.saveSes({ access_token:d.access_token, refresh_token:d.refresh_token, uid:d.user.id, email:d.user.email, exp: Date.now() + (d.expires_in||3600)*1000 }); return true; }
+    catch(e){ this.saveSes(null); return false; } },
+  async miPerfil(){ const rows = await this.rest('perfiles', `id=eq.${this.ses.uid}&select=*`); this.perfil = rows[0] || null;
+    if (this.perfil) this.rest('perfiles', `id=eq.${this.ses.uid}`, { method:'PATCH', body:{ ultimo_acceso:new Date().toISOString() }, prefer:'return=minimal' }).catch(()=>{});
+    return this.perfil; },
+  async setPassword(nueva){ await this.req('/auth/v1/user', { method:'PUT', body:{ password:nueva } });
+    await this.rest('perfiles', `id=eq.${this.ses.uid}`, { method:'PATCH', body:{ cambiar:false }, prefer:'return=minimal' }); if (this.perfil) this.perfil.cambiar = false; },
+  async logout(){ const tok = this.ses && this.ses.access_token; this.saveSes(null); this.perfil = null;
+    if (tok) try { await fetch(this.url + '/auth/v1/logout', { method:'POST', headers:{ apikey:this.cfg.supabaseAnonKey, Authorization:'Bearer '+tok } }); } catch(e){} },
+  async restaurar(){ if (!this.on || !this.ses) return null; if (Date.now() > (this.ses.exp||0) - 60000){ if (!await this.refresh()) return null; }
+    try { return await this.miPerfil(); } catch(e){ return null; } },
+
+  /* ---------- lectura en caché ---------- */
+  mapUsuario(p){ return { id:p.codigo || p.id, uid:p.id, codigo:p.codigo || p.id, nombres:p.nombres, apellidos:p.apellidos, nombre:p.nombre, year:p.nivel, paralelo:p.paralelo, email:p.email,
+    rep:p.rep||'', tel:p.tel||'', temp:(Store.s.usuarios||{})[p.codigo]?.temp || null, hash:null, cambiar:p.cambiar, entregada:p.entregada, creado:Date.parse(p.creado), ultimoAcceso:p.ultimo_acceso?Date.parse(p.ultimo_acceso):null, notas:{}, adapt:[] }; },
+  mapDocente(p){ return { id:p.id, nombres:p.nombres, apellidos:p.apellidos, nombre:p.nombre, email:p.email, prog:p.prog, cursos:[], temp:(Store.s.docentes||{})[p.id]?.temp || null, cambiar:p.cambiar, entregada:p.entregada, creado:Date.parse(p.creado), ultimoAcceso:p.ultimo_acceso?Date.parse(p.ultimo_acceso):null }; },
+  mapCurso(c){ return { id:c.id, prog:c.prog, nivel:c.nivel, paralelo:c.paralelo, docenteId:c.docente_id, anio:c.anio, creado:Date.parse(c.creado) }; },
+  async pull(){
+    const rol = this.perfil.rol;
+    const [perfiles, cursos, ajustes] = await Promise.all([ this.rest('perfiles','select=*&order=nombre'), this.rest('cursos','select=*&order=nivel,paralelo'), this.rest('ajustes','select=*').catch(()=>[]) ]);
+    const a = Store.s.admin = Store.s.admin || { cursos:[], anio:'2027–2028' };
+    a.cursos = cursos.map(this.mapCurso);
+    const an = (ajustes||[]).find(x=>x.clave==='anio_lectivo'); if (an) a.anio = String(an.valor).replace(/"/g,'');
+    Store.s.usuarios = {}; Store.s.docentes = {};
+    perfiles.forEach(p => { if (p.rol==='estudiante') Store.s.usuarios[p.codigo || p.id] = this.mapUsuario(p); else if (p.rol==='docente') Store.s.docentes[p.id] = this.mapDocente(p); });
+    a.cursos.forEach(c => { const d = c.docenteId && Store.s.docentes[c.docenteId]; if (d && !d.cursos.includes(c.id)) d.cursos.push(c.id); });
+    if (rol==='admin' || rol==='docente'){
+      const [notas, adapt] = await Promise.all([ this.rest('notas','select=estudiante_id,actividad,nota,intentos,resultado,origen'), this.rest('adaptaciones','select=*').catch(()=>[]) ]);
+      const porUid = {}; Object.values(Store.s.usuarios).forEach(u => porUid[u.uid] = u);
+      Store.s.docente.notas = {}; Store.s.docente.adapt = Store.s.docente.adapt || {};
+      notas.forEach(n => { const u = porUid[n.estudiante_id]; if (!u) return; (Store.s.docente.notas[u.codigo] = Store.s.docente.notas[u.codigo] || {})[n.actividad] = n.nota==null ? null : +n.nota; });
+      adapt.forEach(x => { const u = porUid[x.estudiante_id]; if (u) Store.s.docente.adapt[u.codigo] = x.lista || []; });
+    }
+    if (rol==='estudiante'){
+      const [notas, adapt] = await Promise.all([ this.rest('notas',`estudiante_id=eq.${this.ses.uid}&select=actividad,nota,intentos,resultado,fecha`), this.rest('adaptaciones',`estudiante_id=eq.${this.ses.uid}&select=lista`).catch(()=>[]) ]);
+      notas.forEach(n => { if (!Store.s.activities[n.actividad]?.done) Store.s.activities[n.actividad] = { done:true, at:Date.parse(n.fecha), score:n.resultado || null, attempts:n.intentos || null, remoto:true }; });
+      if (adapt[0]) (Store.s.docente.adapt = Store.s.docente.adapt || {})[this.perfil.codigo] = adapt[0].lista || [];
+    }
+    Store.save();
+  },
+
+  /* ---------- escrituras ---------- */
+  async crearCurso(c){ const rows = await this.rest('cursos','', { method:'POST', body:{ prog:c.prog, nivel:+c.nivel, paralelo:c.paralelo, docente_id:c.docenteId||null, anio:(Store.s.admin.anio||'2027-2028').replace('–','-') } }); return this.mapCurso(rows[0]); },
+  async borrarCurso(id){ await this.rest('cursos', `id=eq.${id}`, { method:'DELETE', prefer:'return=minimal' }); },
+  async asignarCurso(cursoId, docenteId){ await this.rest('cursos', `id=eq.${cursoId}`, { method:'PATCH', body:{ docente_id:docenteId }, prefer:'return=minimal' }); },
+  async crearEstudiantes(filas){ const r = await this.fn('crear_estudiantes', { filas: filas.map(f => ({ codigo:f.codigo, nombres:f.nombres, apellidos:f.apellidos, nivel:+f.year, paralelo:f.paralelo, rep:f.rep||'', tel:f.tel||'' })) });
+    if (!r.ok) throw new Error(r.msg||'Error al crear'); return r; },
+  async crearDocente(d){ const r = await this.fn('crear_docente', d); if (!r.ok) throw new Error(r.msg||'Error al crear'); return r; },
+  async resetPassword(uid){ const r = await this.fn('reset_password', { id:uid }); if (!r.ok) throw new Error(r.msg); return r.temp; },
+  async borrarUsuario(uid){ const r = await this.fn('borrar_usuario', { id:uid }); if (!r.ok) throw new Error(r.msg); },
+  async cambiarCorreo(uid, email){ const r = await this.fn('cambiar_correo', { id:uid, email }); if (!r.ok) throw new Error(r.msg); },
+  async entregada(uid, v){ await this.rest('perfiles', `id=eq.${uid}`, { method:'PATCH', body:{ entregada:!!v }, prefer:'return=minimal' }); },
+  async pushNota(uid, actividad, nota, extra={}){ await this.rest('notas','on_conflict=estudiante_id,actividad', { method:'POST', headers:{ 'Prefer':'resolution=merge-duplicates,return=minimal' }, body:{ estudiante_id:uid, actividad, nota, intentos:extra.intentos??null, resultado:extra.resultado??null, origen:extra.origen||'docente', fecha:new Date().toISOString() } }); },
+  async pushAdapt(uid, lista){ await this.rest('adaptaciones','on_conflict=estudiante_id', { method:'POST', headers:{ 'Prefer':'resolution=merge-duplicates,return=minimal' }, body:{ estudiante_id:uid, lista, actualizado:new Date().toISOString() } }); },
+  async evento(tipo, datos){ if (!this.ses) return; try { await this.rest('eventos','', { method:'POST', prefer:'return=minimal', body:{ usuario_id:this.ses.uid, tipo, datos, ruta:location.hash } }); } catch(e){} },
+  async guardarAnio(v){ await this.rest('ajustes','on_conflict=clave', { method:'POST', headers:{ 'Prefer':'resolution=merge-duplicates,return=minimal' }, body:{ clave:'anio_lectivo', valor:JSON.stringify(v) } }); },
+  uidDe(codigo){ const u = (Store.s.usuarios||{})[codigo]; return u ? u.uid : (Store.ses.userId===codigo ? this.ses.uid : null); },
+  /* aplicar el perfil a la sesión local */
+  aplicarPerfil(p){
+    if (p.rol==='admin'){ Object.assign(Store.ses, { rol:'admin', onboarded:true, programa:null, docenteId:null, userId:null }); Store.s.user = Object.assign({}, Store.s.user, { id:'admin', nombre:'Administración', iniciales:'AD' }); }
+    else if (p.rol==='docente'){ Object.assign(Store.ses, { rol:'docente', programa:p.prog, docenteId:p.id, onboarded:true, userId:null, year:null, nivel:null });
+      Store.s.user = Object.assign({}, Store.s.user, { id:p.id, nombre:p.nombre, iniciales:((p.nombres||'D')[0]+(p.apellidos||'')[0]).toUpperCase() }); }
+    else if (p.rol==='estudiante'){ Object.assign(Store.ses, { rol:'estudiante', year:p.nivel, nivel:p.nivel, programa:BIO.progOf(p.nivel), paralelo:p.paralelo, code:null, invitado:false, userId:p.codigo, docenteId:null, onboarded:true });
+      Store.s.user = Object.assign({}, Store.s.user, { id:p.codigo, nombre:((p.nombres||'')+' '+(p.apellidos||'')).trim() || p.nombre, iniciales:(((p.nombres||p.nombre)[0]||'E')+((p.apellidos||'')[0]||'')).toUpperCase(), curso:BIO.nivel(p.nivel).n }); }
+    else { Object.assign(Store.ses, { rol:'familia', onboarded:true }); }
+    Store.save();
+  }
+};
+Cloud.init();
 </script>
 <script>
 /* =====================================================================
@@ -4082,6 +4224,15 @@ BIO.cnGradeItems = [
   { id:'reto-pulmones',     t:'Reto: los pulmones', corto:'Pulmones', unidad:'9-cvt-2', tipo:'Reto', peso:2 },
   { id:'reto-cerebro',      t:'Reto: el cerebro', corto:'Cerebro', unidad:'9-cvt-2', tipo:'Reto', peso:2 }
 ];
+/* Registro autoritativo de las actividades de Ciencias Naturales (sin unidad de Biología: no afectan ese progreso) */
+BIO.cnActividades = {
+  'cn-lab-densidad':   { t:'Laboratorio: densidad y flotación', unidad:null, peso:0, xp:120 },
+  'cn-lab-movimiento': { t:'Laboratorio: movimiento, fuerzas y energía', unidad:null, peso:0, xp:140 },
+  'cn-lab-circuitos':  { t:'Laboratorio: electricidad y circuitos', unidad:null, peso:0, xp:120 },
+  'cn-sim-espacio':    { t:'Simulador: sistema solar y espectro', unidad:null, peso:0, xp:120 },
+  'cn-eco-red':        { t:'Ecosistemas: red trófica y perturbaciones', unidad:null, peso:0, xp:140 }
+};
+Object.assign(BIO.activities, BIO.cnActividades);
 BIO.cnItemsDe = grado => BIO.cnGradeItems.filter(i => +String(i.unidad).split('-')[0] === +grado);
 </script>
 <script>
@@ -4234,7 +4385,8 @@ function openWizard(step){
       box.append(head('Estudiantes','¿Cómo vas a entrar?','Si tu docente ya te entregó tu usuario institucional, entra con él. Si todavía no lo tienes, puedes usar el código del curso.'),
         h('div',{class:'wz-roles',style:'grid-template-columns:repeat(2,1fr)'},
           h('button',{class:'wz-role',onclick:()=>{ st='login'; render(); }}, h('span',{class:'em'},'🔑'), h('b',{},'Tengo usuario y contraseña'), h('span',{class:'small muted'},`Tu correo institucional, por ejemplo 215444@${DOMINIO_EST}.`)),
-          h('button',{class:'wz-role',onclick:()=>{ st='anio'; render(); }}, h('span',{class:'em'},'🎫'), h('b',{},'Tengo el código del curso'), h('span',{class:'small muted'},'El código que la docente comparte con todo el paralelo.'))),
+          Cloud.on ? h('button',{class:'wz-role',onclick:()=>{ Store.guest(8); updateChips(); st='aprender'; render(); }}, h('span',{class:'em'},'👀'), h('b',{},'Solo quiero mirar'), h('span',{class:'small muted'},'Explora los laboratorios como invitado; tu avance no se guarda.'))
+                   : h('button',{class:'wz-role',onclick:()=>{ st='anio'; render(); }}, h('span',{class:'em'},'🎫'), h('b',{},'Tengo el código del curso'), h('span',{class:'small muted'},'El código que la docente comparte con todo el paralelo.'))),
         h('button',{class:'btn ghost sm',onclick:()=>{ st='rol'; render(); }},'← Atrás'));
     }
     else if (st==='login'){
@@ -4255,7 +4407,7 @@ function openWizard(step){
         h('div',{class:'stack',style:'gap:8px;max-width:420px'}, usr, pas, msg,
           h('button',{class:'btn primary',onclick:entrar},'Entrar')),
         h('p',{class:'small muted'},'¿Olvidaste tu contraseña? Tu docente puede restablecerla desde su panel.'),
-        h('div',{class:'row'}, h('button',{class:'btn sm ghost',onclick:()=>{ st='anio'; render(); }},'Entrar con el código del curso'), h('button',{class:'btn sm ghost',onclick:()=>{ st='acceso'; render(); }},'← Atrás')));
+        h('div',{class:'row'}, Cloud.on ? null : h('button',{class:'btn sm ghost',onclick:()=>{ st='anio'; render(); }},'Entrar con el código del curso'), h('button',{class:'btn sm ghost',onclick:()=>{ st='acceso'; render(); }},'← Atrás')));
       pas.addEventListener('keydown', e => { if (e.key==='Enter') entrar(); });
       setTimeout(()=>usr.focus(),50);
     }
@@ -4300,7 +4452,7 @@ function openWizard(step){
       box.append(head('Representantes','Código de tu representado','La docente te entrega un código por estudiante. Solo verás el avance de tu representado.'),
         h('div',{class:'row'}, inp, h('button',{class:'btn primary',onclick:()=>{ if (inp.value.trim().toUpperCase()!==BIO.familyCode){ msg.className='notice warn'; msg.textContent='Ese código no corresponde a ningún estudiante. Revísalo con la docente.'; msg.style.display='flex'; return; }
           Store.ses.rol='familia'; Store.ses.onboarded=true; Store.save(); updateChips(); close('#/familia'); }},'Entrar')), msg,
-        h('p',{class:'small muted'},`Para la demostración, el código es ${BIO.familyCode}.`),
+        Cloud.on ? h('p',{class:'small muted'},'El acceso de representantes con cuenta propia se habilita en la siguiente fase; por ahora la docente comparte el reporte impreso.') : h('p',{class:'small muted'},`Para la demostración, el código es ${BIO.familyCode}.`),
         h('button',{class:'btn sm ghost',onclick:()=>{ st='rol'; render(); }},'← Atrás'));
       setTimeout(()=>inp.focus(),50);
     }
@@ -4528,6 +4680,7 @@ const DOC = {
     if (asign.length) return asign;
     const cursos = (typeof Admin !== 'undefined' ? Admin.cursos() : []).filter(c => c.prog === prog);
     if (cursos.length) return cursos;
+    if (Cloud.on) return [];
     return BIO.nivelesDe(prog).flatMap(n => ['A','B'].map(p => ({ id:'v'+n.id+p, prog, nivel:n.id, paralelo:p, virtual:true })));
   },
   nivelesVisibles(){ return [...new Set(DOC.cursosVisibles().map(c => +c.nivel))].sort((a,b)=>a-b); },
@@ -4555,7 +4708,7 @@ const DOC = {
         notas, dias, min: vivo ? Store.s.timeMin + Math.round(Store.s.events.length*0.4) + 186 : 0,
         adapt:(Store.s.docente.adapt||{})[u.codigo] || u.adapt || [], demo:vivo, real:true };
     });
-    if (DOC.prog()==='cn') return [];
+    if (DOC.prog()==='cn' || Cloud.on) return [];
     const r = BIO.rosterOf(DOC.year, DOC.par).map(e => Object.assign({}, e, { adapt:(Store.s.docente.adapt||{})[e.id] || e.adapt }));
     if (DOC.year===2 && DOC.par==='A' && DOC.prog()==='bio') r.push(DOC.demoRow()); return r; },
   items(){ return BIO.progOf(DOC.year)==='cn' ? BIO.cnItemsDe(DOC.year) : BIO.gradeItemsOf(DOC.year); },
@@ -4666,6 +4819,7 @@ function notaModal(e, item, n, rerender){
     n==null ? h('div',{class:'notice warn'},'Sin entregar. Puedes registrar una nota manualmente o recordarle al estudiante.') : h('div',{class:'notice ok'},`Registrada: ${fmtNota(n)} sobre 10.`),
     h('div',{class:'row'}, inp, h('button',{class:'btn primary sm',onclick:()=>{ const v = parseFloat(inp.value); if (isNaN(v)) return toast('Escribe una nota entre 0 y 10.');
       const nn = Store.s.docente.notas; (nn[e.id] = nn[e.id] || {})[item.id] = Math.max(0,Math.min(10,v)); Store.save();
+      if (Cloud.on){ const uid = Cloud.uidDe(e.id); if (uid) Cloud.pushNota(uid, item.id, Math.max(0,Math.min(10,v)), { origen:'docente' }).catch(er=>toast('No se guardó en el servidor: '+er.message)); }
       const st = BIO.getRoster().find(x=>x.id===e.id); if (st) st.notas[item.id] = Math.max(0,Math.min(10,v));
       closeModal(); rerender(); toast('Nota registrada.'); }},'Guardar nota')),
     h('div',{class:'row'}, h('a',{class:'btn sm',href:'#/docente/reporte/'+e.id,onclick:closeModal},'Ver reporte del estudiante'), h('button',{class:'btn sm ghost',onclick:closeModal},'Cerrar'))));
@@ -4805,6 +4959,7 @@ function tabNEE(body, rerender){
       h('input',{type:'checkbox',checked:e.adapt.includes(k),'aria-label':`${BIO.adaptaciones[k]} para ${e.nombre}`,onchange:ev=>{
         const map = Store.s.docente.adapt; const cur = new Set(map[e.id] || e.adapt);
         ev.target.checked ? cur.add(k) : cur.delete(k); map[e.id] = [...cur]; Store.save();
+        if (Cloud.on){ const uid = Cloud.uidDe(e.id); if (uid) Cloud.pushAdapt(uid, map[e.id]).catch(er=>toast('No se guardó en el servidor: '+er.message)); }
         if (e.demo){ const a = Store.s.a11y; if (k==='letra-grande') Store.setA11y({text: ev.target.checked?1.15:1});
           if (k==='tipografia') Store.setA11y({font: ev.target.checked?'hyper':''});
           if (k==='voz') Store.setA11y({tts: ev.target.checked}); if (k==='menos-movimiento') Store.setA11y({motion: ev.target.checked});
@@ -5088,9 +5243,10 @@ const Admin = {
     if (this.cursoDe(nivel, paralelo)) return { ok:false, msg:'Ya existe un curso con ese nivel y paralelo.' };
     const c = { id:`c${Date.now().toString(36)}`, prog, nivel:+nivel, paralelo:String(paralelo).toUpperCase(), docenteId:docenteId||null, anio: anio || this.s.anio, creado:Date.now() };
     this.cursos().push(c); Store.save(); Store.log('admin_curso_creado', { nivel:c.nivel, paralelo:c.paralelo, prog });
+    if (Cloud.on) Cloud.crearCurso(c).then(cc => { Object.assign(c, { id:cc.id }); Store.save(); }).catch(e => { this.s.cursos = this.cursos().filter(x=>x!==c); Store.save(); toast('El servidor rechazó el curso: '+e.message); });
     return { ok:true, curso:c };
   },
-  borrarCurso(id){ this.s.cursos = this.cursos().filter(c=>c.id!==id); Store.save(); },
+  borrarCurso(id){ this.s.cursos = this.cursos().filter(c=>c.id!==id); Store.save(); if (Cloud.on) Cloud.borrarCurso(id).catch(e=>toast('No se borró en el servidor: '+e.message)); },
   estudiantesDe(c){ return Users.ofCourse(+c.nivel, c.paralelo); },
   /* ---- docentes ---- */
   docentes(){ return Object.values(Store.s.docentes || {}); },
@@ -5112,19 +5268,27 @@ const Admin = {
   },
   async crearDocente({nombres, apellidos, prog, cursos, email}){
     const d = Store.s.docentes = Store.s.docentes || {};
+    if (Cloud.on){
+      const r = await Cloud.crearDocente({ nombres:capital(nombres), apellidos:capital(apellidos), email:(email||this.emailDocente(nombres, apellidos)), prog });
+      d[r.id] = { id:r.id, nombres:capital(nombres), apellidos:capital(apellidos), nombre:(capital(nombres)+' '+capital(apellidos)).trim(), email:r.email, prog, cursos:cursos||[], temp:r.temp, hash:null, cambiar:true, entregada:false, creado:Date.now(), ultimoAcceso:null };
+      Store.save(); Store.log('admin_docente_creado', { prog, servidor:true }); return d[r.id];
+    }
     const pass = generarPass(), id = 'd'+Date.now().toString(36);
     d[id] = { id, nombres:capital(nombres), apellidos:capital(apellidos), nombre:(capital(nombres)+' '+capital(apellidos)).trim(),
       email:(email && String(email).trim().toLowerCase()) || this.emailDocente(nombres, apellidos), prog, cursos:cursos||[], temp:pass, hash: await hashPass(pass),
       cambiar:true, entregada:false, creado:Date.now(), ultimoAcceso:null };
     Store.save(); Store.log('admin_docente_creado', { prog }); return d[id];
   },
-  async resetDocente(id){ const d = this.docente(id); if (!d) return null; const p = generarPass(); d.temp = p; d.hash = await hashPass(p); d.cambiar = true; d.entregada = false; Store.save(); return p; },
-  borrarDocente(id){ const d = Store.s.docentes||{}; delete d[id]; Store.save(); },
+  async resetDocente(id){ const d = this.docente(id); if (!d) return null;
+    if (Cloud.on){ const t = await Cloud.resetPassword(id); d.temp = t; d.cambiar = true; d.entregada = false; Store.save(); return t; }
+    const p = generarPass(); d.temp = p; d.hash = await hashPass(p); d.cambiar = true; d.entregada = false; Store.save(); return p; },
+  borrarDocente(id){ const d = Store.s.docentes||{}; delete d[id]; Store.save(); if (Cloud.on) Cloud.borrarUsuario(id).catch(e=>toast('No se borró en el servidor: '+e.message)); },
   asignar(docenteId, cursoId, on){
     const d = this.docente(docenteId); if (!d) return; const set = new Set(d.cursos||[]);
     on ? set.add(cursoId) : set.delete(cursoId); d.cursos = [...set];
     const c = this.curso(cursoId); if (c){ if (on) c.docenteId = docenteId; else if (c.docenteId===docenteId) c.docenteId = null; }
     Store.save();
+    if (Cloud.on && c) Cloud.asignarCurso(c.id, c.docenteId).catch(e=>toast('No se guardó la asignación: '+e.message));
   },
   cursosDeDocente(id){ const d = this.docente(id); if (!d) return []; return this.cursos().filter(c => (d.cursos||[]).includes(c.id) || c.docenteId===id); },
   /* ---- respaldo ---- */
@@ -5165,7 +5329,7 @@ function admGate(view){
     h('p',{},'Acceso restringido. Desde aquí se crean los cursos, los usuarios de los estudiantes y las cuentas de los docentes de cada asignatura.'))));
   view.append(h('div',{class:'card stack',style:'max-width:520px'}, u, p, msg,
     h('button',{class:'btn primary',onclick:entrar},'Entrar'),
-    h('p',{class:'small muted'},`Para la demostración: ${ADMIN_EMAIL} · contraseña ${Store.s.adminPass || 'AnaiAdmin2026'}`)));
+    Cloud.on ? h('p',{class:'small muted'},'Entra con la cuenta de administración creada en Supabase.') : h('p',{class:'small muted'},`Para la demostración: ${ADMIN_EMAIL} · contraseña ${Store.s.adminPass || 'AnaiAdmin2026'}`)));
   p.addEventListener('keydown', e => { if (e.key==='Enter') entrar(); });
 }
 
@@ -5332,7 +5496,9 @@ function admDocentes(body, rerender){
         h('button',{class:'btn sm ghost',onclick:()=>credDocenteModal(d, rerender)},'Credenciales'),
         h('button',{class:'btn sm ghost',onclick:()=>{ const inp = h('input',{type:'email',value:d.email,'aria-label':'Correo'});
           openModal(h('div',{class:'stack'}, h('h3',{},'Corregir el correo de '+d.nombre), inp, h('div',{class:'row'},
-            h('button',{class:'btn primary sm',onclick:()=>{ const v = Admin.validarEmail(inp.value, d.id); if (!v.ok) return toast(v.msg); d.email = v.email; Store.save(); closeModal(); rerender(); toast('Correo actualizado.'); }},'Guardar'),
+            h('button',{class:'btn primary sm',onclick:async()=>{ const v = Admin.validarEmail(inp.value, d.id); if (!v.ok) return toast(v.msg);
+              if (Cloud.on){ try { await Cloud.cambiarCorreo(d.id, v.email); } catch(e){ return toast('El servidor no aceptó el cambio: '+e.message); } }
+              d.email = v.email; Store.save(); closeModal(); rerender(); toast('Correo actualizado.'); }},'Guardar'),
             h('button',{class:'btn sm ghost',onclick:closeModal},'Cancelar')))); }},'Corregir correo'),
         h('button',{class:'btn sm ghost',onclick:async()=>{ await Admin.resetDocente(d.id); rerender(); toast('Contraseña restablecida.'); }},'Restablecer'),
         h('button',{class:'btn sm ghost',onclick:()=>{ if (confirm(`¿Eliminar la cuenta de ${d.nombre}?`)){ Admin.borrarDocente(d.id); rerender(); } }},'Eliminar')))))));
@@ -5374,6 +5540,9 @@ function admCredenciales(body){
 
 /* ---------- Ajustes ---------- */
 function admAjustes(body, rerender){
+  body.append(Cloud.on
+    ? h('div',{class:'notice ok'}, h('span',{}, h('b',{},'Modo servidor activo. '), `Conectado a ${Cloud.url}. Cursos, usuarios, docentes, notas y progreso se guardan en la base de datos y se ven desde cualquier computador.`))
+    : h('div',{class:'notice warn'}, h('span',{}, h('b',{},'Modo local (demostración). '), 'Todo se guarda en este navegador. Para producción, configura config.js con los datos del proyecto de Supabase (ver guía).')));
   const anio = h('input',{type:'text',value:Admin.s.anio,'aria-label':'Año lectivo'});
   const pass = h('input',{type:'text',value:Store.s.adminPass || 'AnaiAdmin2026','aria-label':'Contraseña de administración'});
   body.append(h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Institución'),
@@ -5381,9 +5550,9 @@ function admAjustes(body, rerender){
       h('label',{},'Año lectivo', anio),
       h('label',{},'Dominio de estudiantes', h('input',{type:'text',value:DOMINIO_EST,disabled:true})),
       h('label',{},'Dominio de docentes', h('input',{type:'text',value:DOMINIO_DOC,disabled:true})),
-      h('button',{class:'btn sm',onclick:()=>{ Admin.s.anio = anio.value.trim() || Admin.s.anio; Store.save(); toast('Año lectivo actualizado.'); rerender(); }},'Guardar')),
+      h('button',{class:'btn sm',onclick:()=>{ Admin.s.anio = anio.value.trim() || Admin.s.anio; Store.save(); if (Cloud.on) Cloud.guardarAnio(Admin.s.anio).catch(e=>toast('No se guardó en el servidor: '+e.message)); toast('Año lectivo actualizado.'); rerender(); }},'Guardar')),
     h('p',{class:'small muted'},'Los dominios se fijan en el código de la plataforma para evitar errores de tipeo; cámbialos solo junto con TIC.')));
-  body.append(h('div',{class:'card stack',style:'margin-top:16px'}, h('span',{class:'eyebrow'},'Acceso de administración'),
+  if (!Cloud.on) body.append(h('div',{class:'card stack',style:'margin-top:16px'}, h('span',{class:'eyebrow'},'Acceso de administración'),
     h('div',{class:'adm-form'}, h('label',{},'Usuario', h('input',{type:'text',value:ADMIN_EMAIL,disabled:true})), h('label',{},'Contraseña', pass),
       h('button',{class:'btn sm',onclick:()=>{ if (pass.value.trim().length<8) return toast('Usa al menos 8 caracteres.'); Store.s.adminPass = pass.value.trim(); Store.save(); toast('Contraseña de administración actualizada.'); }},'Cambiar'))));
   body.append(h('div',{class:'card stack',style:'margin-top:16px'}, h('span',{class:'eyebrow'},'Datos y respaldo'),
@@ -5393,8 +5562,8 @@ function admAjustes(body, rerender){
         openModal(h('div',{class:'stack'}, h('h3',{},'Restaurar respaldo'), ta, h('div',{class:'row'},
           h('button',{class:'btn primary sm',onclick:()=>{ if (Admin.restaurar(ta.value)){ closeModal(); rerender(); toast('Respaldo restaurado.'); } else toast('El archivo no es válido.'); }},'Restaurar'),
           h('button',{class:'btn sm ghost',onclick:closeModal},'Cancelar')))); }},'Restaurar respaldo'),
-      h('button',{class:'btn sm',onclick:async()=>{ await admDemo(); rerender(); }},'Cargar datos de ejemplo'),
-      h('button',{class:'btn sm ghost',onclick:()=>{ if (confirm('¿Borrar cursos, docentes y usuarios cargados? El progreso de demostración no se toca.')){ Admin.s.cursos = []; Store.s.docentes = {}; Users.borrarTodo(); rerender(); toast('Datos borrados.'); } }},'Borrar todo')),
+      Cloud.on ? h('button',{class:'btn sm',onclick:async()=>{ try { await Cloud.pull(); toast('Datos actualizados desde el servidor.'); rerender(); } catch(e){ toast(e.message); } }},'Actualizar desde el servidor') : h('button',{class:'btn sm',onclick:async()=>{ await admDemo(); rerender(); }},'Cargar datos de ejemplo'),
+      Cloud.on ? null : h('button',{class:'btn sm ghost',onclick:()=>{ if (confirm('¿Borrar cursos, docentes y usuarios cargados? El progreso de demostración no se toca.')){ Admin.s.cursos = []; Store.s.docentes = {}; Users.borrarTodo(); rerender(); toast('Datos borrados.'); } }},'Borrar todo')),
     h('p',{class:'small muted'},'En esta versión de demostración todo se guarda en este navegador. Con el servidor de la fase 2, cursos, usuarios y calificaciones se sincronizan entre dispositivos y el respaldo deja de ser necesario.')));
 }
 /* datos de ejemplo: dos cursos por entorno con estudiantes y docentes */
@@ -9568,6 +9737,7 @@ function roleModal(){
       h('button',{class:'btn sm ghost',onclick:closeModal},'Cancelar'))));
 }
 (function init(){
+  Object.assign(BIO.activities, BIO.cnActividades);   /* prevalece sobre los registros defensivos de cada laboratorio */
   applyA11y(); Store.touchVisit();
   buildNav(); updateChips();
   $('#btn-home').addEventListener('click', ()=>navigate('#/'));
@@ -9592,6 +9762,14 @@ function roleModal(){
   renderBell();
   document.addEventListener('keydown', e => { if (e.key==='Escape') closeBell(); });
   if (!location.hash) location.hash = '#/';
+  if (Cloud.on){
+    /* modo servidor: la sesión válida es la del servidor; si no hay, se vuelve a la bienvenida */
+    Cloud.restaurar().then(async p => {
+      if (p){ Cloud.aplicarPerfil(p); try { await Cloud.pull(); } catch(e){ console.warn(e); } updateChips(); render(); }
+      else { if (Store.ses.rol !== 'estudiante' || Store.ses.userId){ Users.logout(); updateChips(); } render(); if (!Store.ses.onboarded) setTimeout(()=>openWizard(), 400); }
+    });
+    return;
+  }
   render();
   if (!Store.ses.onboarded) setTimeout(()=>openWizard(), 600);
 })();
