@@ -1,0 +1,40 @@
+# Despliegue en Render con un clic: https://render.com/docs/blueprint-spec
+# Render → New → Blueprint → elige este repositorio. Te pedirá los valores marcados con sync: false.
+services:
+  - type: web
+    name: anai-comunica
+    runtime: node
+    region: virginia            # la región más cercana a Ecuador
+    plan: free                  # pruebas: se duerme tras 15 min sin uso. Para uso real: starter
+    buildCommand: npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: anai-comunica-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: SCHOOL_NAME          # p. ej. Unidad Educativa Anai
+        sync: false
+      - key: ADMIN_EMAIL          # primera cuenta de dirección
+        sync: false
+      - key: ADMIN_PASSWORD       # temporal: cámbiala al ingresar
+        sync: false
+      - key: ADMIN_NAME
+        sync: false
+      # Se agregan después, a mano, en Environment:
+      #   APP_URL=https://comunica.anai.edu.ec (al conectar el dominio)
+      #   MAIL_FROM, SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS (al configurar el correo)
+      - key: VAPID_SUBJECT
+        value: mailto:soporte@anai.edu.ec
+
+databases:
+  - name: anai-comunica-db
+    plan: free                  # pruebas: la base gratuita vence. Para uso real: un plan pago
+    region: virginia
+    databaseName: comunica
+    user: comunica
