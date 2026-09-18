@@ -709,7 +709,7 @@ th.rot{font-size:.68rem;white-space:normal}
       <span><b id="marca-n">ANAI BioLab</b><span class="sub" id="marca-sub">Laboratorio virtual</span></span>
     </a>
     <nav class="nav" id="nav-main"></nav>
-    <div class="sidebar-foot">Prototipo MVP · ANAI Online<br><span class="mono">v1.1 · Ciencias Naturales EGB + Biología BGU</span></div>
+    <div class="sidebar-foot">Prototipo MVP · ANAI Online<br><span class="mono">v1.2 · Ciencias Naturales EGB + Biología BGU</span></div>
   </aside>
   <div class="main">
     <header class="topbar">
@@ -1437,7 +1437,35 @@ BIO.gradeItems = [
   { id:'reto-pulmones', t:'Reto: los pulmones', corto:'Reto pulmones', unidad:6, tipo:'Reto', peso:2 },
   { id:'sim-circulacion', t:'Simulador cardiorrespiratorio', corto:'Simulador', unidad:6, tipo:'Simulador', peso:1 },
   { id:'mision-globulo', t:'Misión: el viaje de un glóbulo rojo', corto:'Misión glóbulo', unidad:6, tipo:'Misión', peso:3 },
-  { id:'eval-corazon', t:'Evaluación: el corazón', corto:'Evaluación', unidad:6, tipo:'Evaluación', peso:4 }
+  { id:'eval-corazon', t:'Evaluación: el corazón', corto:'Evaluación', unidad:6, tipo:'Evaluación', peso:4 },
+  /* --- módulos incorporados en v1.0 y v1.1 --- */
+  { id:'reto-celula-vegetal', t:'Reto: la célula vegetal', corto:'Cél. vegetal', unidad:2, tipo:'Reto', peso:2 },
+  { id:'reto-procariota', t:'Reto: la célula procariota', corto:'Procariota', unidad:2, tipo:'Reto', peso:2 },
+  { id:'reto-procesos', t:'Reto: procesos celulares', corto:'Procesos', unidad:2, tipo:'Reto', peso:2 },
+  { id:'reto-microscopio', t:'Microscopio virtual', corto:'Microscopio', unidad:2, tipo:'Reto', peso:2 },
+  { id:'mision-salva-celula', t:'Misión: salva la célula', corto:'Mis. célula', unidad:2, tipo:'Misión', peso:3 },
+  { id:'mision-diagnostico-celular', t:'Misión: diagnóstico celular', corto:'Mis. diagnóstico', unidad:2, tipo:'Misión', peso:3 },
+  { id:'lab-catalasa', t:'Laboratorio: catalasa y temperatura', corto:'Lab. catalasa', unidad:3, tipo:'Laboratorio', peso:3 },
+  { id:'lab-osmosis-papa', t:'Laboratorio: ósmosis en papa', corto:'Lab. ósmosis', unidad:3, tipo:'Laboratorio', peso:3 },
+  { id:'lab-fermentacion', t:'Laboratorio: fermentación', corto:'Lab. fermentación', unidad:3, tipo:'Laboratorio', peso:3 },
+  { id:'reto-adn', t:'Reto: ADN y mutaciones', corto:'ADN', unidad:4, tipo:'Reto', peso:2 },
+  { id:'reto-cruces', t:'Reto: cuadro de Punnett', corto:'Cruces', unidad:4, tipo:'Reto', peso:2 },
+  { id:'mision-codigo-genetico', t:'Misión: código genético', corto:'Mis. genética', unidad:4, tipo:'Misión', peso:3 },
+  { id:'reto-evolucion', t:'Reto: selección natural', corto:'Evolución', unidad:4, tipo:'Reto', peso:2 },
+  { id:'lab-frecuencia-cardiaca', t:'Laboratorio: frecuencia cardíaca', corto:'Lab. pulso', unidad:6, tipo:'Laboratorio', peso:3 },
+  { id:'reto-higado', t:'Reto: el hígado', corto:'Hígado', unidad:6, tipo:'Reto', peso:2 },
+  { id:'reto-rinones', t:'Reto: los riñones', corto:'Riñones', unidad:6, tipo:'Reto', peso:2 },
+  { id:'reto-estomago', t:'Reto: el estómago', corto:'Estómago', unidad:6, tipo:'Reto', peso:2 },
+  { id:'reto-intestino-delgado', t:'Reto: el intestino delgado', corto:'I. delgado', unidad:6, tipo:'Reto', peso:2 },
+  { id:'reto-intestino-grueso', t:'Reto: el intestino grueso', corto:'I. grueso', unidad:6, tipo:'Reto', peso:2 },
+  { id:'reto-pancreas', t:'Reto: el páncreas', corto:'Páncreas', unidad:6, tipo:'Reto', peso:2 },
+  { id:'reto-reproductor', t:'Reto: sistema reproductor', corto:'Reproductor', unidad:6, tipo:'Reto', peso:2 },
+  { id:'reto-esqueletico', t:'Reto: sistema esquelético', corto:'Esqueleto', unidad:6, tipo:'Reto', peso:2 },
+  { id:'reto-muscular', t:'Reto: sistema muscular', corto:'Muscular', unidad:6, tipo:'Reto', peso:2 },
+  { id:'reto-nervioso', t:'Reto: sistema nervioso', corto:'Nervioso', unidad:6, tipo:'Reto', peso:2 },
+  { id:'reto-ecosistemas', t:'Reto: ecosistemas del Ecuador', corto:'Ecosistemas', unidad:7, tipo:'Reto', peso:2 },
+  { id:'reto-poblaciones', t:'Reto: dinámica de poblaciones', corto:'Poblaciones', unidad:7, tipo:'Reto', peso:2 },
+  { id:'mision-ecosistema-riesgo', t:'Misión: el ecosistema en riesgo', corto:'Mis. ecosistema', unidad:7, tipo:'Misión', peso:3 }
 ];
 BIO.gradeItemsOf = year => BIO.gradeItems.filter(i => BIO.unitsOf(year).includes(i.unidad));
 
@@ -4260,7 +4288,18 @@ BIO.cnGradeItems = [
   { id:'cn-sim-espacio',    t:'Simulador: sistema solar y espectro', corto:'Espacio', unidad:'9-cf-3', tipo:'Simulador', peso:3 },
   { id:'reto-corazon',      t:'Reto: el corazón', corto:'Corazón', unidad:'9-cvt-2', tipo:'Reto', peso:2 },
   { id:'reto-pulmones',     t:'Reto: los pulmones', corto:'Pulmones', unidad:'9-cvt-2', tipo:'Reto', peso:2 },
-  { id:'reto-cerebro',      t:'Reto: el cerebro', corto:'Cerebro', unidad:'9-cvt-2', tipo:'Reto', peso:2 }
+  { id:'reto-cerebro',      t:'Reto: el cerebro', corto:'Cerebro', unidad:'9-cvt-2', tipo:'Reto', peso:2 },
+  /* --- módulos incorporados en v1.0 y v1.1 --- */
+  { id:'cn-lab-energia',    t:'Laboratorio: calor, luz y sonido', corto:'Energía', unidad:'8-cf-3', tipo:'Laboratorio', peso:3 },
+  { id:'reto-microscopio',  t:'Microscopio virtual', corto:'Microscopio', unidad:'8-cvt-1', tipo:'Reto', peso:2 },
+  { id:'reto-celula-vegetal', t:'Reto: la célula vegetal', corto:'Cél. vegetal', unidad:'8-cvt-1', tipo:'Reto', peso:2 },
+  { id:'reto-procesos',     t:'Reto: procesos celulares', corto:'Procesos', unidad:'8-cvt-1', tipo:'Reto', peso:2 },
+  { id:'reto-adn',          t:'Reto: ADN y mutaciones', corto:'ADN', unidad:'9-cvt-1', tipo:'Reto', peso:2 },
+  { id:'reto-cruces',       t:'Reto: cuadro de Punnett', corto:'Cruces', unidad:'9-cvt-1', tipo:'Reto', peso:2 },
+  { id:'cn-clima',          t:'Tablero de clima y riesgo', corto:'Clima', unidad:'9-cvt-3', tipo:'Tablero', peso:3 },
+  { id:'cn-tierra',         t:'Tierra dinámica', corto:'Tierra', unidad:'10-cvt-2', tipo:'Modelo 3D', peso:3 },
+  { id:'cn-biomoleculas',   t:'Biomoléculas y homeostasis', corto:'Biomoléculas', unidad:'10-cvt-1', tipo:'Laboratorio', peso:3 },
+  { id:'cn-audiencia',      t:'Audiencia científica simulada', corto:'Audiencia', unidad:'10-cvt-3', tipo:'Caso', peso:4 }
 ];
 /* Registro autoritativo de las actividades de Ciencias Naturales (sin unidad de Biología: no afectan ese progreso) */
 BIO.cnActividades = {
@@ -4899,11 +4938,13 @@ function tabEstudiantes(body, rerender){
 }
 
 /* ---------- Seguimiento y mensajes ---------- */
+/* Busca un ítem de calificación en el libro del programa activo (CN o Biología). */
+function itemDe(id){ return BIO.cnGradeItems.find(i=>i.id===id) || BIO.gradeItems.find(i=>i.id===id) || null; }
 function tabSeguimiento(body){
   const r = DOC.roster(); const inact = r.filter(e=>e.dias>=4).sort((a,b)=>b.dias-a.dias);
   const venc = BIO.assignments.filter(a=>a.year===DOC.year && a.paralelo===DOC.par);
   body.append(h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Tareas asignadas a este curso'),
-    venc.length ? h('div',{class:'stack',style:'gap:8px'}, venc.map(a => { const it = BIO.gradeItems.find(i=>i.id===a.item); const d = Math.ceil((a.vence-Date.now())/86400000);
+    venc.length ? h('div',{class:'stack',style:'gap:8px'}, venc.map(a => { const it = itemDe(a.item); if (!it) return null; const d = Math.ceil((a.vence-Date.now())/86400000);
       const faltan = r.filter(e=>e.notas[a.item]==null).length;
       return h('div',{class:'act'}, h('span',{class:'ico',style:'background:var(--bg-3)'}, d<0?'⏰':'📌'),
         h('span',{}, h('div',{class:'t'},it.t), h('div',{class:'d'}, (d<0?`venció ${diasTxt(-d)}`:d===0?'vence hoy':`vence en ${d} días`)+` · faltan ${faltan} de ${r.length}`)),
@@ -4917,13 +4958,29 @@ function tabSeguimiento(body){
     h('span',{}, h('div',{class:'t'},e.nombre), h('div',{class:'d'},`Última conexión ${diasTxt(e.dias)} · promedio ${fmtNota(DOC.prom(e))} · representante: ${e.rep}`)),
     h('div',{class:'row',style:'margin-left:auto;gap:6px'}, h('button',{class:'btn sm primary',onclick:()=>msgModal(e)},'Preparar mensaje')))));
   body.append(box);
+  /* Trabajo hecho fuera de los contenidos del año: se registra igual y aquí se ve, para que
+     nada de lo que hace el estudiante quede invisible para su docente. */
+  const delAnio = new Set(DOC.items().map(i=>i.id));
+  const fuera = [];
+  r.forEach(e => Object.keys(e.notas||{}).forEach(id => { if (delAnio.has(id) || e.notas[id]==null) return;
+    const it = itemDe(id) || (BIO.activities[id] ? { t:BIO.activities[id].t } : null); if (!it) return;
+    fuera.push({ nombre:e.nombre, t:it.t, nota:e.notas[id] }); }));
+  const fb = h('div',{class:'card stack',style:'margin-top:16px'}, h('span',{class:'eyebrow'},'Exploró por su cuenta, fuera de su año'),
+    h('p',{class:'small muted'},'No promedia en su año, pero cuenta como iniciativa: la plataforma es abierta y el estudiante puede adelantarse o repasar.'));
+  if (!fuera.length) fb.append(h('p',{class:'small muted'},'Todavía nadie ha explorado contenidos de otro año.'));
+  fuera.slice(0,12).forEach(f => fb.append(h('div',{class:'act'}, h('span',{class:'ico',style:'background:var(--bg-3)'},'✦'),
+    h('span',{}, h('div',{class:'t'},f.nombre), h('div',{class:'d'},f.t)),
+    h('span',{class:'pill',style:'margin-left:auto'}, fmtNota(f.nota)))));
+  body.append(fb);
   body.append(h('div',{class:'card stack',style:'margin-top:16px'}, h('span',{class:'eyebrow'},'Con el servidor de la fase 2'),
     h('p',{class:'small'},'Se puede programar un resumen semanal automático por correo para estudiantes y representantes, sin costo, usando la cuenta institucional. Hoy, el envío lo haces tú desde aquí en dos toques.')));
 }
 function msgModal(e){
   const item = BIO.assignments.filter(a=>a.year===e.year && a.paralelo===e.paralelo && e.notas[a.item]==null)[0];
-  const it = item && BIO.gradeItems.find(i=>i.id===item.item);
-  const txt = `Hola ${e.nombre.split(' ')[0]}, te saluda tu docente de Biología. Vi que hace ${e.dias} días no entras a ANAI BioLab${it?` y que aún tienes pendiente "${it.t}"`:''}. ¿Necesitas ayuda con algo? Puedes retomar desde donde te quedaste: son 10 minutos. Un abrazo.`;
+  const it = item && itemDe(item.item);
+  const cn = DOC.prog()==='cn';
+  const asig = cn ? 'Ciencias Naturales' : 'Biología', marca = cn ? 'ANAI Ciencias' : 'ANAI BioLab';
+  const txt = `Hola ${e.nombre.split(' ')[0]}, te saluda tu docente de ${asig}. Vi que hace ${e.dias} días no entras a ${marca}${it?` y que aún tienes pendiente "${it.t}"`:''}. ¿Necesitas ayuda con algo? Puedes retomar desde donde te quedaste: son 10 minutos. Un abrazo.`;
   const ta = h('textarea',{style:'min-height:130px'}, txt);
   const wa = () => `https://wa.me/593${e.repTel.replace(/^0/,'')}?text=${encodeURIComponent(ta.value)}`;
   openModal(h('div',{class:'stack'}, h('span',{class:'eyebrow'},'Mensaje para '+e.nombre), h('h3',{},'Acompañamiento'),
@@ -4931,7 +4988,7 @@ function msgModal(e){
     ta,
     h('div',{class:'row'},
       h('a',{class:'btn primary sm',href:wa(),target:'_blank',rel:'noopener',onclick:()=>{ Store.log('mensaje_docente',{canal:'whatsapp'}); }},'Enviar por WhatsApp'),
-      h('a',{class:'btn sm',href:`mailto:${e.email}?subject=${encodeURIComponent('Biología · ANAI BioLab')}&body=${encodeURIComponent(txt)}`,onclick:()=>{ Store.log('mensaje_docente',{canal:'correo'}); }},'Enviar por correo'),
+      h('a',{class:'btn sm',href:`mailto:${e.email}?subject=${encodeURIComponent(asig+' · '+marca)}&body=${encodeURIComponent(txt)}`,onclick:()=>{ Store.log('mensaje_docente',{canal:'correo'}); }},'Enviar por correo'),
       h('button',{class:'btn sm ghost',onclick:()=>{ navigator.clipboard?.writeText(ta.value).then(()=>toast('Mensaje copiado.')); }},'Copiar'),
       h('button',{class:'btn sm ghost',onclick:closeModal},'Cerrar'))));
 }
