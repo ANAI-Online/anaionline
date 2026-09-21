@@ -709,7 +709,7 @@ th.rot{font-size:.68rem;white-space:normal}
       <span><b id="marca-n">ANAI BioLab</b><span class="sub" id="marca-sub">Laboratorio virtual</span></span>
     </a>
     <nav class="nav" id="nav-main"></nav>
-    <div class="sidebar-foot">Prototipo MVP · ANAI Online<br><span class="mono">v1.5 · Ciencias Naturales EGB + Biología BGU</span></div>
+    <div class="sidebar-foot">Prototipo MVP · ANAI Online<br><span class="mono">v1.6 · Ciencias Naturales EGB + Biología BGU</span></div>
   </aside>
   <div class="main">
     <header class="topbar">
@@ -1605,10 +1605,23 @@ const DEFAULT_STATE = () => ({
   timeMin: 0
 });
 const KEY = 'anai-biolab-v1';
+try { window.addEventListener('storage', e => { if (e.key !== KEY || !e.newValue || typeof Store === 'undefined' || !Store.s) return;
+  try { const o = JSON.parse(e.newValue); if (o && o.perfilDe && o.perfilDe === Store.s.perfilDe) Store.fusionar(o); } catch(_){} }); } catch(e){}
 const Store = {
   s: null,
   load(){ try { const raw = localStorage.getItem(KEY); this.s = raw ? Object.assign(DEFAULT_STATE(), JSON.parse(raw)) : DEFAULT_STATE(); } catch(e){ this.s = DEFAULT_STATE(); } return this.s; },
-  save(){ try { localStorage.setItem(KEY, JSON.stringify(this.s)); } catch(e){} },
+  /* Guardar fusionando: si el mismo estudiante trabaja en dos pestañas, ninguna borra el avance de la otra. */
+  save(){ try { const raw = localStorage.getItem(KEY); if (raw){ const o = JSON.parse(raw); if (o && o.perfilDe && o.perfilDe === this.s.perfilDe) this.fusionar(o); }
+    localStorage.setItem(KEY, JSON.stringify(this.s)); } catch(e){} },
+  fusionar(o){
+    const A = this.s.activities = this.s.activities || {};
+    Object.entries(o.activities || {}).forEach(([k,v]) => { const m = A[k]; if (!v) return; if (!m || (v.done && !m.done)) A[k] = v; else if (v.enviado) m.enviado = true; });
+    const q = this.s.syncPend = this.s.syncPend || {};
+    Object.entries(o.syncPend || {}).forEach(([k,v]) => { if (!(k in q) && A[k] && A[k].done && !A[k].enviado) q[k] = v; });
+    const S = this.s.seen = this.s.seen || {}; Object.entries(o.seen || {}).forEach(([k,arr]) => { const t = S[k] = S[k] || []; (arr||[]).forEach(x => { if (!t.includes(x)) t.push(x); }); });
+    this.s.xp = Math.max(this.s.xp || 0, o.xp || 0);
+    this.s.badges = this.s.badges || []; (o.badges || []).forEach(b => { if (!this.s.badges.includes(b)) this.s.badges.push(b); });
+  },
   reset(){ try { localStorage.removeItem(KEY); } catch(e){} this.s = DEFAULT_STATE(); },
   /* Analítica: esquema de eventos exportable (usuario, actividad, modelo, estructura, fecha, duración, intentos, resultado) */
   log(type, data={}){
@@ -1625,10 +1638,11 @@ const Store = {
     this.log('actividad_completada', { actividad:id, resultado:extra.score ?? null, intentos: extra.attempts ?? null });
     if (first) this.addXP(a.xp, a.t);
     this.save();
-    if (typeof Cloud !== 'undefined' && Cloud.on && this.ses.rol === 'estudiante' && Cloud.ses){
-      const nota = this.gradeOf(id);
-      Cloud.pushNota(Cloud.ses.uid, id, nota, { intentos: extra.attempts ?? null, resultado: extra.score != null ? String(extra.score) : null, origen:'plataforma' }).catch(e => console.warn('nota', e));
-      Cloud.evento('actividad_completada', { actividad:id, resultado:extra.score ?? null });
+    if (typeof Cloud !== 'undefined' && Cloud.on && this.ses.rol === 'estudiante' && this.ses.userId){
+      /* se encola y se envía; si falla (red, sesión), queda pendiente y se reintenta sola */
+      (this.s.syncPend = this.s.syncPend || {})[id] = Date.now(); this.save();
+      Cloud.enviarPendientes();
+      if (Cloud.ses) Cloud.evento('actividad_completada', { actividad:id, resultado:extra.score ?? null });
     }
   },
   markSeen(model, id){
@@ -1670,7 +1684,7 @@ const Store = {
     this.s.lastActivity = { t:'', at:Date.now(), href:'#/' };
     this.s.visitas = { last:Date.now(), prev:null, total:1 };
     this.s.avisos = { leidos:[], prefs:{ inactividad:true, vencimientos:true, logros:true } };
-    this.s.docente = { adapt:{}, notas:{}, codes:null };
+    this.s.docente = { adapt:{}, notas:{}, codes:null }; this.s.syncPend = {};
     this.save();
   },
   esDemo(){ return this.s.user.id === 'demo-mateo'; },
@@ -1803,7 +1817,8 @@ function navItems(){
     {g:'Entornos'},
     {href:'#/cn', t:'Ciencias Naturales', dot:'eco'},
     {href:'#/', t:'Biología', dot:'anat'},
-    {href:'#/docente', t:'Panel docente', ico:'▤'},
+    {href:'#/docente', t:'Notas y seguimiento (todos los cursos)', ico:'▤'},
+    {href:'#/docente?t=diagnostico', t:'Diagnóstico', ico:'◎'},
     ...salir
   ];
   if (rol === 'familia') return [
@@ -2276,15 +2291,22 @@ const Cloud = {
   ses: null,                       // { access_token, refresh_token, uid, email, exp }
   perfil: null,
   KEY: 'anai-cloud-session',
-  init(){ try { this.ses = JSON.parse(localStorage.getItem(this.KEY) || 'null'); } catch(e){ this.ses = null; } },
+  init(){ try { this.ses = JSON.parse(localStorage.getItem(this.KEY) || 'null'); } catch(e){ this.ses = null; }
+    /* Todas las pestañas comparten la misma sesión: si una la renueva, las demás adoptan la nueva al instante. */
+    try { window.addEventListener('storage', e => { if (e.key === this.KEY){ try { const s = JSON.parse(e.newValue || 'null'); if (s) { this.ses = s; this.caida = false; } } catch(_){} } }); } catch(e){}
+    try { window.addEventListener('online', () => this.enviarPendientes()); document.addEventListener('visibilitychange', () => { if (!document.hidden) this.enviarPendientes(); }); } catch(e){}
+  },
+  /* adopta la sesión guardada si otra pestaña la renovó */
+  sync(){ try { const s = JSON.parse(localStorage.getItem(this.KEY) || 'null'); if (s && (!this.ses || (s.exp||0) > (this.ses.exp||0) || s.refresh_token !== this.ses.refresh_token && (s.exp||0) >= (this.ses.exp||0))) this.ses = s; } catch(e){} },
   saveSes(s){ this.ses = s; try { s ? localStorage.setItem(this.KEY, JSON.stringify(s)) : localStorage.removeItem(this.KEY); } catch(e){} },
 
   /* ---------- HTTP ---------- */
   headers(auth=true){ const hd = { 'apikey': this.cfg.supabaseAnonKey, 'Content-Type':'application/json' };
     hd['Authorization'] = 'Bearer ' + ((auth && this.ses && this.ses.access_token) || this.cfg.supabaseAnonKey); return hd; },
   async req(path, opts={}, retry=true){
+    if (opts.auth !== false){ this.sync(); if (retry && this.ses && Date.now() > (this.ses.exp||0) - this.margen()) await this.refresh(); }
     const r = await fetch(this.url + path, { method: opts.method || 'GET', headers: Object.assign(this.headers(opts.auth!==false), opts.headers||{}), body: opts.body ? JSON.stringify(opts.body) : undefined });
-    if (r.status === 401 && retry && this.ses && this.ses.refresh_token){ const ok = await this.refresh(); if (ok) return this.req(path, opts, false); }
+    if (r.status === 401 && retry && opts.auth !== false && this.ses && this.ses.refresh_token){ const ok = await this.refresh(true); if (ok) return this.req(path, opts, false); }
     const txt = await r.text(); let data = null; try { data = txt ? JSON.parse(txt) : null; } catch(e){ data = txt; }
     if (!r.ok){ const msg = (data && (data.msg || data.message || data.error_description || data.error)) || `Error ${r.status}`; const err = new Error(msg); err.status = r.status; err.data = data; throw err; }
     return data;
@@ -2296,13 +2318,54 @@ const Cloud = {
   async login(email, password){
     let d; try { d = await this.req('/auth/v1/token?grant_type=password', { method:'POST', auth:false, body:{ email:String(email).trim().toLowerCase(), password } }); }
     catch(e){ return { ok:false, msg: /invalid/i.test(e.message) ? 'Usuario o contraseña incorrectos.' : 'No se pudo conectar con el servidor: '+e.message }; }
-    this.saveSes({ access_token:d.access_token, refresh_token:d.refresh_token, uid:d.user.id, email:d.user.email, exp: Date.now() + (d.expires_in||3600)*1000 });
+    this.saveSes({ access_token:d.access_token, refresh_token:d.refresh_token, uid:d.user.id, email:d.user.email, exp: Date.now() + (d.expires_in||3600)*1000, dur:(d.expires_in||3600)*1000 }); this.caida = false;
     const p = await this.miPerfil(); if (!p) return { ok:false, msg:'Tu cuenta existe pero no tiene perfil asignado. Pide a administración que lo revise.' };
     return { ok:true, perfil:p };
   },
-  async refresh(){ try { const d = await this.req('/auth/v1/token?grant_type=refresh_token', { method:'POST', auth:false, body:{ refresh_token:this.ses.refresh_token } }, false);
-    this.saveSes({ access_token:d.access_token, refresh_token:d.refresh_token, uid:d.user.id, email:d.user.email, exp: Date.now() + (d.expires_in||3600)*1000 }); return true; }
-    catch(e){ this.saveSes(null); return false; } },
+  /* Renovación a prueba de varias pestañas: solo una renueva a la vez; las demás esperan y adoptan el resultado.
+     Antes, dos pestañas renovando a la vez hacían que el servidor anulara la sesión y las notas dejaban de enviarse. */
+  async refresh(forzar){
+    this.sync(); if (!this.ses) return false;
+    const usado = this.ses.refresh_token;
+    const hacer = async () => {
+      this.sync(); if (!this.ses) return false;
+      if (this.ses.refresh_token !== usado && Date.now() < (this.ses.exp||0)) return true;      /* otra pestaña ya la renovó */
+      if (!forzar && Date.now() < (this.ses.exp||0) - this.margen()) return true;
+      const rt = this.ses.refresh_token;
+      try {
+        const d = await this.req('/auth/v1/token?grant_type=refresh_token', { method:'POST', auth:false, body:{ refresh_token:rt } }, false);
+        this.saveSes({ access_token:d.access_token, refresh_token:d.refresh_token, uid:d.user.id, email:d.user.email, exp: Date.now() + (d.expires_in||3600)*1000, dur:(d.expires_in||3600)*1000 });
+        this.caida = false; return true;
+      } catch(e){
+        this.sync(); if (this.ses && this.ses.refresh_token !== rt && Date.now() < (this.ses.exp||0)) return true;
+        this.saveSes(null); this.sesionCaida(); return false;
+      }
+    };
+    /* Un solo renovador a la vez entre todas las pestañas. Web Locks es atómico; si el navegador no lo tiene, cerrojo en localStorage. */
+    try { if (typeof navigator !== 'undefined' && navigator.locks && navigator.locks.request) return await navigator.locks.request('anai-renovar-sesion', hacer); } catch(e){}
+    const LK = this.KEY + '-renovando', espera = ms => new Promise(r => setTimeout(r, ms));
+    for (let i = 0; i < 6; i++){ const l = +(localStorage.getItem(LK) || 0); if (!l || Date.now() - l > 8000) break; await espera(700); }
+    try { localStorage.setItem(LK, String(Date.now())); } catch(e){}
+    try { return await hacer(); } finally { try { localStorage.removeItem(LK); } catch(e){} }
+  },
+  /* se renueva un poco antes de vencer: 1 minuto (o un cuarto de la duración si el permiso es corto) */
+  margen(){ return Math.min(60000, ((this.ses && this.ses.dur) || 3600000) / 4); },
+  sesionCaida(){ this.caida = true; try { if (typeof avisoSesionCaida === 'function') avisoSesionCaida(); } catch(e){} },
+  /* Envía al servidor las actividades completadas que aún no llegaron (fallos de red o de sesión). */
+  async enviarPendientes(){
+    if (this._enviando || !this.on || typeof Store === 'undefined' || Store.ses.rol !== 'estudiante') return;
+    const q = Store.s.syncPend || {}; const ids = Object.keys(q); if (!ids.length) return;
+    this.sync(); if (!this.ses){ if (Store.ses.userId) this.sesionCaida(); return; }
+    this._enviando = true;
+    try {
+      for (const id of ids){ const a = Store.s.activities[id]; if (!a || !a.done){ delete q[id]; continue; }
+        const int = Number.isFinite(+a.attempts) ? Math.max(0, Math.round(+a.attempts)) : null;
+        try { await this.pushNota(this.ses.uid, id, Store.gradeOf(id), { intentos:int, resultado: a.score != null ? String(a.score).slice(0,200) : null, origen:'plataforma', fecha:a.at });
+          a.enviado = true; delete q[id]; }
+        catch(e){ console.warn('pendiente', id, e.message); if (e.status === 401 || !this.ses) break; }
+      }
+    } finally { this._enviando = false; Store.s.syncPend = q; Store.save(); if (typeof renderSync === 'function') renderSync(); }
+  },
   async miPerfil(){ const rows = await this.rest('perfiles', `id=eq.${this.ses.uid}&select=*`); this.perfil = rows[0] || null;
     if (this.perfil) this.rest('perfiles', `id=eq.${this.ses.uid}`, { method:'PATCH', body:{ ultimo_acceso:new Date().toISOString() }, prefer:'return=minimal' }).catch(()=>{});
     return this.perfil; },
@@ -2331,19 +2394,24 @@ const Cloud = {
       const [notas, adapt] = await Promise.all([ this.rest('notas','select=estudiante_id,actividad,nota,intentos,resultado,origen,fecha'), this.rest('adaptaciones','select=*').catch(()=>[]) ]);
       const porUid = {}; Object.values(Store.s.usuarios).forEach(u => porUid[u.uid] = u);
       Store.s.docente.notas = {}; Store.s.docente.adapt = Store.s.docente.adapt || {};
-      Store.s.docente.fechas = {};
+      Store.s.docente.fechas = {}; Store.s.docente.intentos = {}; Store.s.docente.nNotas = notas.length;
       notas.forEach(n => { const u = porUid[n.estudiante_id]; if (!u) return; (Store.s.docente.notas[u.codigo] = Store.s.docente.notas[u.codigo] || {})[n.actividad] = n.nota==null ? null : +n.nota;
-        if (n.fecha) (Store.s.docente.fechas[u.codigo] = Store.s.docente.fechas[u.codigo] || {})[n.actividad] = Date.parse(n.fecha); });
+        if (n.fecha) (Store.s.docente.fechas[u.codigo] = Store.s.docente.fechas[u.codigo] || {})[n.actividad] = Date.parse(n.fecha);
+        if (n.intentos != null) (Store.s.docente.intentos[u.codigo] = Store.s.docente.intentos[u.codigo] || {})[n.actividad] = +n.intentos; });
       adapt.forEach(x => { const u = porUid[x.estudiante_id]; if (u) Store.s.docente.adapt[u.codigo] = x.lista || []; });
     }
     if (rol==='estudiante'){
       const [notas, adapt] = await Promise.all([ this.rest('notas',`estudiante_id=eq.${this.ses.uid}&select=actividad,nota,intentos,resultado,fecha`), this.rest('adaptaciones',`estudiante_id=eq.${this.ses.uid}&select=lista`).catch(()=>[]) ]);
       notas.forEach(n => { if (!Store.s.activities[n.actividad]?.done) Store.s.activities[n.actividad] = { done:true, at:Date.parse(n.fecha), score:n.resultado || null, attempts:n.intentos || null, remoto:true }; });
+      /* Recuperación: lo que este estudiante completó en este equipo y no está en el servidor se vuelve a enviar. */
+      const enServidor = new Set(notas.map(n => n.actividad)); const q = Store.s.syncPend = Store.s.syncPend || {};
+      Object.entries(Store.s.activities).forEach(([id, a]) => { if (a && a.done && !a.remoto && !enServidor.has(id) && BIO.activities[id]) q[id] = q[id] || a.at || Date.now(); });
       if (adapt[0]) (Store.s.docente.adapt = Store.s.docente.adapt || {})[this.perfil.codigo] = adapt[0].lista || [];
     }
     await this.pullTareas();
     this.ultimoPull = Date.now();
     Store.save();
+    if (rol === 'estudiante') await this.enviarPendientes();
   },
 
   /* ---------- escrituras ---------- */
@@ -2365,7 +2433,7 @@ const Cloud = {
   async borrarUsuario(uid){ const r = await this.fn('borrar_usuario', { id:uid }); if (!r.ok) throw new Error(r.msg); },
   async cambiarCorreo(uid, email){ const r = await this.fn('cambiar_correo', { id:uid, email }); if (!r.ok) throw new Error(r.msg); },
   async entregada(uid, v){ await this.rest('perfiles', `id=eq.${uid}`, { method:'PATCH', body:{ entregada:!!v }, prefer:'return=minimal' }); },
-  async pushNota(uid, actividad, nota, extra={}){ await this.rest('notas','on_conflict=estudiante_id,actividad', { method:'POST', headers:{ 'Prefer':'resolution=merge-duplicates,return=minimal' }, body:{ estudiante_id:uid, actividad, nota, intentos:extra.intentos??null, resultado:extra.resultado??null, origen:extra.origen||'docente', fecha:new Date().toISOString() } }); },
+  async pushNota(uid, actividad, nota, extra={}){ await this.rest('notas','on_conflict=estudiante_id,actividad', { method:'POST', headers:{ 'Prefer':'resolution=merge-duplicates,return=minimal' }, body:{ estudiante_id:uid, actividad, nota, intentos:extra.intentos??null, resultado:extra.resultado??null, origen:extra.origen||'docente', fecha:new Date(extra.fecha || Date.now()).toISOString() } }); },
   async pushAdapt(uid, lista){ await this.rest('adaptaciones','on_conflict=estudiante_id', { method:'POST', headers:{ 'Prefer':'resolution=merge-duplicates,return=minimal' }, body:{ estudiante_id:uid, lista, actualizado:new Date().toISOString() } }); },
   async evento(tipo, datos){ if (!this.ses) return; try { await this.rest('eventos','', { method:'POST', prefer:'return=minimal', body:{ usuario_id:this.ses.uid, tipo, datos, ruta:location.hash } }); } catch(e){} },
   async guardarAnio(v){ await this.rest('ajustes','on_conflict=clave', { method:'POST', headers:{ 'Prefer':'resolution=merge-duplicates,return=minimal' }, body:{ clave:'anio_lectivo', valor:JSON.stringify(v) } }); },
@@ -2382,6 +2450,21 @@ const Cloud = {
   }
 };
 Cloud.init();
+
+/* Aviso visible cuando la sesión del servidor se pierde: lo hecho queda guardado en el equipo
+   y se envía solo al volver a entrar con el mismo usuario. */
+function avisoSesionCaida(){
+  if (typeof document === 'undefined' || document.getElementById('aviso-sesion')) return;
+  const rol = Store.ses.rol; if (rol !== 'estudiante' && rol !== 'docente' && rol !== 'admin') return;
+  if (rol === 'estudiante' && !Store.ses.userId) return;
+  const pend = Object.keys(Store.s.syncPend || {}).length;
+  const el = h('div',{id:'aviso-sesion',role:'alert',style:'position:fixed;left:50%;transform:translateX(-50%);top:12px;z-index:9999;max-width:640px;width:calc(100% - 24px);background:#fff4e0;border:1px solid #e0a23a;border-left:6px solid #b86e00;border-radius:12px;padding:12px 16px;box-shadow:0 8px 28px rgba(0,0,0,.18);display:flex;gap:12px;align-items:center;flex-wrap:wrap'},
+    h('span',{style:'flex:1;min-width:220px'}, h('b',{},'Tu sesión se cerró. '),
+      rol === 'estudiante' ? `Vuelve a entrar para que tu docente reciba tu avance.${pend ? ` Tienes ${pend} actividad${pend===1?'':'es'} guardada${pend===1?'':'s'} en este equipo que se enviará${pend===1?'':'n'} al volver a entrar.` : ' Lo que hagas se guarda en este equipo y se enviará al volver a entrar.'}`
+                           : 'Vuelve a entrar para seguir viendo los datos actualizados del servidor.'),
+    h('button',{class:'btn primary sm',onclick:()=>{ el.remove(); Users.logout(); updateChips(); openWizard('login'); }},'Volver a entrar'));
+  document.body.append(el);
+}
 </script>
 <script>
 /* =====================================================================
@@ -4824,7 +4907,8 @@ route('/accesibilidad', (view) => {
    ===================================================================== */
 const DOC = {
   year: 2, par: 'A',
-  prog(){ const p = Store.prog(); return (Store.ses.rol==='docente' && Store.ses.programa) ? Store.ses.programa : p; },
+  prog(){ if (Store.ses.rol==='admin'){ const ui = Store.s.ui = Store.s.ui || {}; return ui.admProg || 'cn'; }
+    const p = Store.prog(); return (Store.ses.rol==='docente' && Store.ses.programa) ? Store.ses.programa : p; },
   /* cursos que puede ver: los asignados por la administración o, si no hay, todos los de su asignatura */
   cursosVisibles(){
     const prog = DOC.prog();
@@ -4876,38 +4960,95 @@ const diasTxt = d => d===0 ? 'hoy' : d===1 ? 'ayer' : `hace ${d} días`;
 route('/docente', (view, q) => {
   view.classList.add('wide');
   let tab = q.t || 'resumen';
+  if (Store.ses.rol === 'admin' && (q.e === 'cn' || q.e === 'bio')) (Store.s.ui = Store.s.ui || {}).admProg = q.e;
   const head = h('div',{class:'page-head'},
     h('div',{}, h('span',{class:'eyebrow'},'Panel docente · '+(BIO.programas[DOC.prog()]||BIO.programas.bio).n),
       h('h1',{}, (BIO.programas[DOC.prog()]||BIO.programas.bio).n + ' · ' + (BIO.programas[DOC.prog()]||BIO.programas.bio).sub),
-      h('p',{}, Users.all().length ? 'Cursos y estudiantes cargados por la administración.' : 'Datos de demostración ficticios, salvo la fila del estudiante demo, que refleja la actividad real registrada en este navegador.')),
+      h('p',{}, Store.ses.rol==='admin' ? 'Vista de administración: todos los cursos de ambos entornos, con las mismas herramientas del docente.' : Users.all().length ? 'Cursos y estudiantes cargados por la administración.' : 'Datos de demostración ficticios, salvo la fila del estudiante demo, que refleja la actividad real registrada en este navegador.')),
     h('div',{class:'row'}, h('a',{class:'btn sm',href:'#/familia'},'Ver como familia'), h('a',{class:'btn sm ghost',href: DOC.prog()==='cn' ? '#/cn' : '#/panel'},'Ver como estudiante'), h('button',{class:'btn sm ghost',onclick:cerrarSesion},'Cerrar sesión')));
   DOC.sincronizar();
+  const esAdmin = Store.ses.rol === 'admin';
+  const selProg = esAdmin ? h('span',{class:'row',style:'gap:6px;margin-right:10px'}, h('span',{class:'small muted'},'Entorno:'),
+    ...['cn','bio'].map(pg => h('button',{class:'chip'+(DOC.prog()===pg?' picked':''),onclick:()=>{ (Store.s.ui = Store.s.ui || {}).admProg = pg; Store.save(); location.hash = '#/docente?t='+tab+'&e='+pg; }}, (BIO.programas[pg]||{}).n || pg))) : null;
+  const sync = Cloud.on ? h('div',{class:'small muted',style:'margin:-6px 0 12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap'}) : null;
+  const pintarSync = () => { if (!sync) return; sync.innerHTML='';
+    sync.append(h('span',{}, Cloud.ultimoPull ? `Datos del servidor · actualizados ${timeAgo(Cloud.ultimoPull)}` : 'Datos del servidor'),
+      h('button',{class:'btn sm ghost',onclick:async function(){ this.disabled=true; this.textContent='Actualizando…'; try { await Cloud.pull(); toast('Datos actualizados.'); } catch(e){ toast('No se pudo actualizar: '+e.message); } render(); }},'↻ Actualizar')); };
   const picker = h('div',{class:'row',style:'gap:8px;flex-wrap:wrap;margin-bottom:14px'},
+    selProg,
     h('span',{class:'small muted'},'Curso:'),
-    ...DOC.nivelesVisibles().map(n => h('button',{class:'chip'+(+DOC.year===+n?' picked':''),onclick:()=>{ DOC.year=n; DOC.sincronizar(); render(); }}, BIO.nivel(n).corto)),
     h('span',{class:'small muted',style:'margin-left:8px'},'Paralelo:'),
     h('span',{id:'pars',class:'row',style:'gap:6px'}));
   const tabs = h('div',{class:'tabs',role:'tablist'});
   [['resumen','Resumen'],['calificaciones','Calificaciones'],['tareas','Tareas'],['estudiantes','Estudiantes'],['seguimiento','Seguimiento'],['codigos','Mis cursos'],['nee','Adaptaciones NEE']]
-    .concat(Store.ses.rol==='admin' ? [['usuarios','Usuarios y contraseñas']] : [])
+    .concat(Store.ses.rol==='admin' ? [['diagnostico','Diagnóstico'],['usuarios','Usuarios y contraseñas']] : [])
     .forEach(([id,t]) => tabs.append(h('button',{role:'tab','aria-selected':String(id===tab),onclick:()=>{ tab=id; render(); }},t)));
   const body = h('div',{class:'stack'});
-  view.append(head, picker, tabs, h('div',{style:'height:14px'}), body);
+  view.append(head, picker, ...(sync ? [sync] : []), tabs, h('div',{style:'height:14px'}), body);
 
   function render(){
-    $$('button',tabs).forEach(b => b.setAttribute('aria-selected', String(b.textContent === ({resumen:'Resumen',calificaciones:'Calificaciones',tareas:'Tareas',estudiantes:'Estudiantes',usuarios:'Usuarios y contraseñas',seguimiento:'Seguimiento',codigos:'Mis cursos',nee:'Adaptaciones NEE'})[tab])));
+    $$('button',tabs).forEach(b => b.setAttribute('aria-selected', String(b.textContent === ({resumen:'Resumen',calificaciones:'Calificaciones',tareas:'Tareas',diagnostico:'Diagnóstico',estudiantes:'Estudiantes',usuarios:'Usuarios y contraseñas',seguimiento:'Seguimiento',codigos:'Mis cursos',nee:'Adaptaciones NEE'})[tab])));
+    DOC.sincronizar(); pintarSync();
+    if (selProg) $$('button',selProg).forEach((b,i) => b.classList.toggle('picked', ['cn','bio'][i]===DOC.prog()));
     const nv = DOC.nivelesVisibles();
-    $$('.chip',picker).forEach((c,i) => { if (i < nv.length) c.classList.toggle('picked', +nv[i]===+DOC.year); });
+    $$('.curso-chip',picker).forEach(c => c.remove());
+    const ancla = [...picker.children].find(x => x.textContent === 'Curso:');
+    nv.slice().reverse().forEach(n => ancla.after(h('button',{class:'chip curso-chip'+(+DOC.year===+n?' picked':''),onclick:()=>{ DOC.year=n; DOC.sincronizar(); render(); }}, BIO.nivel(n).corto)));
+    if (!nv.length) ancla.after(h('span',{class:'small muted curso-chip'}, 'Sin cursos en este entorno'));
     const pars = $('#pars'); pars.innerHTML='';
     DOC.paralelosDe(DOC.year).forEach(p => pars.append(h('button',{class:'chip'+(DOC.par===p?' picked':''),onclick:()=>{ DOC.par=p; render(); }}, p)));
     body.innerHTML='';
-    ({ resumen:tabResumen, calificaciones:tabNotas, tareas:tabTareas, estudiantes:tabEstudiantes, usuarios:tabUsuarios, seguimiento:tabSeguimiento, codigos:tabCodigos, nee:tabNEE })[tab](body, render);
+    ({ resumen:tabResumen, calificaciones:tabNotas, tareas:tabTareas, diagnostico:tabDiagnostico, estudiantes:tabEstudiantes, usuarios:tabUsuarios, seguimiento:tabSeguimiento, codigos:tabCodigos, nee:tabNEE })[tab](body, render);
     Store.log('docente_tab',{tab, year:DOC.year, paralelo:DOC.par});
   }
   render();
   if (Cloud.on && Cloud.ses && Date.now() - (Cloud.ultimoPull || 0) > 60000)
     Cloud.pull().then(() => { if (document.body.contains(body)) render(); }).catch(e => console.warn('actualizar', e));
 });
+
+/* ---------- Diagnóstico (solo administración) ---------- */
+function tabDiagnostico(body){
+  const cursos = (typeof Admin !== 'undefined' ? Admin.cursos() : []).slice().sort((a,b) => a.nivel - b.nivel || String(a.paralelo).localeCompare(b.paralelo));
+  const us = Users.all(), notas = Store.s.docente.notas || {}, fechas = Store.s.docente.fechas || {};
+  const nNotas = u => Object.values(notas[u.codigo] || {}).filter(x => x != null).length;
+  const ult = u => Math.max(0, ...Object.values(fechas[u.codigo] || {}));
+  const totNotas = us.reduce((a,u) => a + nNotas(u), 0);
+  body.append(h('div',{class:'grid g4'},
+    [[cursos.length,'cursos'],[us.length,'estudiantes con cuenta'],[us.filter(u=>u.ultimoAcceso).length,'estudiantes que ya entraron'],[totNotas,'notas en el servidor']]
+      .map(([v,l]) => h('div',{class:'card stat'}, h('span',{class:'v'},String(v)), h('span',{class:'l'},l)))));
+  if (Cloud.on) body.append(h('p',{class:'small muted'}, Cloud.ultimoPull ? `Leído del servidor ${timeAgo(Cloud.ultimoPull)}. Pulse "↻ Actualizar" para ver lo más reciente.` : ''));
+  /* curso por curso */
+  const filas = cursos.map(c => { const est = us.filter(u => +u.year === +c.nivel && u.paralelo === c.paralelo);
+    const d = c.docenteId && (Store.s.docentes||{})[c.docenteId];
+    const entraron = est.filter(u => u.ultimoAcceso).length, conNotas = est.filter(u => nNotas(u) > 0).length, n = est.reduce((a,u)=>a+nNotas(u),0);
+    const ultima = Math.max(0, ...est.map(ult));
+    const alertas = [];
+    if (!d) alertas.push('Sin docente asignado: el docente no puede ver a estos estudiantes ni sus notas.');
+    if (!est.length) alertas.push('Sin estudiantes en este curso.');
+    if (est.length && entraron && !n) alertas.push('Hay estudiantes que entraron pero ninguna nota llegó al servidor.');
+    return { c, d, est, entraron, conNotas, n, ultima, alertas }; });
+  body.append(h('div',{class:'card stack',style:'margin-top:16px'}, h('span',{class:'eyebrow'},'Estado por curso'),
+    h('div',{class:'tablewrap'}, h('table',{class:'data'},
+      h('thead',{}, h('tr',{}, ...['Curso','Entorno','Docente','Estudiantes','Ya entraron','Con notas','Notas','Última nota',''].map(t => h('th',{},t)))),
+      h('tbody',{}, filas.map(f => h('tr',{},
+        h('td',{}, h('b',{}, `${BIO.nivel(f.c.nivel).corto} ${f.c.paralelo}`)),
+        h('td',{}, (BIO.programas[f.c.prog]||{}).n || f.c.prog),
+        h('td',{}, f.d ? f.d.nombre : h('span',{class:'pill bad'},'Sin asignar')),
+        h('td',{}, String(f.est.length)), h('td',{}, String(f.entraron)), h('td',{}, String(f.conNotas)), h('td',{}, String(f.n)),
+        h('td',{class:'small muted'}, f.ultima ? timeAgo(f.ultima) : '–'),
+        h('td',{}, f.alertas.length ? h('span',{class:'pill warn',title:f.alertas.join(' ')}, '⚠ '+f.alertas[0]) : h('span',{class:'pill ok'},'Bien'),
+          h('button',{class:'btn sm ghost',style:'margin-left:6px',onclick:()=>{ (Store.s.ui = Store.s.ui || {}).admProg = f.c.prog; DOC.year = f.c.nivel; DOC.par = f.c.paralelo; Store.save(); location.hash = '#/docente?t=calificaciones&e='+f.c.prog; }},'Ver notas')))))))));
+  /* estudiantes que no coinciden con ningún curso */
+  const huerfanos = us.filter(u => !cursos.some(c => +c.nivel === +u.year && c.paralelo === u.paralelo));
+  const box = h('div',{class:'card stack',style:'margin-top:16px'}, h('span',{class:'eyebrow'},'Estudiantes que no coinciden con ningún curso'),
+    h('p',{class:'small muted'},'Su año y paralelo no corresponden a un curso creado. Ningún docente los ve. Corrígelos en Administración → Estudiantes (Editar o "Cambiar año o paralelo"), o crea el curso que falta.'));
+  if (!huerfanos.length) box.append(h('div',{class:'notice ok'},'Todos los estudiantes están en un curso existente.'));
+  else box.append(h('div',{class:'tablewrap'}, h('table',{class:'data'}, h('thead',{}, h('tr',{}, h('th',{},'Código'), h('th',{},'Estudiante'), h('th',{},'Año y paralelo registrados'))),
+    h('tbody',{}, huerfanos.slice(0,60).map(u => h('tr',{}, h('td',{class:'mono'},u.codigo), h('td',{},u.nombre), h('td',{}, `${(BIO.nivel(u.year)||{}).corto || u.year} "${u.paralelo}"`)))))));
+  body.append(box);
+  body.append(h('div',{class:'notice info',style:'margin-top:16px'}, h('span',{}, h('b',{},'Cómo leer esta página. '),
+    'Para que un docente vea las notas de un estudiante hacen falta tres cosas: que el curso exista con el mismo año y paralelo del estudiante, que el curso tenga ese docente asignado, y que el estudiante haya entrado con su usuario al resolver los retos. Si un curso dice "Hay estudiantes que entraron pero ninguna nota llegó", pídeles que vuelvan a entrar con su usuario en el mismo equipo donde trabajaron: la plataforma reenvía sola lo que tenga guardado.')));
+}
 
 /* ---------- Resumen ---------- */
 function tabResumen(body){
@@ -4926,12 +5067,26 @@ function tabResumen(body){
     h('div',{class:'bars'}, items.map(i => { const ns = r.map(e=>e.notas[i.id]).filter(x=>x!=null); const m = ns.length ? ns.reduce((a,b)=>a+b,0)/ns.length : 0;
       return h('div',{class:'bar'}, h('span',{title:i.t},i.corto), h('div',{class:'track'},h('i',{class: m<6?'bad':'', style:`width:${m*10}%`})), h('span',{class:'v'}, m?m.toFixed(1):'–')); })),
     h('p',{class:'small muted'},'Las actividades sin entregar no promedian. Toca "Calificaciones" para ver estudiante por estudiante.'));
-  // dificultades
-  const T = BIO.teacherClass;
-  const errs = h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Preguntas con mayor porcentaje de error'),
-    h('div',{class:'bars'}, T.preguntasError.slice(0,5).map(q => h('div',{class:'bar'}, h('span',{title:q.q,style:'overflow:hidden;text-overflow:ellipsis;white-space:nowrap'},q.q), h('div',{class:'track'},h('i',{class:q.err>=35?'bad':'',style:`width:${q.err}%`})), h('span',{class:'v'},q.err+'%')))),
-    h('span',{class:'eyebrow',style:'margin-top:6px'},'Conceptos que conviene retomar'),
-    h('div',{class:'row'}, [...new Set(T.preguntasError.map(q=>q.concepto))].slice(0,5).map(c => h('span',{class:'pill'},c))));
+  // dificultades: con estudiantes reales se calculan de sus intentos; el bloque de ejemplo solo en la demostración
+  let errs;
+  if (r.some(e => e.real)){
+    const it = Store.s.docente.intentos || {}; const stats = items.map(i => { const xs = r.map(e => (it[e.id]||{})[i.id]).filter(x => x != null);
+      return { i, n:xs.length, m: xs.length ? xs.reduce((a,b)=>a+b,0)/xs.length : 0 }; }).filter(x => x.n).sort((a,b)=>b.m-a.m).slice(0,6);
+    const bajas = items.map(i => { const ns = r.map(e=>e.notas[i.id]).filter(x=>x!=null); return { i, n:ns.length, bajo: ns.filter(x=>x<7).length }; }).filter(x=>x.bajo).sort((a,b)=>b.bajo-a.bajo).slice(0,5);
+    errs = h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Retos que más intentos piden'),
+      stats.length ? h('div',{class:'bars'}, stats.map(x => h('div',{class:'bar'}, h('span',{title:x.i.t},x.i.corto), h('div',{class:'track'},h('i',{class:x.m>=3?'bad':'',style:`width:${Math.min(100,x.m/5*100)}%`})), h('span',{class:'v'}, x.m.toFixed(1).replace('.',',')))))
+        : h('p',{class:'small muted'},'Aparecerá cuando los estudiantes resuelvan sus primeros retos.'),
+      h('span',{class:'eyebrow',style:'margin-top:6px'},'Conviene retomar en clase'),
+      bajas.length ? h('div',{class:'row'}, bajas.map(x => h('span',{class:'pill warn',title:`${x.bajo} de ${x.n} bajo 7`}, `${x.i.corto} · ${x.bajo} bajo 7`)))
+        : h('p',{class:'small muted'},'Todavía no hay actividades con notas bajo 7.'),
+      h('p',{class:'small muted'},'Promedio de intentos hasta resolver cada reto: más intentos indican un concepto que cuesta.'));
+  } else {
+    const T = BIO.teacherClass;
+    errs = h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Preguntas con mayor porcentaje de error · ejemplo'),
+      h('div',{class:'bars'}, T.preguntasError.slice(0,5).map(q => h('div',{class:'bar'}, h('span',{title:q.q,style:'overflow:hidden;text-overflow:ellipsis;white-space:nowrap'},q.q), h('div',{class:'track'},h('i',{class:q.err>=35?'bad':'',style:`width:${q.err}%`})), h('span',{class:'v'},q.err+'%')))),
+      h('span',{class:'eyebrow',style:'margin-top:6px'},'Conceptos que conviene retomar'),
+      h('div',{class:'row'}, [...new Set(T.preguntasError.map(q=>q.concepto))].slice(0,5).map(c => h('span',{class:'pill'},c))));
+  }
   g.append(porItem, errs); body.append(g);
   // acompañamiento
   const list = h('div',{class:'card stack',style:'margin-top:16px'}, h('span',{class:'eyebrow'},'Necesitan acompañamiento'),
