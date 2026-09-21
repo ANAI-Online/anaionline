@@ -709,7 +709,7 @@ th.rot{font-size:.68rem;white-space:normal}
       <span><b id="marca-n">ANAI BioLab</b><span class="sub" id="marca-sub">Laboratorio virtual</span></span>
     </a>
     <nav class="nav" id="nav-main"></nav>
-    <div class="sidebar-foot">Prototipo MVP · ANAI Online<br><span class="mono">v1.4 · Ciencias Naturales EGB + Biología BGU</span></div>
+    <div class="sidebar-foot">Prototipo MVP · ANAI Online<br><span class="mono">v1.5 · Ciencias Naturales EGB + Biología BGU</span></div>
   </aside>
   <div class="main">
     <header class="topbar">
@@ -1687,10 +1687,13 @@ const Store = {
     const push = (id, em, t, d, href, tipo) => out.push({ id, em, t, d, href, tipo, leido: this.s.avisos.leidos.includes(id) });
     const d = this.daysAway();
     if (p.inactividad && d >= 2 && this.s.lastActivity.t) push('inact-'+d, '👋', `Hace ${d} días que no entrabas`, `Te quedaste en "${this.s.lastActivity.t}". Retomar toma menos de 10 minutos.`, this.s.lastActivity.href, 'inactividad');
-    if (p.vencimientos) (BIO.assignments||[]).filter(a => (!ses.year || a.year===ses.year) && (!ses.paralelo || a.paralelo===ses.paralelo)).forEach(a => {
-      const it = BIO.gradeItems.find(i=>i.id===a.item); if (!it || this.s.activities[a.item]?.done) return;
-      const dias = Math.ceil((a.vence - Date.now())/86400000);
-      push('venc-'+a.id, dias<0?'⏰':'📌', dias<0 ? `Pendiente: ${it.t}` : `${it.t} · ${dias<=1?'vence mañana':'vence en '+dias+' días'}`, a.nota, ACT_HREF[a.item] || '#/panel', 'vencimiento');
+    if (p.vencimientos && typeof Tareas !== 'undefined') Tareas.mias().forEach(t => {
+      if (this.s.activities[t.act]?.done) return;
+      const rec = Tareas.recurso(t.act), dias = Math.ceil((t.vence - Date.now())/86400000);
+      const nueva = t.creado && Date.now() - t.creado < 4*86400000;
+      if (dias > 3 && nueva){ push('nueva-'+t.id, '🆕', `Nueva tarea: ${rec.t}`, `Entrega: ${new Date(t.vence).toLocaleDateString('es-EC',{weekday:'long',day:'numeric',month:'long'})}.` + (t.nota ? ' '+t.nota : ''), rec.href, 'vencimiento'); return; }
+      if (dias > 3) return;
+      push('venc-'+t.id+'-'+Math.min(dias,3), dias<0?'⏰':'📌', dias<0 ? `Tarea vencida: ${rec.t}` : `Tarea: ${rec.t} · ${dias<=0?'vence hoy':dias===1?'vence mañana':'vence en '+dias+' días'}`, t.nota || 'Asignada por tu docente. Se entrega sola cuando resuelves el reto.', rec.href, 'vencimiento');
     });
     const reto = ['corazon','cerebro','pulmones'].map(o => ({o, R:(BIO.organs[o]||{}).reto})).find(x => x.R && !this.s.activities['reto-'+x.o]?.done && (this.s.seen[x.o]||[]).length);
     if (reto){ const got = reto.R.observa.filter(o=>(this.s.seen[reto.o]||[]).includes(o.id)).length;
@@ -1779,6 +1782,7 @@ function render(){
   Store.log('vista',{vista:r.path});
   currentView = fn(view, Object.assign(params, r.query)) || {};
   if (typeof contextualizar === 'function') { try { contextualizar(view, r.path); } catch(e){ console.warn('contexto', e); } }
+  if (typeof tarPostRender === 'function') { try { tarPostRender(view, r.path); } catch(e){ console.warn('tareas', e); } }
   window.scrollTo({top:0, behavior:'instant'});
   updateNav(r.path);
   if (typeof updateCrumbs === 'function') updateCrumbs(r.path);
@@ -1817,14 +1821,14 @@ function navItems(){
     const us = BIO.cn.unidades.filter(u => u.grado === g);
     const labs = []; const vistos = new Set();
     us.forEach(u => (u.recursos||[]).forEach(id => { const r = BIO.cn.recursos[id]; if (!r || vistos.has(r.href)) return;
-      if (/^(Laboratorio|Simulador|Tablero|Caso|Microscopio)/.test(r.tipo) || /^Misión/.test(r.tipo)) { vistos.add(r.href); labs.push({ href:r.href, t:(x => x.charAt(0).toUpperCase()+x.slice(1))(r.t.replace(/^(Laboratorio|Simulador|Misión): /,'')), ico: /Misión/.test(r.tipo) ? '◈' : /Simulador|Tablero/.test(r.tipo) ? '∿' : /Microscopio/.test(r.tipo) ? '◉' : '⚗' }); } }));
+      if (/^(Laboratorio|Simulador|Tablero|Caso|Microscopio)/.test(r.tipo)) { vistos.add(r.href); labs.push({ href:r.href, t:(x => x.charAt(0).toUpperCase()+x.slice(1))(r.t.replace(/^(Laboratorio|Simulador|Misión): /,'')), ico: /Misión/.test(r.tipo) ? '◈' : /Simulador|Tablero/.test(r.tipo) ? '∿' : /Microscopio/.test(r.tipo) ? '◉' : '⚗' }); } }));
     return [
       {g:'Estudiante'},
       {href:'#/cn', t:'Inicio', ico:'⌂'},
       {href:'#/mapa', t:'Mapa', ico:'🗺'},
       {g:`Mis unidades · ${g}.º EGB`},
       ...us.map(u => ({ href:'#/cn/unidad/'+u.id, t:`${u.dom==='cvt'?'Vida':'Física'} U${u.n} · ${u.t.split(/[:,]/)[0]}`, dot: u.dom==='cvt' ? 'eco' : 'gen' })),
-      {g:'Laboratorios, simuladores y misiones'},
+      {g:'Laboratorios y simuladores'},
       ...labs,
       {g:'Otros grados'},
       {href:'#/cn/dominio/cvt', t:'Vida y Tierra (8.º a 10.º)', dot:'eco'},
@@ -2324,10 +2328,12 @@ const Cloud = {
     perfiles.forEach(p => { if (p.rol==='estudiante') Store.s.usuarios[p.codigo || p.id] = this.mapUsuario(p); else if (p.rol==='docente') Store.s.docentes[p.id] = this.mapDocente(p); });
     a.cursos.forEach(c => { const d = c.docenteId && Store.s.docentes[c.docenteId]; if (d && !d.cursos.includes(c.id)) d.cursos.push(c.id); });
     if (rol==='admin' || rol==='docente'){
-      const [notas, adapt] = await Promise.all([ this.rest('notas','select=estudiante_id,actividad,nota,intentos,resultado,origen'), this.rest('adaptaciones','select=*').catch(()=>[]) ]);
+      const [notas, adapt] = await Promise.all([ this.rest('notas','select=estudiante_id,actividad,nota,intentos,resultado,origen,fecha'), this.rest('adaptaciones','select=*').catch(()=>[]) ]);
       const porUid = {}; Object.values(Store.s.usuarios).forEach(u => porUid[u.uid] = u);
       Store.s.docente.notas = {}; Store.s.docente.adapt = Store.s.docente.adapt || {};
-      notas.forEach(n => { const u = porUid[n.estudiante_id]; if (!u) return; (Store.s.docente.notas[u.codigo] = Store.s.docente.notas[u.codigo] || {})[n.actividad] = n.nota==null ? null : +n.nota; });
+      Store.s.docente.fechas = {};
+      notas.forEach(n => { const u = porUid[n.estudiante_id]; if (!u) return; (Store.s.docente.notas[u.codigo] = Store.s.docente.notas[u.codigo] || {})[n.actividad] = n.nota==null ? null : +n.nota;
+        if (n.fecha) (Store.s.docente.fechas[u.codigo] = Store.s.docente.fechas[u.codigo] || {})[n.actividad] = Date.parse(n.fecha); });
       adapt.forEach(x => { const u = porUid[x.estudiante_id]; if (u) Store.s.docente.adapt[u.codigo] = x.lista || []; });
     }
     if (rol==='estudiante'){
@@ -2335,6 +2341,8 @@ const Cloud = {
       notas.forEach(n => { if (!Store.s.activities[n.actividad]?.done) Store.s.activities[n.actividad] = { done:true, at:Date.parse(n.fecha), score:n.resultado || null, attempts:n.intentos || null, remoto:true }; });
       if (adapt[0]) (Store.s.docente.adapt = Store.s.docente.adapt || {})[this.perfil.codigo] = adapt[0].lista || [];
     }
+    await this.pullTareas();
+    this.ultimoPull = Date.now();
     Store.save();
   },
 
@@ -2347,6 +2355,13 @@ const Cloud = {
   async crearDocente(d){ const r = await this.fn('crear_docente', d); if (!r.ok) throw new Error(r.msg||'Error al crear'); return r; },
   async resetPassword(uid){ const r = await this.fn('reset_password', { id:uid }); if (!r.ok) throw new Error(r.msg); return r.temp; },
   async editarPerfil(uid, campos){ await this.rest('perfiles', `id=eq.${uid}`, { method:'PATCH', body:campos, prefer:'return=minimal' }); },
+  mapTarea(r){ return { id:r.id, act:r.actividad, recurso:r.recurso, nivel:r.nivel, paralelo:r.paralelo, cursoId:r.curso_id, vence:Date.parse(r.vence), nota:r.nota||'', docenteId:r.docente_id, creado:Date.parse(r.creado) }; },
+  async crearTarea(t){ try { const rows = await this.rest('tareas','', { method:'POST', body:{ curso_id:t.cursoId, nivel:+t.nivel, paralelo:t.paralelo, actividad:t.act, recurso:t.recurso, vence:new Date(t.vence).toISOString(), nota:t.nota||'' } }); this.sinTareas = false; return rows[0]; }
+    catch(e){ if (/tareas|404|42P01|relation/i.test(String(e.message))) this.sinTareas = true; throw e; } },
+  async editarTarea(id, c){ await this.rest('tareas', `id=eq.${id}`, { method:'PATCH', body:{ vence:new Date(c.vence).toISOString(), nota:c.nota||'' }, prefer:'return=minimal' }); },
+  async borrarTarea(id){ await this.rest('tareas', `id=eq.${id}`, { method:'DELETE', prefer:'return=minimal' }); },
+  async pullTareas(){ try { const rows = await this.rest('tareas','select=*&order=vence'); Store.s.tareas = rows.map(r => this.mapTarea(r)); this.sinTareas = false; }
+    catch(e){ this.sinTareas = true; console.warn('tareas', e.message); } },
   async borrarUsuario(uid){ const r = await this.fn('borrar_usuario', { id:uid }); if (!r.ok) throw new Error(r.msg); },
   async cambiarCorreo(uid, email){ const r = await this.fn('cambiar_correo', { id:uid, email }); if (!r.ok) throw new Error(r.msg); },
   async entregada(uid, v){ await this.rest('perfiles', `id=eq.${uid}`, { method:'PATCH', body:{ entregada:!!v }, prefer:'return=minimal' }); },
@@ -4852,7 +4867,7 @@ const DOC = {
   prom(e){ const its = DOC.items().filter(i => e.notas[i.id]!=null); if (!its.length) return null;
     const w = its.reduce((a,i)=>a+i.peso,0); return Math.round(its.reduce((a,i)=>a+e.notas[i.id]*i.peso,0)/w*10)/10; },
   entregadas(e){ return DOC.items().filter(i => e.notas[i.id]!=null).length; },
-  tareasVencidas(e){ return BIO.assignments.filter(a => a.year===e.year && a.paralelo===e.paralelo && a.vence < Date.now() && e.notas[a.item]==null).length; }
+  tareasVencidas(e){ return Tareas.de(e.year, e.paralelo).filter(t => t.vence < Date.now() && e.notas[t.act]==null).length; }
 };
 const notaClass = n => n==null ? 'na' : n>=8 ? 'ok' : n>=6 ? 'mid' : 'low';
 const fmtNota = n => n==null ? '–' : n.toFixed(1).replace('.0','');
@@ -4865,7 +4880,7 @@ route('/docente', (view, q) => {
     h('div',{}, h('span',{class:'eyebrow'},'Panel docente · '+(BIO.programas[DOC.prog()]||BIO.programas.bio).n),
       h('h1',{}, (BIO.programas[DOC.prog()]||BIO.programas.bio).n + ' · ' + (BIO.programas[DOC.prog()]||BIO.programas.bio).sub),
       h('p',{}, Users.all().length ? 'Cursos y estudiantes cargados por la administración.' : 'Datos de demostración ficticios, salvo la fila del estudiante demo, que refleja la actividad real registrada en este navegador.')),
-    h('div',{class:'row'}, h('a',{class:'btn sm',href:'#/familia'},'Ver como familia'), h('a',{class:'btn sm ghost',href:'#/panel'},'Ver como estudiante'), h('button',{class:'btn sm ghost',onclick:cerrarSesion},'Cerrar sesión')));
+    h('div',{class:'row'}, h('a',{class:'btn sm',href:'#/familia'},'Ver como familia'), h('a',{class:'btn sm ghost',href: DOC.prog()==='cn' ? '#/cn' : '#/panel'},'Ver como estudiante'), h('button',{class:'btn sm ghost',onclick:cerrarSesion},'Cerrar sesión')));
   DOC.sincronizar();
   const picker = h('div',{class:'row',style:'gap:8px;flex-wrap:wrap;margin-bottom:14px'},
     h('span',{class:'small muted'},'Curso:'),
@@ -4873,23 +4888,25 @@ route('/docente', (view, q) => {
     h('span',{class:'small muted',style:'margin-left:8px'},'Paralelo:'),
     h('span',{id:'pars',class:'row',style:'gap:6px'}));
   const tabs = h('div',{class:'tabs',role:'tablist'});
-  [['resumen','Resumen'],['calificaciones','Calificaciones'],['estudiantes','Estudiantes'],['seguimiento','Seguimiento'],['codigos','Mis cursos'],['nee','Adaptaciones NEE']]
+  [['resumen','Resumen'],['calificaciones','Calificaciones'],['tareas','Tareas'],['estudiantes','Estudiantes'],['seguimiento','Seguimiento'],['codigos','Mis cursos'],['nee','Adaptaciones NEE']]
     .concat(Store.ses.rol==='admin' ? [['usuarios','Usuarios y contraseñas']] : [])
     .forEach(([id,t]) => tabs.append(h('button',{role:'tab','aria-selected':String(id===tab),onclick:()=>{ tab=id; render(); }},t)));
   const body = h('div',{class:'stack'});
   view.append(head, picker, tabs, h('div',{style:'height:14px'}), body);
 
   function render(){
-    $$('button',tabs).forEach(b => b.setAttribute('aria-selected', String(b.textContent === ({resumen:'Resumen',calificaciones:'Calificaciones',estudiantes:'Estudiantes',usuarios:'Usuarios y contraseñas',seguimiento:'Seguimiento',codigos:'Mis cursos',nee:'Adaptaciones NEE'})[tab])));
+    $$('button',tabs).forEach(b => b.setAttribute('aria-selected', String(b.textContent === ({resumen:'Resumen',calificaciones:'Calificaciones',tareas:'Tareas',estudiantes:'Estudiantes',usuarios:'Usuarios y contraseñas',seguimiento:'Seguimiento',codigos:'Mis cursos',nee:'Adaptaciones NEE'})[tab])));
     const nv = DOC.nivelesVisibles();
     $$('.chip',picker).forEach((c,i) => { if (i < nv.length) c.classList.toggle('picked', +nv[i]===+DOC.year); });
     const pars = $('#pars'); pars.innerHTML='';
     DOC.paralelosDe(DOC.year).forEach(p => pars.append(h('button',{class:'chip'+(DOC.par===p?' picked':''),onclick:()=>{ DOC.par=p; render(); }}, p)));
     body.innerHTML='';
-    ({ resumen:tabResumen, calificaciones:tabNotas, estudiantes:tabEstudiantes, usuarios:tabUsuarios, seguimiento:tabSeguimiento, codigos:tabCodigos, nee:tabNEE })[tab](body, render);
+    ({ resumen:tabResumen, calificaciones:tabNotas, tareas:tabTareas, estudiantes:tabEstudiantes, usuarios:tabUsuarios, seguimiento:tabSeguimiento, codigos:tabCodigos, nee:tabNEE })[tab](body, render);
     Store.log('docente_tab',{tab, year:DOC.year, paralelo:DOC.par});
   }
   render();
+  if (Cloud.on && Cloud.ses && Date.now() - (Cloud.ultimoPull || 0) > 60000)
+    Cloud.pull().then(() => { if (document.body.contains(body)) render(); }).catch(e => console.warn('actualizar', e));
 });
 
 /* ---------- Resumen ---------- */
@@ -4996,15 +5013,15 @@ function tabEstudiantes(body, rerender){
 function itemDe(id){ return BIO.cnGradeItems.find(i=>i.id===id) || BIO.gradeItems.find(i=>i.id===id) || null; }
 function tabSeguimiento(body){
   const r = DOC.roster(); const inact = r.filter(e=>e.dias>=4).sort((a,b)=>b.dias-a.dias);
-  const venc = BIO.assignments.filter(a=>a.year===DOC.year && a.paralelo===DOC.par);
-  body.append(h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Tareas asignadas a este curso'),
-    venc.length ? h('div',{class:'stack',style:'gap:8px'}, venc.map(a => { const it = itemDe(a.item); if (!it) return null; const d = Math.ceil((a.vence-Date.now())/86400000);
-      const faltan = r.filter(e=>e.notas[a.item]==null).length;
+  const venc = Tareas.de(DOC.year, DOC.par);
+  body.append(h('div',{class:'card stack'}, h('div',{class:'row',style:'justify-content:space-between'}, h('span',{class:'eyebrow'},'Tareas asignadas a este curso'), h('a',{class:'btn sm',href:'#/docente?t=tareas'},'Asignar o editar')),
+    venc.length ? h('div',{class:'stack',style:'gap:8px'}, venc.map(t => { const rec = Tareas.recurso(t.act); const d = Math.ceil((t.vence-Date.now())/86400000);
+      const faltan = r.filter(e=>e.notas[t.act]==null).length;
       return h('div',{class:'act'}, h('span',{class:'ico',style:'background:var(--bg-3)'}, d<0?'⏰':'📌'),
-        h('span',{}, h('div',{class:'t'},it.t), h('div',{class:'d'}, (d<0?`venció ${diasTxt(-d)}`:d===0?'vence hoy':`vence en ${d} días`)+` · faltan ${faltan} de ${r.length}`)),
-        h('span',{class:'pill '+(d<0?'bad':d<=2?'warn':'')}, new Date(a.vence).toLocaleDateString('es-EC',{day:'2-digit',month:'short'}))); }))
-      : h('p',{class:'small muted'},'Sin tareas asignadas a este curso.'),
-    h('p',{class:'small muted'},'Las fechas de entrega alimentan los avisos suaves del estudiante y el resumen de la familia.')));
+        h('span',{}, h('div',{class:'t'},rec.t), h('div',{class:'d'}, tarFaltan(t.vence)+` · faltan ${faltan} de ${r.length}`)),
+        h('span',{class:'pill '+(d<0?'bad':d<=2?'warn':'')}, tarFecha(t.vence))); }))
+      : h('p',{class:'small muted'},'Sin tareas asignadas a este curso. Asígnalas desde la pestaña Tareas.'),
+    h('p',{class:'small muted'},'Las fechas de entrega alimentan los avisos del estudiante y el resumen de la familia.')));
   const box = h('div',{class:'card stack',style:'margin-top:16px'}, h('span',{class:'eyebrow'},'Sin entrar hace 4 días o más'),
     h('p',{class:'small muted'},'Sin costo: la plataforma prepara el mensaje y tú lo envías por WhatsApp o correo desde tu propio teléfono o cuenta.'));
   if (!inact.length) box.append(h('div',{class:'notice ok'},'Todo el curso se conectó en los últimos días.'));
@@ -5030,8 +5047,8 @@ function tabSeguimiento(body){
     h('p',{class:'small'},'Se puede programar un resumen semanal automático por correo para estudiantes y representantes, sin costo, usando la cuenta institucional. Hoy, el envío lo haces tú desde aquí en dos toques.')));
 }
 function msgModal(e){
-  const item = BIO.assignments.filter(a=>a.year===e.year && a.paralelo===e.paralelo && e.notas[a.item]==null)[0];
-  const it = item && itemDe(item.item);
+  const item = Tareas.de(e.year, e.paralelo).filter(t => e.notas[t.act]==null)[0];
+  const it = item && Tareas.recurso(item.act);
   const cn = DOC.prog()==='cn';
   const asig = cn ? 'Ciencias Naturales' : 'Biología', marca = cn ? 'ANAI Ciencias' : 'ANAI BioLab';
   const txt = `Hola ${e.nombre.split(' ')[0]}, te saluda tu docente de ${asig}. Vi que hace ${e.dias} días no entras a ${marca}${it?` y que aún tienes pendiente "${it.t}"`:''}. ¿Necesitas ayuda con algo? Puedes retomar desde donde te quedaste: son 10 minutos. Un abrazo.`;
@@ -5294,8 +5311,8 @@ route('/familia', (view) => {
   const notas = items.map(i => ({ i, n: Store.gradeDemo(i.id) }));
   const hechas = notas.filter(x=>x.n!=null);
   const prom = hechas.length ? Math.round(hechas.reduce((a,x)=>a+x.n*x.i.peso,0)/hechas.reduce((a,x)=>a+x.i.peso,0)*10)/10 : null;
-  const pend = BIO.assignments.filter(a => a.year===year && !s.activities[a.item]?.done)
-    .map(a => ({ a, it: BIO.gradeItems.find(i=>i.id===a.item), dias: Math.ceil((a.vence-Date.now())/86400000) })).sort((x,y)=>x.dias-y.dias);
+  const pend = Tareas.de(year, Store.ses.paralelo || null).filter(t => !s.activities[t.act]?.done)
+    .map(t => ({ a:{ vence:t.vence, nota:t.nota || 'Asignada por la docente.' }, it:{ t:Tareas.recurso(t.act).t }, dias: Math.ceil((t.vence-Date.now())/86400000) })).sort((x,y)=>x.dias-y.dias);
   const semana = Math.max(0, Math.min(180, 45 + Math.round(s.events.length*0.6)));
 
   view.append(h('div',{class:'page-head noprint'}, h('div',{}, h('span',{class:'eyebrow'},'Vista de representante · solo lectura'), h('h1',{},`Avance de ${primer}`),
@@ -5846,6 +5863,242 @@ async function admDemo(){
   Admin.cursos().forEach(c => nombres.forEach(([ap,no]) => filas.push({ codigo:String(cod++), nombres:no, apellidos:ap, nombre:`${ap} ${no}`, year:c.nivel, paralelo:c.paralelo, rep:'', tel:'' })));
   await Users.importar(filas);
   toast('Datos de ejemplo cargados: 3 cursos, 2 docentes y 24 estudiantes.');
+}
+</script>
+<style>
+.tar-form{display:grid;grid-template-columns:minmax(260px,2fr) minmax(150px,1fr);gap:12px 16px;align-items:end}
+.tar-form label{display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:.86rem}
+.tar-form .full{grid-column:1/-1}
+.tar-prev{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px dashed var(--line);border-radius:12px;background:var(--bg-2)}
+.tar-prev .em{font-size:1.5rem;line-height:1}
+.tar-prev[hidden]{display:none}
+.tar-par{display:inline-flex!important;flex-direction:row!important;align-items:center;gap:6px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;cursor:pointer;font-weight:700}
+.tar-par:has(input:checked){border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.tar-fecha{padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;min-height:42px}
+.tar-pars{display:flex;gap:6px;flex-wrap:wrap}
+.tar-item{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+.tar-item .em{font-size:1.4rem}
+.tar-item .t{font-weight:700}
+.tar-item .d{font-size:.84rem;color:var(--ink-2)}
+.tar-bar{height:6px;border-radius:4px;background:var(--bg-3);overflow:hidden;margin-top:6px;max-width:320px}
+.tar-bar i{display:block;height:100%;background:var(--ok)}
+.tar-det{grid-column:1/-1;border-top:1px solid var(--line);padding-top:10px}
+.tar-mias .act .pill{margin-left:auto}
+.tar-aviso{margin:0 0 14px}
+@media (max-width:720px){ .tar-form{grid-template-columns:1fr} .tar-item{grid-template-columns:auto 1fr} .tar-item > .row{grid-column:1/-1} }
+</style>
+<script>
+/* =====================================================================
+   TAREAS: el docente asigna recursos del mapa de su curso con fecha
+   ---------------------------------------------------------------------
+   · Solo se pueden asignar recursos de las unidades del curso
+     (Ciencias: las 6 unidades del grado; Biología: las unidades del año),
+     tomados del catálogo curricular (BIO.curriculo).
+   · Una tarea se da por entregada sola cuando el estudiante completa la
+     actividad del recurso; no hay archivos que subir.
+   · En modo servidor se guardan en la tabla `tareas` de Supabase.
+   ===================================================================== */
+const TAR_DIA = 86400000;
+const Tareas = {
+  /* tareas de ejemplo: solo en la demostración local, nunca junto a datos reales */
+  demo(){ return (!Cloud.on && !Users.all().length) ? (BIO.assignments||[]).map(a => ({ id:a.id, act:a.item, nivel:a.year, paralelo:a.paralelo, vence:a.vence, nota:a.nota, demo:true })) : []; },
+  lista(){ return [...(Store.s.tareas || []), ...this.demo()]; },
+  de(nivel, par){ return this.lista().filter(t => +t.nivel === +nivel && (!par || t.paralelo === par)).sort((a,b) => a.vence - b.vence); },
+  mias(){ const s = Store.ses; if (s.rol !== 'estudiante' || !s.year) return []; return this.de(s.year, s.paralelo || null); },
+  recurso(act){ const e = Object.entries(BIO.curriculo || {}).find(([k,r]) => r.act === act); return e ? Object.assign({ id:e[0] }, e[1]) : { id:null, t:(BIO.activities[act]||{}).t || act, em:'📌', href:(typeof ACT_HREF!=='undefined' && ACT_HREF[act]) || '#/', tipo:'Actividad' }; },
+  titulo(t){ return this.recurso(t.act).t; },
+  /* Mapa del curso: los recursos que se pueden asignar, agrupados por unidad */
+  mapa(nivel){
+    const C = BIO.curriculo || {}, grupos = [], vistos = new Set();
+    if (+nivel >= 8){
+      BIO.cn.unidades.filter(u => u.grado === +nivel).forEach(u => {
+        const items = (u.recursos||[]).map(id => Object.assign({ id }, C[id])).filter(r => r.act && !vistos.has(r.act));
+        items.forEach(r => vistos.add(r.act));
+        if (items.length) grupos.push({ t:`${u.dom==='cvt'?'Vida y Tierra':'Ciencias Físicas'} · U${u.n}: ${u.t}`, unidad:u.id, items }); });
+    } else {
+      (BIO.unitsOf(+nivel) || []).forEach(n => { const u = BIO.units.find(x => x.n === n) || { n, t:'' };
+        const items = Object.entries(C).filter(([k,r]) => r.bio === n && r.act && !vistos.has(r.act)).map(([k,r]) => Object.assign({ id:k }, r));
+        items.forEach(r => vistos.add(r.act));
+        if (items.length) grupos.push({ t:`Unidad ${n}: ${u.t}`, unidad:n, items }); });
+    }
+    return grupos;
+  },
+  enMapa(nivel, act){ return this.mapa(nivel).some(g => g.items.some(r => r.act === act)); },
+  /* ---- escrituras ---- */
+  async crear({ act, nivel, paralelos, vence, nota }){
+    if (!this.enMapa(nivel, act)) return { ok:false, msg:'Ese recurso no pertenece al mapa de este curso.' };
+    if (!paralelos || !paralelos.length) return { ok:false, msg:'Elige al menos un paralelo.' };
+    if (!vence || isNaN(vence)) return { ok:false, msg:'Elige la fecha de entrega.' };
+    if (vence < Date.now() - TAR_DIA) return { ok:false, msg:'La fecha de entrega ya pasó.' };
+    const creadas = [], repetidas = [];
+    Store.s.tareas = Store.s.tareas || [];
+    for (const par of paralelos){
+      if (Store.s.tareas.some(t => t.act === act && +t.nivel === +nivel && t.paralelo === par)){ repetidas.push(par); continue; }
+      const t = { id:'t'+Date.now().toString(36)+Math.random().toString(36).slice(2,6), act, recurso:this.recurso(act).id, nivel:+nivel, paralelo:par,
+        vence, nota:String(nota||'').trim(), docenteId:Store.ses.docenteId || null, creado:Date.now() };
+      if (Cloud.on){
+        const curso = typeof Admin !== 'undefined' && Admin.cursoDe(nivel, par);
+        if (!curso) return { ok:false, msg:`El curso ${BIO.nivel(nivel).corto} ${par} no existe en el servidor.` };
+        if (Store.ses.rol === 'docente' && curso.docenteId && curso.docenteId !== Store.ses.docenteId) return { ok:false, msg:`El curso ${BIO.nivel(nivel).corto} ${par} está asignado a otro docente.` };
+        if (Store.ses.rol === 'docente' && !curso.docenteId) return { ok:false, msg:`La administración todavía no te asignó el curso ${BIO.nivel(nivel).corto} ${par}. Pídele que lo haga en Administración → Docentes.` };
+        try { const row = await Cloud.crearTarea(Object.assign({}, t, { cursoId:curso.id })); Object.assign(t, { id:row.id, cursoId:curso.id }); }
+        catch(e){ return { ok:false, msg: Cloud.sinTareas ? TAR_SIN_TABLA : 'El servidor no guardó la tarea: '+e.message }; }
+      }
+      Store.s.tareas.push(t); creadas.push(t);
+    }
+    Store.save(); Store.log('tarea_asignada', { act, nivel, paralelos:creadas.map(t=>t.paralelo) });
+    return { ok:true, creadas, repetidas };
+  },
+  async editar(id, { vence, nota }){
+    const t = (Store.s.tareas||[]).find(x => x.id === id); if (!t) return { ok:false, msg:'No se encontró la tarea.' };
+    if (!vence || isNaN(vence)) return { ok:false, msg:'Elige la fecha de entrega.' };
+    if (Cloud.on){ try { await Cloud.editarTarea(id, { vence, nota }); } catch(e){ return { ok:false, msg:'El servidor no guardó el cambio: '+e.message }; } }
+    Object.assign(t, { vence, nota:String(nota||'').trim() }); Store.save(); return { ok:true };
+  },
+  async borrar(id){
+    if (Cloud.on) await Cloud.borrarTarea(id);
+    Store.s.tareas = (Store.s.tareas||[]).filter(x => x.id !== id); Store.save();
+  },
+  /* ---- estado ---- */
+  /* para el docente: e es una fila de DOC.roster() */
+  estadoDe(t, e){
+    const hecha = e.notas && e.notas[t.act] != null;
+    const f = ((Store.s.docente.fechas || {})[e.id] || {})[t.act] || null;
+    if (hecha) return f && f > t.vence ? { k:'tarde', txt:'Entregó tarde', cls:'warn', f } : { k:'ok', txt:'Entregó', cls:'ok', f };
+    return t.vence < Date.now() ? { k:'vencida', txt:'No entregó', cls:'bad' } : { k:'pend', txt:'Pendiente', cls:'' };
+  },
+  /* para el estudiante conectado */
+  miEstado(t){
+    const a = Store.s.activities[t.act];
+    if (a && a.done) return a.at && a.at > t.vence ? { k:'tarde', txt:'Entregada tarde', cls:'warn' } : { k:'ok', txt:'Entregada', cls:'ok' };
+    return t.vence < Date.now() ? { k:'vencida', txt:'Vencida', cls:'bad' } : { k:'pend', txt:'Pendiente', cls:'' };
+  }
+};
+const TAR_SIN_TABLA = 'El servidor todavía no tiene la tabla de tareas. La administración debe ejecutar una sola vez el archivo backend/supabase/migracion-v1.5-tareas.sql en Supabase (SQL Editor).';
+const tarFecha = ms => new Date(ms).toLocaleDateString('es-EC', { weekday:'short', day:'numeric', month:'short' });
+const tarFaltan = ms => { const d = Math.ceil((ms - Date.now()) / TAR_DIA); return d < 0 ? `venció hace ${-d} día${d===-1?'':'s'}` : d === 0 ? 'vence hoy' : d === 1 ? 'vence mañana' : `vence en ${d} días`; };
+const tarDeInput = v => { if (!v) return NaN; const [y,m,d] = v.split('-').map(Number); return new Date(y, m-1, d, 23, 59, 0).getTime(); };
+const tarAInput = ms => { const x = new Date(ms); return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`; };
+
+/* ---------- Pestaña del docente ---------- */
+function tabTareas(body, rerender){
+  const nivel = +DOC.year, par = DOC.par, curso = `${BIO.nivel(nivel).corto} ${par}`;
+  const grupos = Tareas.mapa(nivel);
+  if (Cloud.on && Cloud.sinTareas) body.append(h('div',{class:'notice warn'}, h('span',{}, TAR_SIN_TABLA)));
+  /* formulario */
+  const sel = h('select',{'aria-label':'Recurso a asignar'}, h('option',{value:''},'Elige un recurso del mapa del curso…'),
+    grupos.map(g => h('optgroup',{label:g.t}, g.items.map(r => h('option',{value:r.act}, `${r.em} ${r.t} · ${r.tipo}`)))));
+  const prev = h('div',{class:'tar-prev full',hidden:true});
+  const fecha = h('input',{type:'date',class:'tar-fecha','aria-label':'Fecha de entrega',value:tarAInput(Date.now() + 7*TAR_DIA),min:tarAInput(Date.now())});
+  const pars = DOC.paralelosDe(nivel);
+  const cbs = pars.map(p => { const c = h('input',{type:'checkbox',value:p}); c.checked = p === par; return h('label',{class:'tar-par'}, c, p); });
+  const nota = h('textarea',{placeholder:'Indicación para los estudiantes (opcional). Ej.: "Formula tu hipótesis antes de experimentar."',style:'min-height:64px'});
+  const msg = h('div',{class:'small',role:'alert'});
+  const pintarPrev = () => { const r = grupos.flatMap(g=>g.items).find(x => x.act === sel.value); prev.hidden = !r; prev.innerHTML = '';
+    if (r) prev.append(h('span',{class:'em'}, r.em), h('div',{class:'stack',style:'gap:4px'}, h('b',{}, r.t), h('span',{class:'small muted'}, `${r.tipo} · ${r.d}`),
+      h('span',{class:'small'}, h('b',{},'Reto que resolverán: '), r.reto), h('a',{class:'small',href:r.href,target:'_blank',rel:'noopener'},'Abrir el recurso en otra pestaña ↗'))); };
+  sel.onchange = pintarPrev;
+  const btn = h('button',{class:'btn primary'},'Asignar tarea');
+  btn.onclick = async () => { msg.textContent = ''; msg.style.color = 'var(--bad)';
+    if (!sel.value){ msg.textContent = 'Elige un recurso.'; sel.focus(); return; }
+    btn.disabled = true;
+    const r = await Tareas.crear({ act:sel.value, nivel, paralelos:cbs.map(l=>l.querySelector('input')).filter(c=>c.checked).map(c=>c.value), vence:tarDeInput(fecha.value), nota:nota.value });
+    btn.disabled = false;
+    if (!r.ok){ msg.textContent = r.msg; return; }
+    toast(r.creadas.length ? `Tarea asignada a ${r.creadas.map(t=>BIO.nivel(t.nivel).corto+' '+t.paralelo).join(', ')}.` : 'No se creó ninguna tarea nueva.');
+    if (r.repetidas.length) toast(`Ya estaba asignada en ${r.repetidas.join(', ')}: edita su fecha en la lista.`);
+    rerender(); };
+  body.append(h('div',{class:'card stack'}, h('span',{class:'eyebrow'},`Asignar una actividad · mapa de ${BIO.nivel(nivel).n}`),
+    h('p',{class:'small muted'},'Solo aparecen los recursos de las unidades de este curso. La tarea se marca entregada sola cuando el estudiante resuelve el reto del recurso.'),
+    grupos.length ? h('div',{class:'tar-form'},
+      h('label',{class:'full'},'Recurso', sel), prev,
+      h('label',{},'Fecha de entrega', fecha),
+      h('div',{class:'stack',style:'gap:6px'}, h('span',{style:'font-weight:600;font-size:.86rem'},'Paralelos'), h('div',{class:'tar-pars'}, cbs)),
+      h('label',{class:'full'},'Indicación', nota),
+      h('div',{class:'full row'}, btn, msg))
+    : h('p',{class:'small'},'Este curso aún no tiene recursos en su mapa.')));
+  /* lista */
+  const r = DOC.roster(); const ts = Tareas.de(nivel, par);
+  const actualizar = Cloud.on ? h('button',{class:'btn sm ghost',onclick:async function(){ this.disabled = true; this.textContent = 'Actualizando…';
+      try { await Cloud.pull(); toast('Entregas actualizadas.'); } catch(e){ toast('No se pudo actualizar: '+e.message); } rerender(); }},'↻ Actualizar entregas') : null;
+  const lista = h('div',{class:'card stack',style:'margin-top:16px'}, h('div',{class:'row',style:'justify-content:space-between'}, h('span',{class:'eyebrow'},`Tareas de ${curso} (${ts.length})`), actualizar));
+  if (!ts.length) lista.append(h('p',{class:'small muted'},'Todavía no hay tareas para este paralelo.'));
+  ts.forEach(t => {
+    const rec = Tareas.recurso(t.act), est = r.map(e => ({ e, s:Tareas.estadoDe(t, e) }));
+    const ok = est.filter(x => x.s.k==='ok' || x.s.k==='tarde').length, tarde = est.filter(x=>x.s.k==='tarde').length;
+    const vencida = t.vence < Date.now();
+    const det = h('div',{class:'tar-det',hidden:true});
+    const item = h('div',{class:'tar-item'},
+      h('span',{class:'em'}, rec.em || '📌'),
+      h('div',{}, h('div',{class:'t'}, rec.t), h('div',{class:'d'}, `${rec.tipo} · entrega ${tarFecha(t.vence)} (${tarFaltan(t.vence)})` + (t.nota ? ` · “${t.nota}”` : '')),
+        r.length ? h('div',{class:'small',style:'margin-top:4px'}, `${ok} de ${r.length} entregaron` + (tarde ? ` · ${tarde} tarde` : '')) : null,
+        r.length ? h('div',{class:'tar-bar'}, h('i',{style:`width:${Math.round(ok/Math.max(1,r.length)*100)}%`})) : null,
+        t.demo ? h('span',{class:'pill',style:'margin-top:6px'},'Ejemplo de demostración') : null),
+      h('div',{class:'row',style:'gap:6px;flex-wrap:wrap;justify-content:flex-end'},
+        h('span',{class:'pill '+(vencida?'bad':Math.ceil((t.vence-Date.now())/TAR_DIA)<=2?'warn':'')}, tarFecha(t.vence)),
+        r.length ? h('button',{class:'btn sm ghost','aria-expanded':'false',onclick:function(){ det.hidden = !det.hidden; this.setAttribute('aria-expanded', String(!det.hidden)); this.textContent = det.hidden ? 'Ver estudiantes' : 'Ocultar'; }},'Ver estudiantes') : null,
+        t.demo ? null : h('button',{class:'btn sm ghost',onclick:()=>tarEditarModal(t, rerender)},'Editar'),
+        t.demo ? null : h('button',{class:'btn sm ghost danger-text',onclick:()=>confirmar({ peligro:true, titulo:`¿Quitar la tarea "${rec.t}"?`, texto:`Deja de aparecer para ${curso}. Lo que los estudiantes ya resolvieron se conserva en el libro de calificaciones.`, boton:'Quitar tarea', accion: async()=>{ await Tareas.borrar(t.id); toast('Tarea quitada.'); rerender(); } })},'Quitar')),
+      det);
+    const orden = { vencida:0, pend:1, tarde:2, ok:3 };
+    det.append(h('div',{class:'tablewrap'}, h('table',{class:'data'},
+      h('thead',{}, h('tr',{}, h('th',{},'Estudiante'), h('th',{},'Estado'), h('th',{},'Fecha'), h('th',{},''))),
+      h('tbody',{}, est.sort((a,b) => orden[a.s.k]-orden[b.s.k] || a.e.nombre.localeCompare(b.e.nombre)).map(({e,s}) => h('tr',{},
+        h('td',{}, e.nombre), h('td',{}, h('span',{class:'pill '+s.cls}, s.txt)), h('td',{class:'small muted'}, s.f ? tarFecha(s.f) : '–'),
+        h('td',{}, (s.k==='pend'||s.k==='vencida') ? h('button',{class:'btn sm ghost',onclick:()=>msgModal(e)},'Recordar') : null)))))));
+    lista.append(item);
+  });
+  body.append(lista);
+}
+function tarEditarModal(t, despues){
+  const rec = Tareas.recurso(t.act);
+  const fecha = h('input',{type:'date',class:'tar-fecha',value:tarAInput(t.vence),'aria-label':'Fecha de entrega'});
+  const nota = h('textarea',{style:'min-height:70px'}, t.nota || '');
+  const msg = h('div',{class:'small',role:'alert',style:'color:var(--bad)'});
+  const ok = h('button',{class:'btn primary sm'},'Guardar cambios');
+  ok.onclick = async () => { ok.disabled = true; const r = await Tareas.editar(t.id, { vence:tarDeInput(fecha.value), nota:nota.value }); ok.disabled = false;
+    if (!r.ok){ msg.textContent = r.msg; return; } closeModal(); toast('Tarea actualizada.'); despues && despues(); };
+  openModal(h('div',{class:'stack'}, h('span',{class:'eyebrow'},'Editar tarea'), h('h3',{}, `${rec.em} ${rec.t}`),
+    h('label',{class:'stack',style:'gap:6px'},'Fecha de entrega', fecha), h('label',{class:'stack',style:'gap:6px'},'Indicación', nota), msg,
+    h('div',{class:'row'}, ok, h('button',{class:'btn sm ghost',onclick:closeModal},'Cancelar'))));
+}
+
+/* ---------- Estudiante: "Mis tareas" en su inicio y aviso en el recurso asignado ---------- */
+function tarBloqueMias(){
+  const ts = Tareas.mias(); if (!ts.length) return null;
+  const conEstado = ts.map(t => ({ t, s:Tareas.miEstado(t), r:Tareas.recurso(t.act) }));
+  const pend = conEstado.filter(x => x.s.k==='pend' || x.s.k==='vencida');
+  const hechas = conEstado.filter(x => x.s.k==='ok' || x.s.k==='tarde').slice(-3).reverse();
+  const box = h('section',{class:'card stack tar-mias',style:'margin-bottom:16px','aria-label':'Mis tareas'},
+    h('div',{class:'row',style:'justify-content:space-between;align-items:baseline'}, h('span',{class:'eyebrow'},'Mis tareas'),
+      h('span',{class:'small muted'}, pend.length ? `${pend.length} pendiente${pend.length===1?'':'s'}` : 'Todo entregado ✓')));
+  if (!pend.length) box.append(h('div',{class:'notice ok'},'No tienes tareas pendientes. Buen trabajo.'));
+  [...pend, ...hechas].forEach(({t,s,r}) => box.append(h('a',{class:'act',href:r.href},
+    h('span',{class:'ico',style:'background:var(--bg-3)'}, r.em || '📌'),
+    h('span',{}, h('div',{class:'t'}, r.t), h('div',{class:'d'}, (s.k==='pend'||s.k==='vencida' ? `Entrega: ${tarFecha(t.vence)} · ${tarFaltan(t.vence)}` : `Entregada · era para el ${tarFecha(t.vence)}`) + (t.nota ? ` · ${t.nota}` : ''))),
+    h('span',{class:'pill '+s.cls}, s.txt))));
+  return box;
+}
+function tarAvisoRecurso(view, path){
+  if (Store.ses.rol !== 'estudiante' || typeof currRecursoDe !== 'function') return;
+  const id = currRecursoDe(path); const act = id && BIO.curriculo[id] && BIO.curriculo[id].act; if (!act) return;
+  const t = Tareas.mias().find(x => x.act === act); if (!t) return;
+  const s = Tareas.miEstado(t);
+  const el = h('div',{class:'notice tar-aviso '+(s.k==='ok'?'ok':s.k==='vencida'?'warn':'info'),role:'status'},
+    h('span',{}, h('b',{}, s.k==='ok' ? '✓ Tarea entregada. ' : s.k==='tarde' ? 'Tarea entregada tarde. ' : '📌 Tarea asignada por tu docente. '),
+      s.k==='ok'||s.k==='tarde' ? 'Tu docente ya ve tu resultado.' : `Entrega: ${tarFecha(t.vence)} (${tarFaltan(t.vence)}). Se entrega sola cuando resuelves el reto de este recurso.`,
+      t.nota ? h('span',{}, ' Indicación: ', h('i',{}, t.nota)) : null));
+  const head = view.querySelector('.page-head'); if (head) head.after(el); else view.prepend(el);
+}
+function tarPostRender(view, path){
+  if (Store.ses.rol !== 'estudiante') return;
+  if (path === '/cn' || path === '/' || path === '/panel'){
+    const poner = () => { view.querySelector('.tar-mias')?.remove(); const b = tarBloqueMias(); if (b){ const first = view.firstElementChild; if (first) first.after(b); else view.prepend(b); } };
+    poner();
+    if (Cloud.on && Cloud.ses && Date.now() - (Cloud.ultimoPull || 0) > 60000)
+      Cloud.pull().then(() => { if (document.body.contains(view) && location.hash.replace('#','').split('?')[0] === path) poner(); }).catch(e => console.warn('tareas', e));
+    return; }
+  tarAvisoRecurso(view, path);
 }
 </script>
 <style>
@@ -9538,6 +9791,9 @@ function cnProgresoDominio(grado, dom){
 
 /* ---------- Siguiente paso recomendado ---------- */
 function cnSiguientePaso(){
+  /* primero, la tarea pendiente que vence antes */
+  if (typeof Tareas !== 'undefined'){ const t = Tareas.mias().find(x => !Store.s.activities[x.act]?.done);
+    if (t){ const r = Tareas.recurso(t.act); return { em:r.em||'📌', t:'Tarea: '+r.t, d:`Entrega: ${tarFecha(t.vence)} · ${tarFaltan(t.vence)}.` + (t.nota ? ' '+t.nota : ''), href:r.href }; } }
   const g = cnNivelActual(), us = BIO.cnUnidadesDe(g);
   for (const u of us) for (const rid of (u.recursos||[])){
     const r = BIO.cnRecurso(rid);
