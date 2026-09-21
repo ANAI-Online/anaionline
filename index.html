@@ -709,7 +709,7 @@ th.rot{font-size:.68rem;white-space:normal}
       <span><b id="marca-n">ANAI BioLab</b><span class="sub" id="marca-sub">Laboratorio virtual</span></span>
     </a>
     <nav class="nav" id="nav-main"></nav>
-    <div class="sidebar-foot">Prototipo MVP · ANAI Online<br><span class="mono">v1.2 · Ciencias Naturales EGB + Biología BGU</span></div>
+    <div class="sidebar-foot">Prototipo MVP · ANAI Online<br><span class="mono">v1.3 · Ciencias Naturales EGB + Biología BGU</span></div>
   </aside>
   <div class="main">
     <header class="topbar">
@@ -2021,10 +2021,21 @@ const COLS = {
   tel:['telefono','teléfono','celular','whatsapp','tel']
 };
 function mapearEncabezado(fila){
-  const map = {}; fila.forEach((h0,i) => { const k = sinTildes(String(h0).toLowerCase()).trim();
-    for (const [campo,alias] of Object.entries(COLS)) if (alias.some(a => sinTildes(a) === k)) { if (map[campo]===undefined) map[campo] = i; } });
+  const map = {}; const norm = v => sinTildes(String(v).toLowerCase()).replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+  /* 1) coincidencia exacta con los alias */
+  fila.forEach((h0,i) => { const k = norm(h0);
+    for (const [campo,alias] of Object.entries(COLS)) if (alias.some(a => norm(a) === k)) { if (map[campo]===undefined) map[campo] = i; } });
+  /* 2) coincidencia por palabra clave, para encabezados como "CÓDIGO ALUMNO", "APELLIDOS DEL ALUMNO", "Paralelo/Sección" */
+  const claves = [['codigo',/\b(cod|codigo|matricula|cedula)\b/],['apellidos',/apellido/],['nombres',/^nombres?\b(?!.*apellido)/],
+    ['nombre_completo',/(estudiante|alumno|nombre completo|apellidos y nombres|nombres y apellidos)/],['paralelo',/(paralelo|seccion)/],
+    ['year',/\b(ano|anio|curso|nivel|grado|year)\b/],['rep',/(representante|correo)/],['tel',/(telefono|celular|whatsapp)/]];
+  fila.forEach((h0,i) => { const k = norm(h0); if (!k || Object.values(map).includes(i)) return;
+    for (const [campo,re] of claves) if (map[campo]===undefined && re.test(k)){ map[campo] = i; break; } });
+  if (map.apellidos!==undefined && map.nombres!==undefined) delete map.nombre_completo;
   return map;
 }
+/* ¿Parece un paralelo? Una o dos letras (A, B, AB). "8º" o "Octavo" no lo son. */
+const esParalelo = v => /^[A-Za-z]{1,2}$/.test(String(v||'').trim());
 const yearDe = v => { const s = sinTildes(String(v||'').toLowerCase()).trim();
   if (/10|decimo/.test(s)) return 10;
   if (/(^|\D)9(\D|$)|noveno/.test(s)) return 9;
@@ -2055,8 +2066,13 @@ const Users = {
   revisar(txt, yearPorDefecto, parPorDefecto){
     const filas = parseTabular(txt); if (!filas.length) return { ok:[], errores:[{ fila:0, msg:'El listado está vacío.' }] };
     let map = mapearEncabezado(filas[0]); let inicio = 1;
-    if (map.codigo === undefined && map.nombre_completo === undefined && map.nombres === undefined){ map = { codigo:0, nombre_completo:1, year:2, paralelo:3 }; inicio = 0; }
-    const ok = [], errores = [], vistos = new Set();
+    if (map.codigo === undefined && map.nombre_completo === undefined && map.nombres === undefined){
+      /* Sin encabezados: se deduce el orden mirando los datos. Si la 3.ª columna no es un año
+         pero la 4.ª sí, el archivo es código · apellidos · nombres · año · paralelo (la plantilla). */
+      const f0 = filas[0] || [];
+      map = (f0.length >= 4 && !yearDe(f0[2]) && yearDe(f0[3])) ? { codigo:0, apellidos:1, nombres:2, year:3, paralelo:4 } : { codigo:0, nombre_completo:1, year:2, paralelo:3 };
+      inicio = 0; }
+    const ok = [], errores = [], avisos = [], vistos = new Set();
     for (let i = inicio; i < filas.length; i++){
       const f = filas[i]; if (!f.join('').trim()) continue;
       const codigo = String(f[map.codigo] ?? '').trim();
@@ -2065,8 +2081,10 @@ const Users = {
         if (partes.length >= 3){ apellidos = partes.slice(0,2).join(' '); nombres = partes.slice(2).join(' '); }
         else { apellidos = partes[0]||''; nombres = partes.slice(1).join(' '); } }
       const year = yearDe(map.year!==undefined ? f[map.year] : '') || yearPorDefecto;
-      const paralelo = String((map.paralelo!==undefined ? f[map.paralelo] : '') || parPorDefecto || 'A').trim().toUpperCase().slice(0,2);
       const fila = i+1;
+      const parCrudo = map.paralelo!==undefined ? String(f[map.paralelo]||'').trim() : '';
+      const paralelo = (esParalelo(parCrudo) ? parCrudo : (parPorDefecto || 'A')).toUpperCase();
+      if (parCrudo && !esParalelo(parCrudo)) avisos.push({ fila, msg:`Paralelo "${parCrudo}" no reconocido para ${codigo || 'la fila'}: se usó ${paralelo}.` });
       if (!codigo) { errores.push({ fila, msg:'Falta el código del estudiante.' }); continue; }
       if (!/^[A-Za-z0-9._-]{3,14}$/.test(codigo)) { errores.push({ fila, msg:`Código "${codigo}" no válido (usa 3 a 14 letras o números, sin espacios).` }); continue; }
       if (!nombres && !apellidos) { errores.push({ fila, msg:`Sin nombre para el código ${codigo}.` }); continue; }
@@ -2077,7 +2095,8 @@ const Users = {
         rep: map.rep!==undefined ? String(f[map.rep]||'').trim() : '', tel: map.tel!==undefined ? String(f[map.tel]||'').trim() : '',
         existe: !!Users.get(codigo) });
     }
-    return { ok, errores };
+    if (inicio === 0 && ok.length) avisos.unshift({ fila:1, msg:'No reconocí los encabezados del archivo y usé el orden código · nombre · año · paralelo. Revisa la vista previa: si los datos no calzan, añade una fila de encabezados (código, apellidos, nombres, año, paralelo).' });
+    return { ok, errores, avisos };
   },
   /* Crea o actualiza los usuarios y genera contraseñas temporales para los nuevos */
   async importar(filas, opts={}){
@@ -2101,6 +2120,40 @@ const Users = {
     }
     Store.save(); Store.log('usuarios_importados', { nuevos, actualizados, total:Object.keys(u).length });
     return { nuevos, actualizados };
+  },
+  /* Edita los datos de un estudiante. El código no cambia: es su usuario. */
+  async editar(codigo, c){
+    const u = this.get(codigo); if (!u) return { ok:false, msg:'No existe ese estudiante.' };
+    const nombres = capital(String(c.nombres ?? u.nombres).trim()), apellidos = capital(String(c.apellidos ?? u.apellidos).trim());
+    if (!nombres && !apellidos) return { ok:false, msg:'Escribe al menos nombres o apellidos.' };
+    const year = +(c.year ?? u.year); if (!BIO.niveles.some(n => +n.id === year)) return { ok:false, msg:'Elige un año válido.' };
+    const paralelo = String(c.paralelo ?? u.paralelo).trim().toUpperCase();
+    if (!/^[A-Z]{1,2}$/.test(paralelo)) return { ok:false, msg:'El paralelo debe ser una letra, por ejemplo A.' };
+    const nuevo = { nombres, apellidos, nombre:(apellidos+' '+nombres).trim(), year, paralelo, rep:String(c.rep ?? u.rep ?? '').trim(), tel:String(c.tel ?? u.tel ?? '').trim() };
+    if (Cloud.on && u.uid){
+      try { await Cloud.editarPerfil(u.uid, { nombres, apellidos, nombre:nuevo.nombre, nivel:year, paralelo, prog:BIO.progOf(year), rep:nuevo.rep, tel:nuevo.tel }); }
+      catch(e){ return { ok:false, msg:'El servidor no aceptó el cambio: '+e.message }; }
+    }
+    Object.assign(u, nuevo); Store.save(); Store.log('usuario_editado', { codigo }); return { ok:true, u };
+  },
+  /* Cambia año y/o paralelo de varios estudiantes a la vez (sirve para corregir una importación). */
+  async mover(codigos, { year, paralelo }){
+    let ok = 0; const errores = [];
+    for (const cod of codigos){ const r = await this.editar(cod, { year: year ?? undefined, paralelo: paralelo ?? undefined }); r.ok ? ok++ : errores.push(cod+': '+r.msg); }
+    return { ok, errores };
+  },
+  /* Elimina la cuenta: en modo servidor borra el usuario y, en cascada, sus notas y adaptaciones. */
+  async eliminar(codigo){
+    const u = this.get(codigo); if (!u) return { ok:false, msg:'No existe ese estudiante.' };
+    if (Cloud.on && u.uid){ try { await Cloud.borrarUsuario(u.uid); } catch(e){ return { ok:false, msg:'El servidor no lo eliminó: '+e.message }; } }
+    delete Store.s.usuarios[codigo];
+    if (Store.s.docente){ delete (Store.s.docente.notas||{})[codigo]; delete (Store.s.docente.adapt||{})[codigo]; }
+    Store.save(); Store.log('usuario_eliminado', { codigo }); return { ok:true };
+  },
+  async eliminarVarios(codigos){
+    let ok = 0; const errores = [];
+    for (const cod of codigos){ const r = await this.eliminar(cod); r.ok ? ok++ : errores.push(cod+': '+r.msg); }
+    return { ok, errores };
   },
   async resetPass(codigo){ const u = Users.get(codigo); if (!u) return null;
     if (Cloud.on){ const t = await Cloud.resetPassword(u.uid); u.temp = t; u.cambiar = true; u.entregada = false; Store.save(); return t; }
@@ -2300,6 +2353,7 @@ const Cloud = {
     if (!r.ok) throw new Error(r.msg||'Error al crear'); return r; },
   async crearDocente(d){ const r = await this.fn('crear_docente', d); if (!r.ok) throw new Error(r.msg||'Error al crear'); return r; },
   async resetPassword(uid){ const r = await this.fn('reset_password', { id:uid }); if (!r.ok) throw new Error(r.msg); return r.temp; },
+  async editarPerfil(uid, campos){ await this.rest('perfiles', `id=eq.${uid}`, { method:'PATCH', body:campos, prefer:'return=minimal' }); },
   async borrarUsuario(uid){ const r = await this.fn('borrar_usuario', { id:uid }); if (!r.ok) throw new Error(r.msg); },
   async cambiarCorreo(uid, email){ const r = await this.fn('cambiar_correo', { id:uid, email }); if (!r.ok) throw new Error(r.msg); },
   async entregada(uid, v){ await this.rest('perfiles', `id=eq.${uid}`, { method:'PATCH', body:{ entregada:!!v }, prefer:'return=minimal' }); },
@@ -5100,10 +5154,11 @@ function tabUsuarios(body, rerender){
   function pintarRevision(){
     paso2.innerHTML='';
     if (!revision) return;
-    const { ok, errores } = revision;
+    const { ok, errores, avisos=[] } = revision;
     const box = h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Paso 2 · Revisión'),
       h('div',{class:'row'}, h('span',{class:'pill ok'},`${ok.length} estudiantes listos`), errores.length ? h('span',{class:'pill bad'},`${errores.length} con problemas`) : null,
         ok.filter(x=>x.existe).length ? h('span',{class:'pill warn'},`${ok.filter(x=>x.existe).length} ya existían (se actualizan)`) : null));
+    if (avisos.length) box.append(h('div',{class:'notice info'}, h('span',{}, avisos.slice(0,5).map(e=>e.msg).join(' · '))));
     if (errores.length) box.append(h('div',{class:'notice warn'}, h('span',{}, h('b',{},'Revisa estas filas: '), errores.slice(0,6).map(e => `fila ${e.fila}: ${e.msg}`).join(' · '))));
     if (ok.length){
       box.append(h('div',{class:'tablewrap'}, h('table',{class:'data'},
@@ -5315,6 +5370,11 @@ function famGate(view){
 }
 </script>
 <style>
+.adm-bulk{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 12px;border:1px solid var(--accent);border-radius:12px;background:var(--bg-2)}
+tr.adm-sel td{background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.btn.danger{background:var(--bad);border-color:var(--bad);color:#fff}
+.btn.danger-text{color:var(--bad)}
+
 .adm-kpi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 .adm-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;align-items:end}
 .adm-form label{display:flex;flex-direction:column;gap:4px;font-size:.8rem;font-weight:600;color:var(--ink-2)}
@@ -5383,7 +5443,15 @@ const Admin = {
   async resetDocente(id){ const d = this.docente(id); if (!d) return null;
     if (Cloud.on){ const t = await Cloud.resetPassword(id); d.temp = t; d.cambiar = true; d.entregada = false; Store.save(); return t; }
     const p = generarPass(); d.temp = p; d.hash = await hashPass(p); d.cambiar = true; d.entregada = false; Store.save(); return p; },
-  borrarDocente(id){ const d = Store.s.docentes||{}; delete d[id]; Store.save(); if (Cloud.on) Cloud.borrarUsuario(id).catch(e=>toast('No se borró en el servidor: '+e.message)); },
+  async borrarDocente(id){ if (Cloud.on) await Cloud.borrarUsuario(id);
+    const d = Store.s.docentes||{}; delete d[id]; this.cursos().forEach(c => { if (c.docenteId===id) c.docenteId = null; }); Store.save(); },
+  async editarDocente(id, c){ const d = this.docente(id); if (!d) return { ok:false, msg:'No existe ese docente.' };
+    const nombres = capital(String(c.nombres||'').trim()), apellidos = capital(String(c.apellidos||'').trim());
+    if (!nombres || !apellidos) return { ok:false, msg:'Escribe nombres y apellidos.' };
+    const prog = c.prog || d.prog, nombre = (nombres+' '+apellidos).trim();
+    if (Cloud.on){ try { await Cloud.editarPerfil(id, { nombres, apellidos, nombre, prog }); } catch(e){ return { ok:false, msg:'El servidor no aceptó el cambio: '+e.message }; } }
+    if (prog !== d.prog){ (d.cursos||[]).forEach(cid => this.asignar(id, cid, false)); d.cursos = []; }
+    Object.assign(d, { nombres, apellidos, nombre, prog }); Store.save(); return { ok:true }; },
   asignar(docenteId, cursoId, on){
     const d = this.docente(docenteId); if (!d) return; const set = new Set(d.cursos||[]);
     on ? set.add(cursoId) : set.delete(cursoId); d.cursos = [...set];
@@ -5495,7 +5563,7 @@ function admCursos(body, rerender){
         h('td',{class:'mono'}, es.length ? `${es.filter(u=>u.entregada).length}/${es.length}` : '—'),
         h('td',{style:'white-space:nowrap'}, h('div',{class:'row',style:'gap:6px;flex-wrap:nowrap'},
           h('a',{class:'btn sm ghost',href:`#/docente/credenciales/${c.nivel}/${c.paralelo}`},'Fichas'),
-          h('button',{class:'btn sm ghost',onclick:()=>{ if (confirm(`¿Eliminar el curso ${BIO.nivel(c.nivel).corto} "${c.paralelo}"? Los usuarios de los estudiantes no se borran.`)){ Admin.borrarCurso(c.id); rerender(); } }},'Eliminar'))));
+          h('button',{class:'btn sm ghost danger-text',onclick:()=>confirmar({ peligro:true, titulo:`¿Eliminar el curso ${BIO.nivel(c.nivel).corto} ${c.paralelo}?`, texto:'Se quita el curso y su asignación docente. Las cuentas de los estudiantes no se borran: si también quieres borrarlas, selecciónalas en la pestaña Estudiantes.', boton:'Eliminar curso', accion: async()=>{ Admin.borrarCurso(c.id); rerender(); toast('Curso eliminado.'); } })},'Eliminar'))));
     })));
   body.append(h('div',{class:'tablewrap',style:'margin-top:16px'}, tbl));
 }
@@ -5521,8 +5589,9 @@ function admEstudiantes(body, rerender){
       revision = Users.revisar(ta.value, c.nivel, c.paralelo); pintar(); }},'Revisar listado'), rev));
   function pintar(){
     rev.innerHTML=''; if (!revision) return;
-    const { ok, errores } = revision;
-    rev.append(h('div',{class:'row'}, h('span',{class:'pill ok'},`${ok.length} listos`), errores.length?h('span',{class:'pill bad'},`${errores.length} con problemas`):null));
+    const { ok, errores, avisos=[] } = revision;
+    rev.append(h('div',{class:'row'}, h('span',{class:'pill ok'},`${ok.length} listos`), errores.length?h('span',{class:'pill bad'},`${errores.length} con problemas`):null, avisos.length?h('span',{class:'pill warn'},`${avisos.length} aviso(s)`):null));
+    if (avisos.length) rev.append(h('div',{class:'notice info'}, h('span',{}, avisos.slice(0,5).map(e=>e.msg).join(' · '))));
     if (errores.length) rev.append(h('div',{class:'notice warn'}, h('span',{}, errores.slice(0,6).map(e=>`fila ${e.fila}: ${e.msg}`).join(' · '))));
     if (ok.length){
       rev.append(h('div',{class:'tablewrap'}, h('table',{class:'data'},
@@ -5534,30 +5603,125 @@ function admEstudiantes(body, rerender){
         const r = await Users.importar(ok); toast(`${r.nuevos} usuarios creados y ${r.actualizados} actualizados.`); revision=null; rerender(); }},'Generar usuarios y contraseñas'));
     }
   }
-  /* listado global */
-  const est = Users.all();
-  if (!est.length) return;
-  const filtro = h('select',{'aria-label':'Filtrar por curso',onchange:()=>pintarLista()}, h('option',{value:''},'Todos los cursos'),
+  /* listado global: buscar, editar, eliminar y acciones en bloque */
+  if (!Users.all().length) return;
+  const filtro = h('select',{'aria-label':'Filtrar por curso',style:'width:auto',onchange:()=>{ sel2.clear(); pintarLista(); }}, h('option',{value:''},'Todos los cursos'),
     BIO.niveles.map(n => h('option',{value:n.id}, n.n)));
+  const buscar = h('input',{type:'text',placeholder:'Buscar por código o nombre','aria-label':'Buscar estudiante',style:'width:240px;max-width:100%',oninput:()=>pintarLista()});
+  const sel2 = new Set();
   const cont = h('div',{class:'stack'});
+  const titulo = h('b',{});
   body.append(h('div',{class:'row',style:'justify-content:space-between;margin:20px 0 8px;flex-wrap:wrap;gap:8px'},
-    h('b',{},`Estudiantes con usuario (${est.length})`), h('div',{class:'row',style:'gap:6px'}, filtro,
-      h('button',{class:'btn sm',onclick:()=>descargarTexto('credenciales-todos.csv', Users.csvCredenciales(Users.all()))},'Descargar credenciales'))), cont);
+    titulo, h('div',{class:'row',style:'gap:6px;flex-wrap:wrap;align-items:center'}, buscar, filtro,
+      h('button',{class:'btn sm',onclick:()=>descargarTexto('credenciales.csv', Users.csvCredenciales(visibles()))},'Descargar credenciales'))), cont);
+  function visibles(){
+    const q = sinTildes(buscar.value.trim().toLowerCase());
+    return Users.all().filter(u => (!filtro.value || +u.year === +filtro.value) && (!q || String(u.codigo).includes(q) || sinTildes(u.nombre.toLowerCase()).includes(q)))
+      .sort((a,b)=> a.year-b.year || String(a.paralelo).localeCompare(String(b.paralelo)) || a.nombre.localeCompare(b.nombre));
+  }
   function pintarLista(){
     cont.innerHTML='';
-    const l = Users.all().filter(u => !filtro.value || +u.year === +filtro.value).sort((a,b)=> a.year-b.year || a.paralelo.localeCompare(b.paralelo) || a.nombre.localeCompare(b.nombre));
+    const l = visibles(); titulo.textContent = `Estudiantes con usuario (${Users.all().length})` + (l.length !== Users.all().length ? ` · mostrando ${l.length}` : '');
+    [...sel2].forEach(c => { if (!l.some(u=>u.codigo===c)) sel2.delete(c); });
+    const todos = h('input',{type:'checkbox','aria-label':'Seleccionar todos los visibles'}); todos.checked = l.length>0 && l.every(u=>sel2.has(u.codigo));
+    todos.onchange = () => { l.forEach(u => todos.checked ? sel2.add(u.codigo) : sel2.delete(u.codigo)); pintarLista(); };
+    if (sel2.size) cont.append(h('div',{class:'adm-bulk'},
+      h('b',{}, `${sel2.size} seleccionado${sel2.size===1?'':'s'}`),
+      h('button',{class:'btn sm',onclick:()=>moverModal([...sel2], ()=>{ sel2.clear(); pintarLista(); })},'Cambiar año o paralelo'),
+      h('button',{class:'btn sm',onclick:()=>descargarTexto('credenciales-seleccion.csv', Users.csvCredenciales([...sel2].map(c=>Users.get(c)).filter(Boolean)))},'Descargar sus credenciales'),
+      h('button',{class:'btn sm danger',onclick:()=>eliminarModal([...sel2], ()=>{ sel2.clear(); pintarLista(); })},'Eliminar seleccionados'),
+      h('button',{class:'btn sm ghost',onclick:()=>{ sel2.clear(); pintarLista(); }},'Quitar selección')));
+    if (!l.length){ cont.append(h('p',{class:'small muted'},'Ningún estudiante coincide con la búsqueda.')); return; }
     cont.append(h('div',{class:'tablewrap'}, h('table',{class:'data'},
-      h('thead',{},h('tr',{},h('th',{},'Código'),h('th',{},'Estudiante'),h('th',{},'Curso'),h('th',{},'Entorno'),h('th',{},'Usuario'),h('th',{},'Estado'),h('th',{},''))),
-      h('tbody',{}, l.map(u => h('tr',{},
-        h('td',{class:'mono'},u.codigo), h('td',{}, h('b',{},u.nombre)),
-        h('td',{},`${BIO.nivel(u.year).corto} ${u.paralelo}`), h('td',{}, progPill(BIO.progOf(u.year))),
+      h('thead',{},h('tr',{},h('th',{style:'width:34px'},todos),h('th',{},'Código'),h('th',{},'Estudiante'),h('th',{},'Curso'),h('th',{},'Entorno'),h('th',{},'Usuario'),h('th',{},'Estado'),h('th',{},'Acciones'))),
+      h('tbody',{}, l.map(u => { const cb = h('input',{type:'checkbox','aria-label':'Seleccionar '+u.nombre}); cb.checked = sel2.has(u.codigo);
+        cb.onchange = () => { cb.checked ? sel2.add(u.codigo) : sel2.delete(u.codigo); pintarLista(); };
+        const parMalo = !/^[A-Z]{1,2}$/.test(String(u.paralelo||''));
+        return h('tr',{class: sel2.has(u.codigo) ? 'adm-sel' : null},
+        h('td',{},cb),
+        h('td',{class:'mono'},u.codigo), h('td',{}, h('b',{},u.nombre), (!u.nombres || !u.apellidos) ? h('div',{class:'small',style:'color:var(--warn)'},'Revisa el nombre') : null),
+        h('td',{}, `${BIO.nivel(u.year).corto} ${u.paralelo}`, parMalo ? h('div',{class:'small',style:'color:var(--warn)'},'Paralelo no válido') : null),
+        h('td',{}, progPill(BIO.progOf(u.year))),
         h('td',{class:'mono small'},u.email),
         h('td',{}, u.entregada?h('span',{class:'pill ok'},'Entregada'):h('span',{class:'pill warn'},'Por entregar')),
-        h('td',{style:'white-space:nowrap'}, h('div',{class:'row',style:'gap:6px;flex-wrap:nowrap'},
+        h('td',{style:'white-space:nowrap'}, h('div',{class:'row',style:'gap:4px;flex-wrap:nowrap'},
+          h('button',{class:'btn sm ghost',onclick:()=>editarEstModal(u, pintarLista)},'Editar'),
           h('button',{class:'btn sm ghost',onclick:()=>credModal(u, pintarLista)},'Entregar'),
-          h('button',{class:'btn sm ghost',onclick:async()=>{ const p = await Users.resetPass(u.codigo); toast('Nueva contraseña: '+p); pintarLista(); }},'Restablecer')))))))));
+          h('button',{class:'btn sm ghost',onclick:()=>confirmar({ titulo:'Restablecer la contraseña de '+u.nombre, texto:'Se genera una contraseña temporal nueva y la anterior deja de funcionar.', boton:'Restablecer',
+            accion: async()=>{ const p = await Users.resetPass(u.codigo); toast('Nueva contraseña: '+p); pintarLista(); } })},'Restablecer'),
+          h('button',{class:'btn sm ghost danger-text',onclick:()=>eliminarModal([u.codigo], pintarLista)},'Eliminar')))); })))));
   }
   pintarLista();
+}
+
+/* ---------- Diálogos de administración ---------- */
+/* Confirmación en ventana propia (no el confirm() del navegador). Con "escribir" exige teclear una palabra. */
+function confirmar({ titulo, texto, boton='Confirmar', peligro=false, escribir=null, accion }){
+  const inp = escribir ? h('input',{type:'text','aria-label':`Escribe ${escribir} para confirmar`,placeholder:escribir,autocomplete:'off'}) : null;
+  const msg = h('div',{class:'small',role:'alert'});
+  const ok = h('button',{class:'btn sm '+(peligro?'danger':'primary')}, boton);
+  ok.onclick = async () => { if (inp && inp.value.trim().toUpperCase() !== escribir){ msg.textContent = `Escribe ${escribir} para confirmar.`; inp.focus(); return; }
+    ok.disabled = true; ok.textContent = 'Procesando…';
+    try { await accion(); closeModal(); } catch(e){ msg.textContent = 'No se pudo completar: '+e.message; ok.disabled = false; ok.textContent = boton; } };
+  openModal(h('div',{class:'stack'}, h('h3',{},titulo), h('p',{},texto),
+    inp ? h('label',{class:'small'}, `Para confirmar, escribe ${escribir}:`, inp) : null, msg,
+    h('div',{class:'row'}, ok, h('button',{class:'btn sm ghost',onclick:closeModal},'Cancelar'))));
+  (inp || ok).focus();
+}
+function editarEstModal(u, despues){
+  const f = { nombres:h('input',{type:'text',value:u.nombres||''}), apellidos:h('input',{type:'text',value:u.apellidos||''}),
+    year:h('select',{}, BIO.niveles.map(n => { const o = h('option',{value:n.id}, n.n); if (+n.id === +u.year) o.selected = true; return o; })),
+    paralelo:h('input',{type:'text',value:/^[A-Z]{1,2}$/.test(String(u.paralelo||''))?u.paralelo:'',maxlength:'2',placeholder:'A',style:'text-transform:uppercase'}),
+    rep:h('input',{type:'text',value:u.rep||'',placeholder:'correo o nombre del representante'}), tel:h('input',{type:'tel',value:u.tel||'',placeholder:'0991234567'}) };
+  const msg = h('div',{class:'small',role:'alert',style:'color:var(--bad)'});
+  const guardar = h('button',{class:'btn primary sm'},'Guardar cambios');
+  guardar.onclick = async () => { guardar.disabled = true;
+    const r = await Users.editar(u.codigo, { nombres:f.nombres.value, apellidos:f.apellidos.value, year:f.year.value, paralelo:f.paralelo.value, rep:f.rep.value, tel:f.tel.value });
+    guardar.disabled = false; if (!r.ok){ msg.textContent = r.msg; return; }
+    closeModal(); toast('Datos actualizados.'); despues && despues(); };
+  openModal(h('div',{class:'stack'}, h('span',{class:'eyebrow'},'Editar estudiante'), h('h3',{},u.nombre),
+    h('p',{class:'small muted'}, 'Código y usuario: ', h('b',{class:'mono'},u.email), '. El código no se cambia porque es el usuario; si está mal, elimina el registro y vuelve a cargarlo.'),
+    h('div',{class:'adm-form'}, h('label',{},'Apellidos', f.apellidos), h('label',{},'Nombres', f.nombres), h('label',{},'Año', f.year), h('label',{},'Paralelo', f.paralelo),
+      h('label',{},'Representante', f.rep), h('label',{},'Teléfono', f.tel)),
+    msg, h('div',{class:'row'}, guardar, h('button',{class:'btn sm ghost',onclick:closeModal},'Cancelar'))));
+  f.apellidos.focus();
+}
+function moverModal(codigos, despues){
+  const year = h('select',{'aria-label':'Año'}, h('option',{value:''},'Mantener el año'), BIO.niveles.map(n => h('option',{value:n.id}, n.n)));
+  const par = h('input',{type:'text',maxlength:'2',placeholder:'Mantener','aria-label':'Paralelo',style:'text-transform:uppercase'});
+  const msg = h('div',{class:'small',role:'alert',style:'color:var(--bad)'});
+  const ok = h('button',{class:'btn primary sm'},'Aplicar a '+codigos.length);
+  ok.onclick = async () => { const y = year.value ? +year.value : null, p = par.value.trim().toUpperCase() || null;
+    if (!y && !p){ msg.textContent = 'Elige un año o escribe un paralelo.'; return; }
+    if (p && !/^[A-Z]{1,2}$/.test(p)){ msg.textContent = 'El paralelo debe ser una letra, por ejemplo A.'; return; }
+    ok.disabled = true; ok.textContent = 'Aplicando…';
+    const r = await Users.mover(codigos, { year:y, paralelo:p });
+    closeModal(); toast(`${r.ok} estudiante(s) actualizados` + (r.errores.length ? ` · ${r.errores.length} con error: ${r.errores[0]}` : '.')); despues && despues(); };
+  openModal(h('div',{class:'stack'}, h('span',{class:'eyebrow'},'Cambiar en bloque'), h('h3',{},`${codigos.length} estudiante(s)`),
+    h('p',{class:'small muted'},'Útil para corregir una carga: por ejemplo, poner paralelo A a todo un curso. Lo que dejes vacío no cambia.'),
+    h('div',{class:'adm-form'}, h('label',{},'Año', year), h('label',{},'Paralelo', par)), msg,
+    h('div',{class:'row'}, ok, h('button',{class:'btn sm ghost',onclick:closeModal},'Cancelar'))));
+}
+function eliminarModal(codigos, despues){
+  const us = codigos.map(c => Users.get(c)).filter(Boolean); if (!us.length) return;
+  const uno = us.length === 1;
+  confirmar({ peligro:true, boton: uno ? 'Eliminar estudiante' : `Eliminar ${us.length} estudiantes`, escribir: uno ? null : 'ELIMINAR',
+    titulo: uno ? `¿Eliminar a ${us[0].nombre}?` : `¿Eliminar ${us.length} estudiantes?`,
+    texto: (uno ? `Se borra la cuenta ${us[0].email}` : `Se borran ${us.length} cuentas`) + ', junto con su progreso, sus notas y sus adaptaciones. No se puede deshacer. Si solo hay un dato mal, usa Editar.',
+    accion: async () => { const r = await Users.eliminarVarios(us.map(u=>u.codigo));
+      toast(`${r.ok} eliminado(s)` + (r.errores.length ? ` · ${r.errores.length} con error: ${r.errores[0]}` : '.')); despues && despues(); } });
+}
+function editarDocModal(d, despues){
+  const nom = h('input',{type:'text',value:d.nombres||''}), ape = h('input',{type:'text',value:d.apellidos||''});
+  const prog = h('select',{}, Object.values(BIO.programas).map(p => { const o = h('option',{value:p.id},'Docente de '+p.n); if (p.id===d.prog) o.selected = true; return o; }));
+  const msg = h('div',{class:'small',role:'alert',style:'color:var(--bad)'});
+  const ok = h('button',{class:'btn primary sm'},'Guardar cambios');
+  ok.onclick = async () => { const r = await Admin.editarDocente(d.id, { nombres:nom.value, apellidos:ape.value, prog:prog.value });
+    if (!r.ok){ msg.textContent = r.msg; return; } closeModal(); toast('Docente actualizado.'); despues && despues(); };
+  openModal(h('div',{class:'stack'}, h('span',{class:'eyebrow'},'Editar docente'), h('h3',{},d.nombre),
+    h('p',{class:'small muted'},'El correo se cambia con "Corregir correo". Si cambias la asignatura, se le quitan los cursos de la anterior.'),
+    h('div',{class:'adm-form'}, h('label',{},'Nombres', nom), h('label',{},'Apellidos', ape), h('label',{},'Asignatura', prog)), msg,
+    h('div',{class:'row'}, ok, h('button',{class:'btn sm ghost',onclick:closeModal},'Cancelar'))));
 }
 
 /* ---------- Docentes ---------- */
@@ -5594,6 +5758,7 @@ function admDocentes(body, rerender){
       h('td',{}, d.entregada?h('span',{class:'pill ok'},'Entregada'):h('span',{class:'pill warn'},'Por entregar'),
         d.ultimoAcceso ? h('div',{class:'small muted'},'Ingresó '+timeAgo(d.ultimoAcceso)) : h('div',{class:'small muted'},'Sin ingresar')),
       h('td',{style:'white-space:nowrap'}, h('div',{class:'row',style:'gap:6px;flex-wrap:nowrap'},
+        h('button',{class:'btn sm ghost',onclick:()=>editarDocModal(d, rerender)},'Editar'),
         h('button',{class:'btn sm ghost',onclick:()=>credDocenteModal(d, rerender)},'Credenciales'),
         h('button',{class:'btn sm ghost',onclick:()=>{ const inp = h('input',{type:'email',value:d.email,'aria-label':'Correo'});
           openModal(h('div',{class:'stack'}, h('h3',{},'Corregir el correo de '+d.nombre), inp, h('div',{class:'row'},
@@ -5602,7 +5767,7 @@ function admDocentes(body, rerender){
               d.email = v.email; Store.save(); closeModal(); rerender(); toast('Correo actualizado.'); }},'Guardar'),
             h('button',{class:'btn sm ghost',onclick:closeModal},'Cancelar')))); }},'Corregir correo'),
         h('button',{class:'btn sm ghost',onclick:async()=>{ await Admin.resetDocente(d.id); rerender(); toast('Contraseña restablecida.'); }},'Restablecer'),
-        h('button',{class:'btn sm ghost',onclick:()=>{ if (confirm(`¿Eliminar la cuenta de ${d.nombre}?`)){ Admin.borrarDocente(d.id); rerender(); } }},'Eliminar')))))));
+        h('button',{class:'btn sm ghost danger-text',onclick:()=>confirmar({ peligro:true, titulo:`¿Eliminar la cuenta de ${d.nombre}?`, texto:`${d.email} dejará de poder entrar. Sus cursos quedan sin docente asignado; las notas de los estudiantes se conservan.`, boton:'Eliminar docente', accion: async()=>{ await Admin.borrarDocente(d.id); rerender(); toast('Docente eliminado.'); } })},'Eliminar')))))));
   body.append(h('div',{class:'tablewrap',style:'margin-top:16px'}, tbl));
   body.append(h('p',{class:'small muted',style:'margin-top:10px'},'El docente de Ciencias Naturales solo ve 8.º, 9.º y 10.º de EGB; el de Biología solo ve Bachillerato. Ninguno puede crear usuarios ni cursos.'));
 }
