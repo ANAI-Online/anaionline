@@ -15,15 +15,73 @@ function stageChrome(stage, E, opts){
   return { phase };
 }
 
+
+/* ---------- Reto del recurso: propósito · qué observar · reto que se desbloquea ---------- */
+function ordenBlock(o, onDone){
+  const wrap = h('div',{class:'stack'}, h('p',{style:'font-weight:600'},o.q)); let pos = 0, att = 0;
+  const chips = h('div',{class:'stack',style:'gap:6px'}), seq = h('ol',{class:'seq'}), fb = h('div',{class:'notice',style:'display:none'});
+  o.seq.map((t,i)=>({t,i})).sort(()=>Math.random()-0.5).forEach(({t,i}) => chips.append(h('button',{class:'chip',style:'text-align:left;white-space:normal;justify-content:flex-start',onclick:function(){ if (this.classList.contains('ok')) return; att++;
+    if (i===pos){ this.classList.add('ok'); this.disabled = true; seq.append(h('li',{},t)); pos++; if (pos===o.seq.length){ fb.className='notice ok'; fb.innerHTML = `<b>Correcto.</b> ${esc(o.fb)}`; fb.style.display='flex'; onDone && onDone(att===o.seq.length?1:2); } }
+    else { this.classList.add('bad'); setTimeout(()=>this.classList.remove('bad'),700); fb.className='notice warn'; fb.innerHTML = pos===0 ? '<b>Aún no.</b> Todo empieza donde está guardada la información genética.' : `<b>Aún no.</b> Después de "${esc(o.seq[pos-1].split(':')[0])}" viene otra etapa. Piensa en qué organelo recibe lo que acaba de salir.`; fb.style.display='flex'; }
+    Store.log('respuesta',{pregunta:'reto-orden',opcion:t,correcto:i===pos-1}); }}, t)));
+  wrap.append(chips, seq, fb); return wrap;
+}
+function retoBanner(R, seenKey, actId, onObserve){
+  const el = h('section',{class:'reto','aria-label':'Tu reto en este recurso'}); const ui = Store.s.ui = Store.s.ui || {}; ui.reto = ui.reto || {};
+  let open = ui.reto[actId] ?? (!Store.s.activities[actId]?.done && window.innerWidth > 860), lastKey = '';  /* en móvil empieza plegado para que el modelo quede a la vista */
+  const render = (force) => { const seen = Store.s.seen[seenKey]||[]; const done = !!Store.s.activities[actId]?.done; const got = R.observa.filter(o=>seen.includes(o.id)).length; const key = `${open}|${got}|${done}`; if (!force && key===lastKey) return; lastKey = key; el.innerHTML='';
+    const obsOk = got === R.observa.length;
+    el.classList.toggle('done', done);
+    el.classList.toggle('closed', !open);
+    el.append(h('button',{class:'reto-head','aria-expanded':String(open),onclick:()=>{ open=!open; ui.reto[actId]=open; Store.save(); render(true); }}, h('span',{class:'reto-ico','aria-hidden':'true'},'🎯'), h('span',{class:'reto-t'}, h('b',{},'Tu reto en este recurso'), h('span',{class:'muted'}, done ? ' · resuelto ✓' : ` · ${got}/${R.observa.length} observaciones`), open ? null : h('span',{class:'reto-p'}, R.proposito)), h('span',{class:'reto-caret'}, open ? 'Ocultar ▴' : 'Ver reto ▾')));
+    if (!open) return;
+    const q = R.pregunta ? R.pregunta.q : R.orden.q;
+    const rc = h('div',{class:'reto-col'}, h('span',{class:'eyebrow'},'3 · Resuelve'));
+    if (done) rc.append(h('p',{class:'small'},q), h('div',{class:'notice ok'},'Reto resuelto. Puedes repasarlo con la evaluación o la misión relacionada.'));
+    else if (!obsOk) rc.append(h('p',{class:'small',style:'font-weight:600'},q), h('div',{class:'notice'},'🔒 Se desbloquea cuando completes las observaciones.'));
+    else rc.append(R.pregunta ? quizBlock(R.pregunta, att => { Store.completeActivity(actId,{score: att===1?'1.er intento':`${att} intentos`, attempts:att}); setTimeout(()=>render(true), 2200); }) : ordenBlock(R.orden, att => { Store.completeActivity(actId,{score: att===1?'sin errores':'con errores', attempts:att}); setTimeout(()=>render(true), 2600); }));
+    el.append(h('div',{class:'reto-body'},
+      h('div',{class:'reto-col'}, h('span',{class:'eyebrow'},'1 · Propósito'), h('p',{},R.proposito), Store.s.a11y.tts ? TTS.btn(R.proposito+'. '+(R.pregunta?R.pregunta.q:'')) : null),
+      h('div',{class:'reto-col'}, h('span',{class:'eyebrow'},'2 · Observa'), h('ul',{class:'checks'}, R.observa.map(o => { const ok = seen.includes(o.id); return h('li',{class: ok?'ok':''}, h('span',{class:'ck','aria-hidden':'true'}, ok?'✓':''), h('button',{class:'linklike',onclick:()=>onObserve && onObserve(o.id)}, o.txt)); })), R.pista ? h('p',{class:'small muted'},R.pista) : null),
+      rc)); };
+  render(true); return { el, render };
+}
+function purposeBanner(o){
+  return h('section',{class:'reto static'+(o.done?' done':'')}, h('div',{class:'reto-body'},
+    h('div',{class:'reto-col'}, h('span',{class:'eyebrow'},'Propósito'), h('p',{},o.proposito)),
+    h('div',{class:'reto-col'}, h('span',{class:'eyebrow'},'Observa'), h('ul',{class:'checks plain'}, o.observa.map(t => h('li',{}, h('span',{class:'ck dotck','aria-hidden':'true'}), t)))),
+    h('div',{class:'reto-col'}, h('span',{class:'eyebrow'},'🎯 Reto'), h('p',{style:'font-weight:600'},o.reto), o.statusEl || (o.done ? h('div',{class:'notice ok'},'Reto resuelto ✓') : null))));
+}
+/* ---------- Vista en detalle: aislar, ampliar, girar y recorrer las partes ---------- */
+function makeDetail(E, stage, S, rerender){
+  let id = null, active = -1; const bar = h('div',{class:'detail-bar',style:'display:none'}); stage.append(bar);
+  const api = {
+    get id(){ return id; }, get active(){ return active; },
+    enter(sid){ if (!E) return toast('La vista en detalle requiere el modelo 3D.'); id = sid; active = -1; const s = S[sid]; E.enterDetail(sid, (s.partes||[]).map(p => p.at)); E.outline(sid); E.setMarkers(s.partes||[], i => api.pick(i));
+      bar.innerHTML=''; bar.append(h('span',{}, '🔍 Vista en detalle: ', h('b',{},s.nombre)), h('button',{class:'btn sm',onclick:()=>{ api.exit(); rerender(); }},'Salir')); bar.style.display='';
+      Store.log('vista_detalle',{estructura:sid}); rerender(); },
+    exit(){ if (!id) return; E.exitDetail(); E.outline(E.selected); id = null; active = -1; bar.style.display='none'; },
+    pick(i){ const s = S[id]; const p = (s.partes||[])[i]; if (!p) return; active = i; E.highlightMarker(i); E.outline(id, p.sub||null); E.spin = false; E.focus(V3(p.at), Math.max(E.opts.minR, Math.min(E.goal.r, 4.2))); Store.log('parte_detalle',{estructura:id, parte:p.n}); rerender(); },
+    panel(){ const s = S[id]; const box = h('div',{class:'parts stack'}, h('span',{class:'eyebrow'},'Partes · toca un número en el modelo o en la lista'));
+      if (!s.partes || !s.partes.length) box.append(h('p',{class:'small muted'},'Esta estructura no tiene subpartes en esta versión. Obsérvala de cerca: rota, acerca y compárala con sus vecinas.'));
+      else s.partes.forEach((p,i) => box.append(h('button',{class:'part'+(i===active?' on':''),onclick:()=>api.pick(i)}, h('span',{class:'pn'},String(i+1)), h('span',{}, h('b',{},p.n), h('span',{class:'small muted',style:'display:block'},p.d)))));
+      box.append(h('div',{class:'row'}, h('button',{class:'btn sm',onclick:()=>{ E.fitDetail(id, (S[id].partes||[]).map(p => p.at)); E.spin = true; E.highlightMarker(-1); E.outline(id); active=-1; rerender(); }},'↺ Ver completa'), h('button',{class:'btn sm ghost',onclick:()=>{ api.exit(); rerender(); }},'Salir de la vista en detalle')));
+      return box; }
+  };
+  return api;
+}
+
 function organView(view, q, D, build){
   const S = Object.fromEntries(D.structures.map(s=>[s.id,s]));
   view.classList.add('wide');
   view.append(h('div',{class:'page-head',style:'margin-bottom:14px'}, h('div',{}, h('span',{class:'eyebrow anat'},D.eyebrow), h('h1',{},D.nombre), h('p',{},D.intro)), h('div',{class:'row'}, D.related.map(r => h('a',{class:'btn sm',href:r.href},r.t)))));
   const stage = h('div',{class:'stage'}), panel = h('div',{class:'panel'});
+  const reto = D.reto ? retoBanner(D.reto, D.id, 'reto-'+D.id, id => { select(id,'reto'); stage.scrollIntoView({behavior:'smooth', block:'nearest'}); }) : null; if (reto) view.append(reto.el);
   view.append(h('div',{class:'viewer'}, stage, panel));
   let E=null, M=null, mode='libre', guideIdx=0, guideDone=false, selected=null, hidden=new Set(), tab='explorar', opacity=D.opacityDefault ?? 1;
   const modeSeg = h('div',{class:'segmented',role:'tablist'}, h('button',{role:'tab','aria-selected':'true',onclick:()=>setMode('libre')},'Exploración libre'), h('button',{role:'tab','aria-selected':'false',onclick:()=>setMode('guiada')},'Exploración guiada'));
-  if (webglOK){ try { E = new Engine3D(stage, { radius:D.radius, phi:D.phi, theta:D.theta, target:D.target, minR:2.5, maxR:22, onSelect:(id,src)=>{ if (id) select(id, src); } }); M = build(E); } catch(e){ console.warn(e); E=null; } }
+  if (webglOK){ try { E = new Engine3D(stage, { radius:D.radius, phi:D.phi, theta:D.theta, target:D.target, minR:2.5, maxR:22, floor:D.floor, floorSize:D.floorSize, onSelect:(id,src)=>{ if (id) select(id, src); }, onDetail:(id)=>{ if (selected!==id) select(id,'modelo'); detail.enter(id); } }); M = build(E); if (D.anchors !== false) D.structures.forEach(st => { const a = st.anchor || st.pos; if (a && !st.noLead) E.setAnchor(st.id, a); }); } catch(e){ console.warn(e); E=null; } }
+  const detail = makeDetail(E, stage, S, () => renderTab());
   const chrome = stageChrome(stage, E, { left:modeSeg, model:D.id, captureTxt:()=>`Captura · ${D.nombre}${selected?` · ${S[selected].nombre}`:''}` });
   if (E && M) E.onFrame(()=>{ const t = M.phaseText ? M.phaseText() : ''; if (chrome.phase.textContent!==t) chrome.phase.textContent=t; chrome.phase.style.display = t ? '' : 'none'; });
   if (!E){ if (D.id==='corazon') stage.append(heart2D((id)=>select(id,'esquema'))); stage.append(h('div',{class:'notice info',style:'position:absolute;left:12px;right:12px;top:56px'},'WebGL no disponible: usa la lista de estructuras para explorar el contenido.')); }
@@ -39,6 +97,7 @@ function organView(view, q, D, build){
   const seen = () => Store.s.seen[D.id] || [];
   function renderList(){ listEl.innerHTML=''; const sn = seen(); D.structures.forEach(s => listEl.append(h('li',{}, h('button',{'aria-pressed':selected===s.id,onclick:()=>select(s.id,'lista')}, h('span',{class:'sw',style:`background:${s.color}`}), s.nombre, sn.includes(s.id)?h('span',{class:'seen'},'✓'):null)))); }
   function renderTab(){ $$('button',tabs).forEach((b,i)=>b.setAttribute('aria-selected', TABS[i][0]===tab)); tabBody.innerHTML='';
+    if (tab==='explorar' && detail.id){ tabBody.append(h('h3',{},S[detail.id].nombre), detail.panel()); return; }
     if (tab==='explorar'){ if (mode==='guiada') tabBody.append(guideBox()); tabBody.append(selected ? hotspotCard(S[selected]) : h('div',{class:'notice'},'Selecciona una estructura en el modelo, en una etiqueta o en la lista. Arrastra para rotar · rueda para acercar · Shift + arrastrar para desplazar · teclado: flechas, + y −.')); tabBody.append(h('div',{}, h('span',{class:'eyebrow'},'Estructuras'), listEl)); renderList(); }
     else if (tab==='capas') tabBody.append(layersBox());
     else if (tab==='animacion') tabBody.append(animBox());
@@ -48,12 +107,13 @@ function organView(view, q, D, build){
     const capaN = (D.capas.find(c=>c.id===s.capa)||{}).n || '';
     return h('div',{class:'hcard stack',style:'gap:4px'},
       h('div',{class:'row',style:'justify-content:space-between'}, h('span',{class:'pill anat'},capaN), h('span',{class:'mono small muted'},`${seen().length}/${D.structures.length} exploradas`)),
-      h('h3',{},s.nombre),
+      h('div',{class:'row',style:'justify-content:space-between;align-items:flex-start;flex-wrap:nowrap'}, h('h3',{},s.nombre), h('button',{class:'btn sm primary',style:'flex:none',onclick:()=>detail.enter(s.id)},'🔍 Ver en detalle')),
+      s.partes ? h('p',{class:'small muted'},`${s.partes.length} partes para descubrir en la vista en detalle · también con doble clic sobre el modelo`) : null,
       h('div',{class:'q'},'¿Qué es? · ¿Qué hace?'), depthBlock(s),
       h('div',{class:'q'},'Dato importante'), h('p',{},s.dato),
       h('div',{class:'q'},'Conecta con'), h('div',{class:'conecta'}, s.conecta.map(id => S[id] ? h('button',{onclick:()=>select(id,'conecta')},'→ '+S[id].nombre) : null), (s.temas||[]).map(t => h('button',{style:'border-style:dashed',onclick:()=>toast(`Tema transversal: ${t}. Se relaciona con ${s.nombre}.`)},t))),
       h('div',{class:'ctrl-row',style:'margin-top:10px'},
-        h('button',{class:'btn sm primary',onclick:()=>{ if (!M) return toast('Requiere el modelo 3D.'); const a = M.anims[0]; M.anims.forEach(x=>x.set(x===a || x.id==='flujo')); if (a.needsOpacity && opacity>a.needsOpacity+0.1) applyOpacity(a.needsOpacity); tab='animacion'; renderTab(); if (!a.focus) E.focus(V3(s.pos), D.focusR); Store.log('animacion',{modelo:D.id,estructura:s.id}); }},'Ver funcionamiento'),
+        h('button',{class:'btn sm',onclick:()=>{ if (!M) return toast('Requiere el modelo 3D.'); const a = M.anims[0]; M.anims.forEach(x=>x.set(x===a || x.id==='flujo')); if (a.needsOpacity && opacity>a.needsOpacity+0.1) applyOpacity(a.needsOpacity); tab='animacion'; renderTab(); if (!a.focus) E.focus(V3(s.pos), D.focusR); Store.log('animacion',{modelo:D.id,estructura:s.id}); }},'Ver funcionamiento'),
         h('button',{class:'btn sm',onclick:()=>{ tab='quiz'; renderTab(); }},'Comprueba lo aprendido'),
         h('button',{class:'btn sm',onclick:()=>{ if(!E) return; D.structures.forEach(x=>E.setVisible(x.id, x.id===s.id)); hidden = new Set(D.structures.filter(x=>x.id!==s.id).map(x=>x.id)); toast(`Aislado: ${s.nombre}. Usa Capas → Mostrar todo para volver.`); }},'Aislar'),
         h('button',{class:'btn sm',onclick:()=>{ if(!E) return; E.setVisible(s.id,false); hidden.add(s.id); toast(`${s.nombre}: oculta.`); }},'Ocultar'),
@@ -62,13 +122,14 @@ function organView(view, q, D, build){
   function layersBox(){
     const box = h('div',{class:'stack'});
     const lay = h('div',{class:'layers'}); D.capas.forEach(c => { const on = D.structures.filter(s=>s.capa===c.id).some(s=>!hidden.has(s.id)); lay.append(h('label',{class:'toggle'}, h('input',{type:'checkbox',checked:on,onchange:e=>{ if(!E) return; setLayer(c.id, e.target.checked); D.structures.filter(s=>s.capa===c.id).forEach(s=> e.target.checked?hidden.delete(s.id):hidden.add(s.id)); const inner = D.structures.some(s=>s.capa===c.id && s.interno); if (inner && e.target.checked && opacity>0.6){ applyOpacity(0.35); op.value=35; opOut.value='35 %'; toast('Se activó la transparencia para ver las estructuras internas.'); } }}), c.n)); });
+    if (M && M.colorModes){ const cm = h('div',{class:'segmented',role:'tablist',style:'align-self:flex-start'}); M.colorModes.forEach(c => cm.append(h('button',{role:'tab','aria-selected':M.colorMode===c.id,onclick:()=>{ M.setColorMode(c.id); $$('button',cm).forEach(b=>b.setAttribute('aria-selected', b.textContent===c.n)); Store.log('modo_color',{modelo:D.id,modo:c.id}); }},c.n))); box.append(h('span',{class:'eyebrow'},'Color'), cm); }
     box.append(h('span',{class:'eyebrow'},'Capas visibles'), lay);
     const op = h('input',{type:'range',min:10,max:100,value:Math.round(opacity*100),id:'op-range'}); const opOut = h('output',{},op.value+' %'); op.addEventListener('input',()=>{ opOut.value=op.value+' %'; applyOpacity(op.value/100); });
     const ex = h('input',{type:'range',min:0,max:100,value:0,id:'ex-range'}); const exOut = h('output',{},'0 %'); ex.addEventListener('input',()=>{ exOut.value=ex.value+' %'; E && E.setExplode(ex.value/100); });
     box.append(h('div',{class:'slider'}, h('label',{for:'op-range'},D.opacityLabel), opOut, op), h('div',{class:'slider'}, h('label',{for:'ex-range'},'Separar estructuras (vista explosionada)'), exOut, ex));
     box.append(h('div',{class:'ctrl-row'}, h('button',{class:'btn sm',onclick:()=>{ op.value=30; opOut.value='30 %'; applyOpacity(0.3); }},'Ver interior'), h('button',{class:'btn sm',onclick:()=>{ op.value=100; opOut.value='100 %'; applyOpacity(1); ex.value=0; exOut.value='0 %'; E && E.setExplode(0); }},'Vista sólida'), h('button',{class:'btn sm',onclick:()=>{ D.structures.forEach(s=>E&&E.setVisible(s.id,true)); hidden.clear(); renderTab(); }},'Mostrar todo')));
     if (hidden.size) box.append(h('p',{class:'small muted'},`Ocultas: ${[...hidden].map(id=>S[id].nombre).join(', ')}`));
-    box.append(h('div',{class:'notice'},D.id==='corazon' ? 'Sugerencia: activa solo "Vasos" y separa las estructuras para ver por dónde entra y sale la sangre.' : D.id==='cerebro' ? 'Sugerencia: baja la transparencia de la corteza para ver el tálamo, el hipotálamo y el hipocampo.' : 'Sugerencia: oculta "Pulmones y pleura" para ver el árbol bronquial completo.'));
+    box.append(h('div',{class:'notice'}, D.capasHint || (D.id==='corazon' ? 'Sugerencia: activa solo "Vasos" y separa las estructuras para ver por dónde entra y sale la sangre.' : D.id==='cerebro' ? 'Sugerencia: baja la transparencia de la corteza para ver el tálamo, el hipotálamo y el hipocampo.' : 'Sugerencia: oculta "Pulmones y pleura" para ver el árbol bronquial completo.')));
     return box;
   }
   function animBox(){
@@ -92,7 +153,9 @@ function organView(view, q, D, build){
   }
   function guideBox(){
     if (guideDone) return h('div',{class:'guide-step'}, h('b',{},'Exploración guiada completada.'), h('p',{class:'small'},'Puedes continuar con la exploración libre, una misión o la evaluación.'));
-    const st = D.guiada[guideIdx]; const box = h('div',{class:'guide-step stack',style:'gap:8px'}, h('div',{class:'row',style:'justify-content:space-between'}, h('b',{},`Paso ${guideIdx+1} de ${D.guiada.length}`), h('span',{class:'mono small muted'},'guiada')), h('p',{class:'small',html:st.txt}));
+    const st = D.guiada[guideIdx]; const box = h('div',{class:'guide-step stack',style:'gap:8px'}, h('div',{class:'row',style:'justify-content:space-between'}, h('b',{},`Paso ${guideIdx+1} de ${D.guiada.length}`), h('span',{class:'mono small muted'},'guiada')), h('p',{class:'small',html:st.txt}),
+      (Store.s.a11y.hints && st.tipo==='select' && S[st.target]) ? h('div',{class:'notice'}, h('span',{}, h('b',{},'Pista: '), S[st.target].n1)) : null,
+      Store.s.a11y.tts ? TTS.btn(()=>box.textContent) : null);
     if (st.tipo==='text'){ const ta = h('textarea',{placeholder:'Escribe tu explicación…','aria-label':'Explicación'}); box.append(ta, h('button',{class:'btn sm primary',onclick:()=>{ if (ta.value.trim().length<40) return toast('Desarrolla un poco más tu explicación (mínimo 40 caracteres).'); Store.addNote('conclusion',`${D.nombre} · exploración guiada: `+ta.value.trim()); Store.log('respuesta_abierta',{actividad:D.guidedActivity,longitud:ta.value.length}); guideAdvance(); }},'Guardar y terminar')); }
     if (st.tipo==='anim') box.append(h('button',{class:'btn sm',onclick:()=>{ tab='animacion'; renderTab(); }},'Ir a Animación'));
     return box;
@@ -100,7 +163,8 @@ function organView(view, q, D, build){
   function guideAdvance(stay){ guideIdx++; if (guideIdx>=D.guiada.length){ guideDone=true; Store.completeActivity(D.guidedActivity); toast('Exploración guiada completada.'); } else if (stay) toast('Paso completado. Vuelve a Explorar para ver el siguiente.'); if (!stay) { tab='explorar'; renderTab(); } }
   function setMode(m){ mode=m; $$('button',modeSeg).forEach((b,i)=>b.setAttribute('aria-selected', (i===0)===(m==='libre'))); tab='explorar'; renderTab(); Store.log('modo_exploracion',{modelo:D.id,modo:m}); }
   function select(id, src){
-    selected=id; E && E.select(id); Store.markSeen(D.id, id); Store.log('seleccion_estructura',{modelo:D.id,estructura:id,origen:src});
+    if (detail.id && detail.id !== id) detail.exit();
+    selected=id; E && E.select(id); Store.markSeen(D.id, id); reto && reto.render(); Store.log('seleccion_estructura',{modelo:D.id,estructura:id,origen:src});
     if (E && src!=='modelo') E.focus(V3(S[id].pos), Math.min(E.goal.r, D.focusR));
     if (E && S[id].interno && opacity>0.6){ applyOpacity(0.35); toast('Transparencia ajustada: esta estructura está en el interior.'); }
     if (mode==='guiada' && !guideDone){ const st = D.guiada[guideIdx]; if (st.tipo==='select'){ if (st.target===id){ toast('Correcto. Siguiente paso.'); guideAdvance(); return; } else { toast(`Aún no. Has seleccionado ${S[id].nombre}. ${hint(st.target, id)}`, 5200); Store.log('respuesta',{pregunta:'guiada:'+st.target,opcion:id,correcto:false}); } } }
@@ -113,7 +177,9 @@ function organView(view, q, D, build){
     if (t.capa!==p.capa) return `La estructura buscada está en la capa "${(D.capas.find(c=>c.id===t.capa)||{}).n}". ${p.nombre}: ${p.n1}`;
     return `${p.nombre}: ${p.n1} Observa de nuevo la posición y la función que buscas.`; }
   renderTab();
-  if (q.s && S[q.s]) { select(q.s,'busqueda'); if (q.quiz){ tab='quiz'; renderTab(); } }
+  if (q.modo==='guiada') setMode('guiada');
+  if (q.s && S[q.s]) { select(q.s,'busqueda'); if (q.quiz){ tab='quiz'; renderTab(); } if (q.detalle && E) detail.enter(q.s); }
+  if (q.tab && ['capas','animacion','quiz'].includes(q.tab)) { tab=q.tab; renderTab(); }
   return { unmount(){ E && E.dispose(); } };
 }
 route('/explorar/corazon', (view,q) => organView(view, q, BIO.heart, buildHeart));
@@ -121,7 +187,7 @@ route('/explorar/cerebro', (view,q) => organView(view, q, BIO.brain, buildBrain)
 route('/explorar/pulmones', (view,q) => organView(view, q, BIO.lungs, buildLungs));
 route('/explorar/organo/:id', (view, p) => {
   const o = BIO.plannedOrgans.find(x=>x.id===p.id) || { em:'🫀', t:'Órgano', d:'' };
-  view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow anat'},'Cuerpo humano · en construcción'), h('h1',{},`${o.em} ${o.t}`), h('p',{},o.d))));
+  view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow anat'},'Cuerpo humano y salud · Unidad 6 · en construcción'), h('h1',{},`${o.em} ${o.t}`), h('p',{},o.d))));
   view.append(h('div',{class:'ph stack'}, h('b',{},'Este órgano aún no tiene modelo 3D.'), h('span',{},'Cuando esté disponible tendrá la misma experiencia que el corazón, el cerebro y los pulmones: Vista general → Anatomía → Funcionamiento → Explorar → ¿Qué pasaría si…? → Caso → Comprueba. El registro de contenidos y el visor ya lo admiten; solo falta el modelo y sus hotspots.')));
   view.append(h('h3',{style:'margin:20px 0 10px'},'Mientras tanto, explora'), h('div',{class:'grid g3'}, [['corazon','🫀','Corazón'],['cerebro','🧠','Cerebro'],['pulmones','🫁','Pulmones y vía aérea']].map(([id,em,t]) => h('a',{class:'tile anat',href:'#/explorar/'+id}, h('span',{class:'ico'},em), h('h3',{},t), h('p',{},`${BIO.organs[id].structures.length} estructuras · animaciones · exploración guiada`), h('span',{class:'pill anat soon'},'Disponible')))));
 });

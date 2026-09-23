@@ -3,9 +3,11 @@
    MISIONES · MISIÓN: EL VIAJE DE UN GLÓBULO ROJO
    ===================================================================== */
 route('/misiones', (view) => {
-  view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow mis'},'Misiones biológicas'), h('h1',{},'Usa lo que sabes para resolver algo'), h('p',{},'Cada misión exige aplicar conocimientos: seguir un recorrido, diagnosticar, predecir. No basta con recordar.'))));
+  view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow mis'},'Misiones biológicas'), h('h1',{},'Usa lo que sabes para resolver algo'), h('p',{},'Las misiones son transversales: cada una integra conocimientos de varias áreas de Ciencias Naturales. Exigen aplicar lo aprendido —seguir un recorrido, diagnosticar, predecir—, no solo recordar.'))));
+  view.append(h('div',{class:'row',style:'margin:-8px 0 16px'}, h('span',{class:'small muted'},'Áreas que conectan:'), BIO.areas.map(a => h('span',{class:`pill ${a.dom}`},a.n))));
   const g = h('div',{class:'grid g3'});
-  BIO.missions.forEach(m => { const done = m.id==='globulo-rojo' && Store.s.activities['mision-globulo']?.done; g.append(h('a',{class:`tile ${m.dominio}`,href: m.disponible?`#/mision/${m.id}`:'#/misiones',onclick: m.disponible?null:(e)=>{e.preventDefault(); toast('Misión planificada para la fase 2.');}}, h('span',{class:'ico'},m.em), h('h3',{},m.t), h('p',{},m.d), h('div',{class:'row small muted',style:'margin-top:auto'}, h('span',{},m.dur), h('span',{},'·'), h('span',{},`+${m.xp} XP`), h('span',{},'·'), h('span',{},`Unidad ${m.unidad}`)), done ? h('span',{class:'pill ok soon'},'Completada') : m.disponible ? h('span',{class:'pill mis soon'},'Disponible') : h('span',{class:'pill soon'},'Fase 2'))); });
+  BIO.missions.forEach(m => { const actId = m.id==='globulo-rojo' ? 'mision-globulo' : 'mision-'+m.id;
+    const done = !!(Store.s.activities[actId]?.done); g.append(h('a',{class:`tile ${m.dominio}`,href: m.disponible?`#/mision/${m.id}`:'#/misiones',onclick: m.disponible?null:(e)=>{e.preventDefault(); toast('Misión planificada para la fase 2.');}}, h('span',{class:'ico'},m.em), h('h3',{},m.t), h('p',{},m.d), h('div',{class:'row',style:'gap:6px'}, (m.areas||[]).map(aid => { const a = BIO.areas.find(x=>x.id===aid); return h('span',{class:`pill ${a.dom}`,style:'font-size:.68rem'},a.n); })), h('div',{class:'row small muted',style:'margin-top:auto'}, h('span',{},m.dur), h('span',{},'·'), h('span',{},`+${m.xp} XP`), h('span',{},'·'), h('span',{},`Unidad ${m.unidad}`)), done ? h('span',{class:'pill ok soon'},'Completada') : m.disponible ? h('span',{class:'pill mis soon'},'Disponible') : h('span',{class:'pill soon'},'Fase 2'))); });
   view.append(g);
 });
 
@@ -28,6 +30,7 @@ route('/mision/globulo-rojo', (view) => {
   const S = Object.fromEntries(BIO.heart.structures.map(s=>[s.id,s]));
   view.classList.add('wide');
   view.append(h('div',{class:'page-head',style:'margin-bottom:14px'}, h('div',{}, h('span',{class:'eyebrow mis'},'Misión biológica · Unidad 6'), h('h1',{},'El viaje de un glóbulo rojo'), h('p',{},'Objetivo: comprender cómo interactúan los sistemas circulatorio y respiratorio siguiendo a un eritrocito por la circulación doble.')), h('span',{class:'pill mis'},'+150 XP · 15–20 min')));
+  view.append(purposeBanner({ proposito:'Comprender cómo interactúan los sistemas circulatorio y respiratorio y qué ocurre con el oxígeno en cada etapa.', observa:['El color y la saturación de O₂ del glóbulo rojo en cada estación','Por qué vaso entra y sale la sangre de cada cámara','Dónde se carga y dónde se entrega el oxígeno'], reto:'Al final, reconstruye el recorrido completo sin ayuda y explica por qué la arteria pulmonar lleva sangre pobre en oxígeno.', done: !!Store.s.activities['mision-globulo']?.done }));
   const stage = h('div',{class:'stage'}), panel = h('div',{class:'panel'});
   view.append(h('div',{class:'mission'}, stage, panel));
   let E=null, M=null, idx=0, errors=0, answered=false, finished=false, quizSel=null, startAt=Date.now();
@@ -58,18 +61,26 @@ route('/mision/globulo-rojo', (view) => {
     else ready();
     body.append(next);
   }
-  function alveoloSVG(){ return `<svg viewBox="0 0 420 240" role="img" aria-label="Alvéolo y capilar pulmonar">
-    <defs><clipPath id="cap"><rect x="0" y="150" width="420" height="60"/></clipPath></defs>
-    <circle cx="210" cy="80" r="70" fill="var(--bg-3)" stroke="var(--line-2)" stroke-width="2"/>
-    <text x="210" y="60" text-anchor="middle" font-size="12" fill="var(--ink-2)" font-weight="600">Alvéolo (aire)</text>
-    <text x="210" y="80" text-anchor="middle" font-size="11" fill="var(--ink-3)">O₂ alto · CO₂ bajo</text>
-    <text x="210" y="98" text-anchor="middle" font-size="10" fill="var(--ink-3)">pared de 1 célula</text>
-    <rect x="0" y="150" width="420" height="60" rx="30" fill="var(--anat-soft)" stroke="var(--line-2)"/>
-    <text x="14" y="200" font-size="11" fill="var(--ink-3)">capilar →</text>
-    <g id="mo2" style="opacity:0"><text x="150" y="130" font-size="12" fill="var(--oxy)" font-weight="700">O₂ ↓</text><text x="172" y="130" font-size="12" fill="var(--oxy)" font-weight="700">O₂ ↓</text><text x="194" y="130" font-size="12" fill="var(--oxy)" font-weight="700">O₂ ↓</text></g>
-    <g id="mco2" style="opacity:0"><text x="230" y="130" font-size="12" fill="var(--deoxy)" font-weight="700">CO₂ ↑</text><text x="262" y="130" font-size="12" fill="var(--deoxy)" font-weight="700">CO₂ ↑</text></g>
-    <circle id="rbc-svg" cx="210" cy="180" r="20" fill="var(--deoxy)" stroke="var(--ink)" stroke-width="2" style="transition:fill .6s"/>
-    <text x="210" y="228" text-anchor="middle" font-size="11" fill="var(--ink-3)">glóbulo rojo</text>
+  function alveoloSVG(){ const arrows = (id, xs, col, up, label) => `<g id="${id}" style="opacity:0;transition:opacity .5s">${xs.map(x => `<g><path d="M${x} ${up?150:122} L${x} ${up?120:152}" stroke="${col}" stroke-width="2.2" stroke-linecap="round"/><path d="M${x-5} ${up?127:145} L${x} ${up?119:153} L${x+5} ${up?127:145}" fill="none" stroke="${col}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${x}" cy="${up?160:112}" r="8.5" fill="${col}"/><text x="${x}" y="${up?163.5:115.5}" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">${label}</text></g>`).join('')}</g>`;
+    return `<svg viewBox="0 0 420 250" role="img" aria-label="Alvéolo y capilar pulmonar: intercambio gaseoso">
+    <defs>
+      <radialGradient id="alvG" cx="42%" cy="36%" r="70%"><stop offset="0" stop-color="#FDEDEA"/><stop offset=".65" stop-color="#F4C1B8"/><stop offset="1" stop-color="#DC948A"/></radialGradient>
+      <linearGradient id="capG" x1="0" x2="1"><stop offset="0" stop-color="var(--deoxy)"/><stop offset=".5" stop-color="#9A5A9E"/><stop offset="1" stop-color="var(--oxy)"/></linearGradient>
+      <radialGradient id="rbcHi" cx="40%" cy="35%" r="60%"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient>
+    </defs>
+    <path d="M194 0 C196 18 198 26 201 40 L221 40 C224 26 226 18 228 0 Z" fill="#EAD7C5" stroke="#C7B09A" stroke-width="1.2"/>
+    <g stroke="#C4786E" stroke-width="1.4"><circle cx="152" cy="96" r="44" fill="url(#alvG)"/><circle cx="270" cy="96" r="44" fill="url(#alvG)"/><circle cx="211" cy="84" r="54" fill="url(#alvG)"/></g>
+    <g fill="none" stroke="url(#capG)" stroke-width="2.2" opacity=".75"><path d="M112 88 C118 58 146 48 170 56"/><path d="M162 50 C184 34 238 34 258 50"/><path d="M252 56 C276 48 304 58 310 88"/><path d="M118 118 C132 132 150 136 170 134"/><path d="M254 134 C276 136 294 130 306 116"/></g>
+    <text x="211" y="76" text-anchor="middle" font-size="12.5" font-weight="700" fill="#6B2E28">Alvéolo (aire)</text>
+    <text x="211" y="92" text-anchor="middle" font-size="10.5" fill="#8A4A42">O₂ alto · CO₂ bajo</text>
+    <text x="100" y="30" font-size="10" fill="var(--ink-3)">bronquiolo</text><path d="M148 27 L192 20" stroke="var(--ink-3)" stroke-width="1" stroke-dasharray="2 2"/>
+    <rect x="8" y="164" width="404" height="52" rx="26" fill="url(#capG)" fill-opacity=".2" stroke="url(#capG)" stroke-width="2.5"/>
+    <text x="22" y="232" font-size="10" fill="var(--ink-3)">desde la arteria pulmonar →</text><text x="398" y="232" text-anchor="end" font-size="10" fill="var(--ink-3)">→ hacia las venas pulmonares</text>
+    <path d="M330 142 L330 162" stroke="var(--ink-3)" stroke-dasharray="2 2"/><text x="334" y="152" font-size="9.5" fill="var(--ink-3)">barrera de 0,5 µm</text>
+    <g opacity=".5"><g fill="var(--deoxy)"><ellipse cx="62" cy="190" rx="17" ry="10.5"/><ellipse cx="112" cy="192" rx="17" ry="10.5"/></g><g fill="var(--oxy)"><ellipse cx="308" cy="190" rx="17" ry="10.5"/><ellipse cx="358" cy="192" rx="17" ry="10.5"/></g></g>
+    <g id="rbc-svg" fill="var(--deoxy)" style="transition:fill .8s"><ellipse cx="210" cy="190" rx="25" ry="15.5" stroke="#00000033" stroke-width="1.5"/><ellipse cx="210" cy="190" rx="11" ry="6.5" fill="#000" fill-opacity=".18"/><ellipse cx="210" cy="190" rx="25" ry="15.5" fill="url(#rbcHi)"/></g>
+    ${arrows('mo2',[172,196],'var(--oxy)',false,'O₂')}${arrows('mco2',[228,252],'var(--deoxy)',true,'CO₂')}
+    <text x="210" y="246" text-anchor="middle" font-size="10.5" fill="var(--ink-3)">glóbulo rojo · hemoglobina</text>
   </svg>`; }
   function lungPanel(){
     let o2=false, co2=false, predicted=false;
@@ -88,13 +99,21 @@ route('/mision/globulo-rojo', (view) => {
   }
   function tissuePanel(deliver){
     const wrap = h('div',{class:'stack'});
-    wrap.append(h('div',{html:`<svg viewBox="0 0 420 220" role="img" aria-label="Capilar y célula muscular">
-      <rect x="0" y="20" width="420" height="56" rx="28" fill="var(--anat-soft)" stroke="var(--line-2)"/><text x="14" y="55" font-size="11" fill="var(--ink-3)">capilar →</text>
-      <circle id="rbc-t" cx="210" cy="48" r="20" fill="${deliver?'var(--oxy)':'var(--deoxy)'}" stroke="var(--ink)" stroke-width="2" style="transition:fill .6s"/>
-      <rect x="60" y="110" width="300" height="90" rx="14" fill="var(--bg-3)" stroke="var(--line-2)"/><text x="210" y="135" text-anchor="middle" font-size="12" font-weight="600" fill="var(--ink-2)">Célula muscular</text>
-      <ellipse cx="150" cy="168" rx="26" ry="12" fill="#E07A4F"/><ellipse cx="270" cy="168" rx="26" ry="12" fill="#E07A4F"/><text x="210" y="172" text-anchor="middle" font-size="10" fill="var(--ink-3)">mitocondrias</text>
-      <g id="t-o2" style="opacity:${deliver?0:1}"><text x="170" y="98" font-size="12" fill="var(--oxy)" font-weight="700">O₂ ↓</text></g>
-      <g id="t-co2" style="opacity:${deliver?0:1}"><text x="235" y="98" font-size="12" fill="var(--deoxy)" font-weight="700">CO₂ ↑</text></g></svg>`}));
+    const mito = (x,y,rot) => `<g transform="translate(${x} ${y}) rotate(${rot})"><ellipse rx="30" ry="13" fill="#E88A5C" stroke="#B85A34" stroke-width="1.3"/><path d="M-22 0 q4 -9 8 0 t8 0 t8 0 t8 0 t8 0" fill="none" stroke="#FBD2B8" stroke-width="1.6"/><ellipse rx="30" ry="13" fill="none" stroke="#F7B08A" stroke-width=".8" transform="scale(.86)"/></g>`;
+    wrap.append(h('div',{html:`<svg viewBox="0 0 420 240" role="img" aria-label="Capilar y fibra muscular">
+      <defs><linearGradient id="capT" x1="0" x2="1"><stop offset="0" stop-color="var(--oxy)"/><stop offset=".5" stop-color="#9A5A9E"/><stop offset="1" stop-color="var(--deoxy)"/></linearGradient>
+        <pattern id="sarc" width="14" height="10" patternUnits="userSpaceOnUse"><rect width="14" height="10" fill="#C9605A"/><rect width="5" height="10" fill="#A84440"/><rect x="9" width="1.2" height="10" fill="#7E2C2A"/></pattern>
+        <radialGradient id="rbcHi2" cx="40%" cy="35%" r="60%"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>
+      <rect x="8" y="16" width="404" height="56" rx="28" fill="url(#capT)" fill-opacity=".2" stroke="url(#capT)" stroke-width="2.5"/><text x="22" y="12" font-size="10" fill="var(--ink-3)">capilar → sangre llega oxigenada y sale con CO₂</text>
+      <g opacity=".5"><ellipse cx="70" cy="44" rx="17" ry="10.5" fill="var(--oxy)"/><ellipse cx="350" cy="44" rx="17" ry="10.5" fill="var(--deoxy)"/></g>
+      <g id="rbc-t" fill="${deliver?'var(--oxy)':'var(--deoxy)'}" style="transition:fill .8s"><ellipse cx="210" cy="44" rx="25" ry="15.5" stroke="#00000033" stroke-width="1.5"/><ellipse cx="210" cy="44" rx="11" ry="6.5" fill="#000" fill-opacity=".18"/><ellipse cx="210" cy="44" rx="25" ry="15.5" fill="url(#rbcHi2)"/></g>
+      <rect x="34" y="112" width="352" height="104" rx="22" fill="url(#sarc)" stroke="#7E2C2A" stroke-width="1.5"/><rect x="34" y="112" width="352" height="104" rx="22" fill="#fff" fill-opacity=".12"/>
+      <ellipse cx="70" cy="122" rx="20" ry="7" fill="#6A58C7" stroke="#4B3D9C"/><ellipse cx="344" cy="206" rx="20" ry="7" fill="#6A58C7" stroke="#4B3D9C"/>
+      ${mito(130,160,-8)}${mito(212,178,6)}${mito(292,156,-4)}
+      <rect x="112" y="190" width="200" height="20" rx="6" fill="var(--bg-2)" fill-opacity=".88"/><text x="212" y="204" text-anchor="middle" font-size="10" font-weight="600" fill="var(--ink-2)">glucosa + O₂ → CO₂ + H₂O + ATP</text>
+      <text x="44" y="232" font-size="10" fill="var(--ink-3)">fibra muscular (célula) · núcleos · mitocondrias</text>
+      <g id="t-o2" style="opacity:${deliver?0:1};transition:opacity .5s"><path d="M180 74 L180 106" stroke="var(--oxy)" stroke-width="2.2" stroke-linecap="round"/><path d="M175 99 L180 107 L185 99" fill="none" stroke="var(--oxy)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="166" cy="90" r="8.5" fill="var(--oxy)"/><text x="166" y="93.5" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">O₂</text></g>
+      <g id="t-co2" style="opacity:${deliver?0:1};transition:opacity .5s"><path d="M244 106 L244 74" stroke="var(--deoxy)" stroke-width="2.2" stroke-linecap="round"/><path d="M239 81 L244 73 L249 81" fill="none" stroke="var(--deoxy)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="260" cy="90" r="9" fill="var(--deoxy)"/><text x="260" y="93" text-anchor="middle" font-size="7.5" font-weight="700" fill="#fff">CO₂</text></g></svg>`}));
     if (!deliver){ wrap.append(h('div',{class:'notice'},'Las mitocondrias de la célula muscular consumen O₂ y producen CO₂ y ATP (respiración celular). El glóbulo rojo entrega O₂ y recoge CO₂.')); return wrap; }
     let a=false,b=false;
     const b1 = h('button',{class:'gas-btn',onclick:()=>{ a=true; b1.classList.add('done'); $('#t-o2',wrap).style.opacity=1; done(); }},'Entregar O₂ → célula');

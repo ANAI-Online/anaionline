@@ -3,7 +3,7 @@
    EVALUACIÓN INTERACTIVA · PROGRESO · CUADERNO · DOCENTE · INICIO APP
    ===================================================================== */
 route('/evaluacion', (view) => {
-  view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow'},'Evaluación interactiva'), h('h1',{},'Demuestra lo que comprendes, no lo que memorizas'), h('p',{},'Selección directa sobre modelos 3D, ordenamiento de procesos, relación estructura-función, verdadero/falso argumentado. Retroalimentación inmediata y específica.'))));
+  view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow'},'Evaluación interactiva · transversal'), h('h1',{},'Demuestra lo que comprendes, no lo que memorizas'), h('p',{},'Selección directa sobre modelos 3D, ordenamiento de procesos, relación estructura-función, verdadero/falso argumentado. Retroalimentación inmediata y específica.'))));
   const g = h('div',{class:'grid g3'});
   g.append(h('a',{class:'tile anat',href:'#/evaluacion/corazon'}, h('span',{class:'ico'},'🫀'), h('h3',{},'El corazón y la circulación'), h('p',{},'5 ítems · selección visual, ordenar, relacionar, V/F argumentado.'), Store.s.activities['eval-corazon']?.done ? h('span',{class:'pill ok soon'},`Realizada · ${Store.s.activities['eval-corazon'].score}`) : h('span',{class:'pill anat soon'},'Disponible')));
   g.append(h('a',{class:'tile cell',href:'#/explorar/celula'}, h('span',{class:'ico'},'🔬'), h('h3',{},'Quiz visual de la célula'), h('p',{},'Selecciona organelos directamente sobre el modelo 3D según su función.'), h('span',{class:'pill cell soon'},'En el explorador celular')));
@@ -52,7 +52,10 @@ route('/progreso', (view) => {
   [[s.xp,'XP acumulados'],['Nivel '+Store.level(),`${400-(s.xp%400)} XP para el siguiente nivel`],[Object.values(s.activities).filter(a=>a.done).length+'/'+Object.keys(BIO.activities).length,'actividades completadas'],[`${Object.values(BIO.organs).reduce((a,o)=>a+(s.seen[o.id]||[]).length,0)+(s.seen['celula-animal']||[]).length}/${Object.values(BIO.organs).reduce((a,o)=>a+o.structures.length,0)+BIO.cell.structures.length}`,'estructuras exploradas']].forEach(([v,l]) => top.append(h('div',{class:'card stat'}, h('span',{class:'v'},String(v)), h('span',{class:'l'},l))));
   view.append(top, h('div',{style:'height:16px'}));
   const g = h('div',{class:'grid g2'});
-  const units = h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Progreso por unidad')); BIO.units.forEach(u => { const pr = Store.unitProgress(u.n); units.append(h('div',{}, h('div',{class:'row',style:'justify-content:space-between;font-size:.86rem'}, h('span',{},`U${u.n} · ${u.t}`), h('span',{class:'mono small muted'},pr+'%')), h('div',{class:'progress'},h('i',{style:`width:${pr}%`})))); });
+  const units = h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Progreso por área y unidad'));
+  const uRow = (u, dom) => { const pr = Store.unitProgress(u.n); return h('div',{style:'padding-left:16px'}, h('div',{class:'row',style:'justify-content:space-between;font-size:.84rem'}, h('span',{},`U${u.n} · ${u.t}`), h('span',{class:'mono small muted'},pr+'%')), h('div',{class:'progress'+(dom?' '+dom:'')},h('i',{style:`width:${pr}%`}))); };
+  BIO.areas.forEach(a => { units.append(h('a',{href:'#/area/'+a.id,class:'row',style:'justify-content:space-between;text-decoration:none;color:inherit;margin-top:4px'}, h('span',{class:'row',style:'gap:8px'}, h('span',{class:'navdot '+a.dom}), h('b',{},a.n)), h('span',{class:'mono small'},areaPct(a)+'%'))); BIO.units.filter(u=>a.unidades.includes(u.n)).forEach(u => units.append(uRow(u, a.dom))); });
+  units.append(h('div',{class:'row',style:'gap:8px;margin-top:4px'}, h('span',{class:'navdot mis'}), h('b',{},'Transversal'))); BIO.units.filter(u=>BIO.transversalUnits.includes(u.n)).forEach(u => units.append(uRow(u, null)));
   const badges = h('div',{class:'card'}, h('span',{class:'eyebrow'},'Insignias'), h('div',{class:'grid',style:'grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:10px'}, BIO.badges.map(b => h('div',{class:'badge-tile'+(s.badges.includes(b.id)?'':' locked')}, h('span',{class:'em'},b.em), h('span',{class:'n'},b.n), h('span',{class:'d'},b.d)))));
   const expl = h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Exploración de modelos'));
   [...Object.values(BIO.organs).map(o => [o.nombre, (s.seen[o.id]||[]).length, o.structures.length, 'anat', '#/explorar/'+o.id]), ['Célula animal', (s.seen['celula-animal']||[]).length, BIO.cell.structures.length, 'cell', '#/explorar/celula']].forEach(([n,a,b,d,href]) => expl.append(h('div',{}, h('div',{class:'row',style:'justify-content:space-between;font-size:.86rem'}, h('a',{href},n), h('span',{class:'mono small muted'},`${a}/${b} · ${Math.round(a/b*100)}%`)), h('div',{class:'progress '+d},h('i',{style:`width:${a/b*100}%`})))));
@@ -76,33 +79,4 @@ route('/cuaderno', (view) => {
     items.forEach(e => list.append(h('div',{class:'entry'}, h('span',{class:'k'},KINDS[e.k]||e.k), h('div',{}, h('div',{class:'t'},new Date(e.at).toLocaleString('es-EC',{dateStyle:'medium',timeStyle:'short'})), h('p',{style:'font-size:.92rem;margin-top:3px'},e.txt), e.img?h('img',{src:e.img,alt:'Captura del modelo 3D'}):null, h('button',{class:'btn sm ghost',style:'margin-top:4px',onclick:()=>{ Store.s.notebook = Store.s.notebook.filter(x=>x.id!==e.id); Store.save(); renderList(); }},'Eliminar'))))); }
   view.append(form, h('div',{style:'height:14px'}), list); renderList();
 });
-
-/* ---------- PANEL DOCENTE ---------- */
-route('/docente', (view) => {
-  const T = BIO.teacherClass; const me = Store.s; const mateo = { n:me.user.nombre+' (demo en vivo)', p:Store.overall(), act:Object.values(me.activities).filter(a=>a.done).length, t: Math.round(me.events.length*0.4)+186, m: me.activities['mision-globulo']?.done?1:0, l: me.activities['lab-fotosintesis']?.done?1:0, err: me.events.filter(e=>e.tipo==='respuesta'&&e.correcto===false).length };
-  const all = [...T.estudiantes, mateo]; const avg = Math.round(all.reduce((a,b)=>a+b.p,0)/all.length);
-  view.classList.add('wide');
-  view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow'},'Panel docente · '+T.curso), h('h1',{},'Biología · 1.º BGU A'), h('p',{},'Datos de demostración ficticios, salvo la fila del estudiante demo, que refleja la actividad real registrada en este navegador.')), h('div',{class:'row'}, ['Asignar actividad','Crear grupo','Publicar reto','Establecer fechas'].map(t=>h('button',{class:'btn sm',disabled:true,title:'Fase 2'},t)))));
-  const top = h('div',{class:'grid g4'}); [[all.length,'estudiantes'],[avg+'%','progreso grupal medio'],[all.reduce((a,b)=>a+b.act,0),'actividades completadas'],[all.filter(x=>x.m).length+'/'+all.length,'misión del glóbulo rojo']].forEach(([v,l])=>top.append(h('div',{class:'card stat'}, h('span',{class:'v'},String(v)), h('span',{class:'l'},l)))); view.append(top, h('div',{style:'height:16px'}));
-  const g = h('div',{class:'grid g2'});
-  const errs = h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Preguntas con mayor porcentaje de error'), h('div',{class:'bars'}, T.preguntasError.map(q => h('div',{class:'bar'}, h('span',{title:q.q,style:'overflow:hidden;text-overflow:ellipsis;white-space:nowrap'},q.q), h('div',{class:'track'},h('i',{class:q.err>=35?'bad':'',style:`width:${q.err}%`})), h('span',{class:'v'},q.err+'%')))));
-  const concepts = {}; T.preguntasError.forEach(q => concepts[q.concepto] = Math.max(concepts[q.concepto]||0, q.err));
-  errs.append(h('span',{class:'eyebrow',style:'margin-top:6px'},'Conceptos con mayores dificultades'), h('div',{class:'row'}, Object.entries(concepts).sort((a,b)=>b[1]-a[1]).map(([c,e]) => h('span',{class:'pill '+(e>=35?'bad':e>=25?'warn':'')},`${c} · ${e}%`))));
-  const units = h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Progreso grupal por unidad'), h('div',{class:'bars'}, T.unidades.map(u => h('div',{class:'bar'}, h('span',{},`U${u.u} · ${BIO.units[u.u-1].t}`), h('div',{class:'track'},h('i',{style:`width:${u.p}%`})), h('span',{class:'v'},u.p+'%')))), h('div',{class:'notice',style:'margin-top:6px'},'Sugerencia automática: la unidad 3 (metabolismo) y el concepto "arteria vs. vena" concentran los errores. Considera asignar el laboratorio de fotosíntesis y la misión del glóbulo rojo como refuerzo.'));
-  g.append(errs, units); view.append(g, h('div',{style:'height:16px'}));
-  const tbl = h('table',{class:'data'}, h('thead',{},h('tr',{},h('th',{},'Estudiante'),h('th',{},'Progreso'),h('th',{},'Actividades'),h('th',{},'Tiempo'),h('th',{},'Misiones'),h('th',{},'Laboratorios'),h('th',{},'Errores'),h('th',{},''))), h('tbody',{}, all.sort((a,b)=>b.p-a.p).map(e => h('tr',{}, h('td',{},h('b',{},e.n)), h('td',{}, h('div',{class:'row',style:'gap:8px'}, h('div',{class:'progress',style:'width:90px'},h('i',{style:`width:${e.p}%`})), h('span',{class:'mono small'},e.p+'%'))), h('td',{class:'num'},e.act), h('td',{class:'num'},fmtMin(e.t)), h('td',{class:'num'},e.m), h('td',{class:'num'},e.l), h('td',{class:'num'},e.err), h('td',{},h('button',{class:'btn sm ghost',onclick:()=>toast('Revisión de respuestas abiertas: fase 2.')},'Revisar'))))));
-  view.append(h('div',{class:'card'}, h('span',{class:'eyebrow'},'Estudiantes'), h('div',{class:'tablewrap',style:'margin-top:8px'},tbl)));
-  view.append(h('div',{style:'height:16px'}), h('div',{class:'card stack'}, h('span',{class:'eyebrow'},'Analítica educativa'), h('p',{class:'small'},'Cada interacción genera un evento estructurado: usuario, actividad, modelo explorado, estructura seleccionada, fecha, duración, intentos, resultado. En producción los eventos se almacenan en PostgreSQL (Supabase) y se exponen por API/vistas para Power BI. Aquí puedes ver la estructura exportable desde "Mi progreso → Exportar datos".'), h('div',{class:'row'}, h('a',{class:'btn sm',href:'#/progreso'},'Ver eventos del estudiante demo'))));
-});
-
-/* ---------- INICIO DE LA APLICACIÓN ---------- */
-(function init(){
-  buildNav();
-  $('#btn-home').addEventListener('click', ()=>navigate('#/'));
-  const mb = $('#btn-motion'); const syncMotion = () => mb.setAttribute('aria-pressed', !Store.s.settings.motion); syncMotion();
-  mb.addEventListener('click', ()=>{ Store.s.settings.motion = !Store.s.settings.motion; Store.save(); syncMotion(); toast(Store.s.settings.motion?'Animaciones activadas.':'Animaciones pausadas.'); });
-  $('#btn-role').addEventListener('click', ()=>{ const isT = location.hash.startsWith('#/docente'); navigate(isT?'#/panel':'#/docente'); });
-  if (!location.hash) location.hash = '#/';
-  render();
-})();
 </script>
