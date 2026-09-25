@@ -252,7 +252,7 @@ function inmAnticuerpoGeo(){
 function inmEscena(stage, onSel){
   const osc = inmOscuro();
   const E = new Engine3D(stage, {
-    radius:10.8, phi:1.2, theta:0.22, minR:0.6, maxR:18, target:[-0.5,0,0], exposure:0.95,
+    radius:10.8, phi:1.2, theta:0.22, minR:0.6, maxR:18, target:[-0.5,0,0], exposure:0.95, escala:{ unidad:'µm', porUnidad:0.5 },
     onSelect:(id) => { if (id && INM_PARTES[id]) onSel(id, 'modelo'); },
     aria:'Modelo 3D de una bacteria con forma de bacilo y, a su derecha, un virus con envoltura a la misma escala, en el líquido de un tejido junto a un capilar con glóbulos rojos y el borde de un macrófago. Arrastra para girar, rueda para acercar; las flechas del teclado también giran. Usa la lista de partes para elegir con el teclado.'
   });

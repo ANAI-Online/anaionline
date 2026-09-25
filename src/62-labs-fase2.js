@@ -119,6 +119,7 @@ function lb2N(v, d){
 }
 function lb2Mean(a){ return a.reduce((s,x)=>s+x,0)/(a.length||1); }
 function lb2Sd(a){ if (a.length<2) return 0; const m = lb2Mean(a); return Math.sqrt(a.reduce((s,x)=>s+(x-m)*(x-m),0)/(a.length-1)); }
+const lb2Min = t => t ? t[0].toLowerCase() + t.slice(1) : '';
 function lb2Note(kind, titulo, texto){
   return h('div',{class:'notice '+(kind||'')}, h('span',{}, titulo ? h('b',{}, titulo+' ') : null, texto));
 }
@@ -130,7 +131,8 @@ function lb2Lbl(def, val){
   return lb2N(+val, def.dec||0) + (def.u ? ' '+def.u : '');
 }
 function lb2Color(i){
-  const c = ['--lab','--cell','--eco','--anat','--gen','--mis'];
+  /* orden validado (dataviz): vecinos distinguibles también con daltonismo, en claro y en oscuro */
+  const c = ['--lab','--deoxy','--eco','--gen','--anat','--cell'];
   return cssVar(c[i % c.length]) || '#C7841F';
 }
 /* regresión lineal simple; devuelve {m, b, x0} donde x0 es el cruce por cero */
@@ -1036,9 +1038,20 @@ function lb2Lab(view, C){
   }
 
   /* ---- gráficos ---- */
-  function drawScalar(canvas){
+  /* estado de la predicción: uno por serie de mediciones (variable independiente + número de mediciones) */
+  function predEstado(){
+    const k = L.indep + '|' + L.runs.length;
+    if (!L.pred || L.pred.k !== k) L.pred = { k };
+    return L.pred;
+  }
+  function tendencia(){
+    const d = C.VARS[L.indep];
+    if (d.opts || !(C.lineal || []).includes(L.indep)) return null;
+    return lb2Fit(levels().map(g => ({ x:g.x, y:g.mean })));
+  }
+  function drawScalar(canvas, pred){
     const gs = levels(), d = C.VARS[L.indep];
-    const pts = gs.map(g => ({ x:g.x, y:g.mean }));
+    const pts = gs.map(g => ({ x:g.x, y:g.mean, sd: g.n > 1 ? g.sd : 0 }));
     const ys = pts.map(p=>p.y);
     let ymin, ymax;
     if (Math.min(...ys) < 0){                      /* escala simétrica alrededor del cero */
@@ -1046,13 +1059,19 @@ function lb2Lab(view, C){
       const paso = Math.pow(10, Math.floor(Math.log10(Math.max(M,1))));
       ymax = Math.ceil(M/(paso/2))*(paso/2); ymin = -ymax;
     }
+    const lin = !!tendencia();
     lineChart(canvas, {
-      series:[{ label:C.depName, color:lb2Color(0), pts, dots:true }],
-      xmin: d.opts ? -0.4 : d.min, xmax: d.opts ? d.opts.length-0.6 : d.max,
+      series:[{ label:C.depName, color:lb2Color(0), pts, dots:true, tendencia: lin ? 'lineal' : undefined }],
+      anotaciones: C.anotaciones ? C.anotaciones(gs, L) : undefined,
+      titulo: C.depName + ' según ' + lb2Min(C.VARS[L.indep].n),
+      tipfmt: v => lb2N(v, (C.dec||0)+1),
+      prediccion: pred || undefined,
+      /* categorías: medio paso de margen y marcas justo debajo de cada punto */
+      xmin: d.opts ? -0.5 : d.min, xmax: d.opts ? d.opts.length-0.5 : d.max,
       ymin, ymax,
       xlabel: d.n + (d.u ? ' ('+d.u+')' : ''), ylabel: C.depUnit,
-      xticks: d.opts ? Math.max(1, d.opts.length-1) : 5,
-      xfmt: v => d.opts ? (d.opts[Math.round(v)] ? d.opts[Math.round(v)].nCorto || d.opts[Math.round(v)].n : '') : lb2N(v, d.dec||0),
+      xticks: d.opts ? d.opts.length*2 : 5,
+      xfmt: v => d.opts ? (Math.abs(v - Math.round(v)) > 0.01 ? '' : d.opts[Math.round(v)] ? d.opts[Math.round(v)].nCorto || d.opts[Math.round(v)].n : '') : lb2N(v, d.dec||0),
       yfmt: v => lb2N(v, C.dec||0)
     });
   }
@@ -1241,19 +1260,32 @@ function lb2Lab(view, C){
     else if (i === 7){
       const wrapA = h('div',{style:'position:relative'}), cA = h('canvas',{class:'chart'});
       wrapA.append(cA);
-      body.append(h('h3',{},'Representación gráfica'), h('p',{class:'small muted'}, C.graficoNota || 'Pasa el cursor sobre los puntos para leer los valores. La tabla del paso anterior contiene los mismos datos en texto.'));
+      const est = predEstado();
+      body.append(h('h3',{},'Representación gráfica'), h('p',{class:'small muted'}, C.graficoNota ||
+        'Pasa el cursor o el dedo por el gráfico (o usa las flechas del teclado) para leer los valores. La tabla del paso anterior contiene los mismos datos en texto.'));
+      const fit = tendencia();
+      const notas = h('div',{class:'stack',style:'gap:8px'},
+        lb2Note('info','Cómo leer las barras de error:','cada punto es el promedio de tus réplicas y la barra vertical va desde el promedio menos la desviación típica hasta el promedio más la desviación típica. Si las barras de dos condiciones se solapan mucho, la diferencia entre ellas podría deberse solo al error de medición.'),
+        fit ? lb2Note('ok', null, grafTendenciaTexto(grafRegresion(levels().map(g => ({ x:g.x, y:g.mean })), 'lineal')) + (C.tendenciaNota ? ' ' + C.tendenciaNota : '')) : null);
+      let secB = null, cB = null;
       if (C.curve){
-        const wrapB = h('div',{style:'position:relative'}), cB = h('canvas',{class:'chart'});
+        const wrapB = h('div',{style:'position:relative'}); cB = h('canvas',{class:'chart'});
         wrapB.append(cB);
         const nc = levels().length;
-        body.append(h('p',{style:'font-weight:600'}, C.curveTitle), wrapB,
-          nc > 6 ? h('p',{class:'small muted'},`Se dibujan las seis primeras condiciones para que las curvas sigan siendo legibles; la tabla de resultados contiene las ${nc}.`) : null,
-          h('p',{style:'font-weight:600;margin-top:8px'}, C.scalarTitle), wrapA);
-        setTimeout(()=>{ try { drawCurves(cB); drawScalar(cA); } catch(e){ console.warn(e); } }, 30);
-      } else {
-        body.append(wrapA);
-        setTimeout(()=>{ try { drawScalar(cA); } catch(e){ console.warn(e); } }, 30);
+        secB = h('div',{class:'stack',style:'gap:10px'}, h('p',{style:'font-weight:600'}, C.curveTitle), wrapB,
+          nc > 6 ? h('p',{class:'small muted'},`Se dibujan las seis primeras condiciones para que las curvas sigan siendo legibles; la tabla de resultados contiene las ${nc}.`) : null);
       }
+      const secA = h('div',{class:'stack',style:'gap:10px'}, C.curve ? h('p',{style:'font-weight:600;margin-top:8px'}, C.scalarTitle) : null, wrapA, notas);
+      /* primero la predicción (sobre el gráfico de promedios); las curvas y las notas aparecen al confirmar u omitir */
+      const pendiente = !est.fase || est.fase === 'dibujar';
+      if (secB){ body.append(secB, secA); } else body.append(secA);
+      const mostrar = () => { if (secB){ secB.style.display = ''; setTimeout(()=>{ try { drawCurves(cB); } catch(e){ console.warn(e); } }, 30); } notas.style.display = ''; };
+      if (pendiente){ if (secB) secB.style.display = 'none'; notas.style.display = 'none'; }
+      const pred = { estado:est, id:C.slug, nota:C.nota, unidadX:C.VARS[L.indep].u || '', unidadY:C.depUnit,
+        que: lb2Min(C.depName) + ' según ' + lb2Min(C.VARS[L.indep].n),
+        pregunta:`¿Cómo crees que cambiará «${lb2Min(C.depName)}» al cambiar «${lb2Min(C.VARS[L.indep].n)}»?`,
+        onFin: () => mostrar() };
+      setTimeout(()=>{ try { drawScalar(cA, pred); if (!pendiente) mostrar(); } catch(e){ console.warn(e); } }, 30);
       body.append(next());
     }
 
@@ -1496,6 +1528,7 @@ route('/laboratorio/catalasa', (view) => lb2Lab(view, {
   depName:'Velocidad inicial de la reacción', depUnit:'mL O₂/min', dec:1,
   depComo:'volumen de oxígeno recogido en los primeros 20 segundos, llevado a minutos (×3). Se usa el tramo inicial porque después el sustrato se agota y la curva se aplana.',
   model: lb2Cat, minLevels:5, minReps:2, minRepLevels:1,
+  lineal:['enzima'],
   vizMax:60, vizCap:(v,est)=>`Se recogerán unos ${lb2N(10*v.sustrato,0)} mL de O₂ en total; la mitad, en los primeros ${lb2N(0.69*10*v.sustrato/Math.max(0.01,est.extra.v0)*60,0)} segundos.`,
   medirLabel:'⏱ Medir 2 minutos de reacción',
   curve:true, curveXmin:0, curveXmax:120, curveXticks:6,
@@ -1601,6 +1634,14 @@ route('/laboratorio/osmosis-papa', (view) => lb2Lab(view, {
   depName:'Cambio porcentual de masa', depUnit:'%', dec:1, diverging:true, vizMax:14,
   depComo:'(masa final − masa inicial) ÷ masa inicial × 100. Positivo significa que el cilindro ganó agua; negativo, que la perdió.',
   model: lb2Osm, minLevels:5, minReps:2, minRepLevels:3,
+  lineal:['conc'],
+  anotaciones:(gs) => {
+    const fit = lb2Fit(gs.map(g=>({x:+g.val, y:g.mean})));
+    const a = [{ y:0, texto:'sin cambio de masa' }];
+    if (fit && fit.x0 != null && fit.x0 >= 0 && fit.x0 <= 2) a.push({ x:fit.x0, texto:'cruce por cero' });
+    return a;
+  },
+  tendenciaNota:'Donde la recta corta la línea «sin cambio de masa» está el punto isotónico; en el Análisis calcularás su valor.',
   vizCap:(v,est)=> est.y > 0.5 ? 'El cilindro está ganando agua: la solución es hipotónica respecto al interior de la célula.'
                  : est.y < -0.5 ? 'El cilindro está perdiendo agua: la solución es hipertónica respecto al interior de la célula.'
                  : 'La balanza casi no se mueve: estás muy cerca del punto isotónico.',

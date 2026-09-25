@@ -818,7 +818,7 @@ function tieEncuadre(E, semiAncho){
 const TIE_LON_VISTA = 0.36;   /* ángulo del modelo donde se centra el Ecuador (lon −78,5°) en la vista inicial */
 function tieInterior3D(stage, onSel){
   const E = new Engine3D(stage, {
-    radius:11.2, phi:1.2, theta:-1.74, minR:5, maxR:22, target:[0,0,0], dark:true, exposure:1.0,
+    radius:11.2, phi:1.2, theta:-1.74, minR:5, maxR:22, target:[0,0,0], dark:true, exposure:1.0, escala:{ unidad:'km', porUnidad:TIE_R/3.1 },
     aria:'Modelo 3D de la Tierra cortada en gajo. Arrastra para rotar, rueda del ratón para acercar, flechas del teclado para girar. Usa la lista de capas para seleccionar cada una con el teclado.',
     onSelect:(id)=>{ if (id) onSel(id); }
   });

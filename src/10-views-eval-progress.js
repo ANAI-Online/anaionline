@@ -69,7 +69,7 @@ route('/progreso', (view) => {
 
 /* ---------- CUADERNO ---------- */
 route('/cuaderno', (view) => {
-  const KINDS = { observacion:'Observación', hipotesis:'Hipótesis', captura:'Captura', resultado:'Resultado', conclusion:'Conclusión', evidencia:'Evidencia', nota:'Nota' };
+  const KINDS = { observacion:'Observación', hipotesis:'Hipótesis', captura:'Captura', resultado:'Resultado', conclusion:'Conclusión', evidencia:'Evidencia', nota:'Nota', prediccion:'Predicción' };
   view.append(h('div',{class:'page-head'}, h('div',{}, h('span',{class:'eyebrow'},'Cuaderno de campo digital'), h('h1',{},'Cuaderno del investigador'), h('p',{},'Observaciones, hipótesis, capturas de modelos, resultados y conclusiones. Este cuaderno puede convertirse en tu portafolio de aprendizaje.'))));
   const form = h('div',{class:'card stack'}); const sel = h('select',{'aria-label':'Tipo de entrada'}); Object.entries(KINDS).forEach(([k,v])=>sel.append(h('option',{value:k},v))); sel.value='nota'; const ta = h('textarea',{placeholder:'Escribe una nota, observación o pregunta…','aria-label':'Nueva entrada'});
   form.append(h('div',{class:'row'}, h('div',{class:'field',style:'min-width:180px'}, h('label',{},'Tipo'), sel), h('div',{class:'field grow'}, h('label',{},'Nueva entrada'), ta)), h('button',{class:'btn primary sm',style:'align-self:flex-start',onclick:()=>{ if (!ta.value.trim()) return; Store.addNote(sel.value, ta.value.trim()); ta.value=''; renderList(); toast('Entrada guardada.'); }},'Guardar entrada'));

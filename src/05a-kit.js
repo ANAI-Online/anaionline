@@ -36,10 +36,12 @@ const Kit = (() => {
 
   /* ---------- texturas procedurales (color + relieve), cacheadas ---------- */
   const cache = {};
-  const SZ = () => (lowEnd() ? 256 : 512);
+  /* v1.9: "poca geometría" sigue a la calidad elegida (Básica → sí, Alta → no); sin motor, como antes */
+  const LOW = () => { try { return (typeof Engine3D === 'function' && Engine3D.bajo) ? Engine3D.bajo() : lowEnd(); } catch(e){ return lowEnd(); } };
+  const SZ = () => (LOW() ? 256 : 512);
   function paint(key, fn){
-    if (cache[key]) return cache[key];
-    const N = SZ(); const cc = document.createElement('canvas'), bc = document.createElement('canvas'); cc.width=cc.height=bc.width=bc.height=N;
+    const N = SZ(); key += N;
+    if (cache[key]) return cache[key]; const cc = document.createElement('canvas'), bc = document.createElement('canvas'); cc.width=cc.height=bc.width=bc.height=N;
     const cx = cc.getContext('2d'), bx = bc.getContext('2d'); const ci = cx.createImageData(N,N), bi = bx.createImageData(N,N);
     const out = { c:[0,0,0], h:0 };
     for (let y=0;y<N;y++) for (let x=0;x<N;x++){ fn(x/N, y/N, out); const k=(y*N+x)*4; ci.data[k]=out.c[0]; ci.data[k+1]=out.c[1]; ci.data[k+2]=out.c[2]; ci.data[k+3]=255; const hv = Math.max(0,Math.min(255,out.h*255)); bi.data[k]=bi.data[k+1]=bi.data[k+2]=hv; bi.data[k+3]=255; }
@@ -65,7 +67,7 @@ const Kit = (() => {
     tissue(){ const n = pf(121,8,5); return paint('tis', (u,v,o) => { const nn=n(u,v); mixc([215,215,215],[255,255,255], cl(0.6+nn), o.c); o.h = 0.5+0.3*nn; }); }
   };
   const texCache = new WeakMap();
-  function texFrom(canvas, srgb, rep){ const t = new THREE.CanvasTexture(canvas); t.wrapS = t.wrapT = THREE.RepeatWrapping; if (srgb) t.encoding = THREE.sRGBEncoding; t.anisotropy = 4; if (rep) t.repeat.set(rep[0], rep[1]); return t; }
+  function texFrom(canvas, srgb, rep){ const t = new THREE.CanvasTexture(canvas); t.wrapS = t.wrapT = THREE.RepeatWrapping; if (srgb) t.encoding = THREE.sRGBEncoding; t.anisotropy = LOW() ? 2 : 4; if (rep) t.repeat.set(rep[0], rep[1]); return t; }
 
   /* ---------- materiales ---------- */
   function tissue(o={}){
@@ -80,7 +82,7 @@ const Kit = (() => {
     map.forEach(a => { if (a.length<5) return; const l = Math.hypot(a[0],a[1],a[2])||1; for (let j=3;j<a.length;j++) nor.setXYZ(a[j], a[0]/l, a[1]/l, a[2]/l); }); nor.needsUpdate = true; return g; }
   /* Esfera esculpida: shape(d) → posición; disp(p,d) → desplazamiento a lo largo de d; color(p,d,disp,out) opcional */
   function sculpt(o){
-    const low = lowEnd(); const g = new THREE.SphereGeometry(1, o.w ?? (low?56:96), o.h ?? (low?40:72), o.phiStart ?? 0, o.phiLength ?? Math.PI*2, o.thetaStart ?? 0, o.thetaLength ?? Math.PI);
+    const low = LOW(); const g = new THREE.SphereGeometry(1, o.w ?? (low?56:96), o.h ?? (low?40:72), o.phiStart ?? 0, o.phiLength ?? Math.PI*2, o.thetaStart ?? 0, o.thetaLength ?? Math.PI);
     const pos = g.attributes.position, d = new THREE.Vector3(), p = new THREE.Vector3(); const cols = o.color ? new Float32Array(pos.count*3) : null; const out = [1,1,1];
     const extra = o.store ? [] : null;
     for (let i=0;i<pos.count;i++){ d.fromBufferAttribute(pos,i).normalize(); if (o.shape) p.copy(o.shape(d.clone())); else p.copy(d).multiply(o.radii ? V3(o.radii) : new THREE.Vector3(1,1,1));
@@ -91,7 +93,7 @@ const Kit = (() => {
   }
   const curve = pts => pts.isCurve ? pts : new THREE.CatmullRomCurve3(pts.map(p => p.isVector3 ? p : V3(p)), false, 'catmullrom', 0.5);
   /* Tubo cónico: radio r0→r1 o función rfn(u) */
-  function taper(pts, r0, r1, o={}){ const low = lowEnd(); const c = curve(pts); const T = o.seg ?? (low?28:56), R = o.rad ?? (low?10:18); const g = new THREE.TubeGeometry(c, T, 1, R, false);
+  function taper(pts, r0, r1, o={}){ const low = LOW(); const c = curve(pts); const T = o.seg ?? (low?28:56), R = o.rad ?? (low?10:18); const g = new THREE.TubeGeometry(c, T, 1, R, false);
     const pos = g.attributes.position, P = new THREE.Vector3(), v = new THREE.Vector3();
     for (let i=0;i<=T;i++){ const u=i/T; c.getPointAt(u,P); const rr = o.rfn ? o.rfn(u) : r0+(r1-r0)*u; for (let j=0;j<=R;j++){ const k=i*(R+1)+j; v.fromBufferAttribute(pos,k).sub(P); if (o.bumpy){ const b = 1 + o.bumpy*n3(u*o.bf, j/R*4, o.seed||0); v.multiplyScalar(b); } v.multiplyScalar(rr).add(P); pos.setXYZ(k,v.x,v.y,v.z); } }
     g.userData.curve = c; g.userData.r0 = o.rfn ? o.rfn(0) : r0; g.userData.r1 = o.rfn ? o.rfn(1) : r1; return g; }
@@ -135,14 +137,16 @@ const Kit = (() => {
   function densify(pts, n){ const c = curve(pts); const out = []; for (let i=0;i<=n;i++) out.push(c.getPointAt(i/n)); return out; }
 
   /* ---------- entorno de estudio (reflejos) ---------- */
-  function studio(renderer, dark){ const pm = new THREE.PMREMGenerator(renderer); const sc = new THREE.Scene();
-    const g = new THREE.SphereGeometry(20, 32, 16); const cols = []; const pos = g.attributes.position; for (let i=0;i<pos.count;i++){ const y = pos.getY(i)/20; const c = new THREE.Color().setHSL(0.58, 0.18, (dark?0.05:0.14) + (dark?0.18:0.34)*Math.max(0,y) + 0.05*Math.max(0,-y)); cols.push(c.r,c.g,c.b); }
+  /* simple (calidad Básica): menos segmentos y solo los dos paneles de luz principales; el tono general es el mismo */
+  function studio(renderer, dark, simple){ const pm = new THREE.PMREMGenerator(renderer); const sc = new THREE.Scene();
+    const g = new THREE.SphereGeometry(20, simple ? 16 : 32, simple ? 8 : 16); const cols = []; const pos = g.attributes.position; for (let i=0;i<pos.count;i++){ const y = pos.getY(i)/20; const c = new THREE.Color().setHSL(0.58, 0.18, (dark?0.05:0.14) + (dark?0.18:0.34)*Math.max(0,y) + 0.05*Math.max(0,-y)); cols.push(c.r,c.g,c.b); }
     g.setAttribute('color', new THREE.Float32BufferAttribute(cols,3)); sc.add(new THREE.Mesh(g, new THREE.MeshBasicMaterial({ vertexColors:true, side:THREE.BackSide })));
     const panel = (w,h,p,k,col) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w,h), new THREE.MeshBasicMaterial({ color:new THREE.Color(col).multiplyScalar(k), side:THREE.DoubleSide })); m.position.set(...p); m.lookAt(0,0,0); sc.add(m); };
-    panel(14,7,[2,15,7],3.4,0xffffff); panel(7,11,[-15,4,5],1.7,0xe3edff); panel(7,11,[15,2,-5],1.3,0xffeadc); panel(12,4,[0,-7,15],0.7,0xffffff); panel(5,5,[0,6,-16],1.6,0xcfe4ff);
+    panel(14,7,[2,15,7],3.4,0xffffff); panel(7,11,[-15,4,5],1.7,0xe3edff); if (!simple){ panel(7,11,[15,2,-5],1.3,0xffeadc); panel(12,4,[0,-7,15],0.7,0xffffff); panel(5,5,[0,6,-16],1.6,0xcfe4ff); }
     const rt = pm.fromScene(sc, 0.035); pm.dispose(); sc.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); }); return rt.texture; }
-  function contactShadow(size, y, opacity=0.35){ const c = document.createElement('canvas'); c.width=c.height=128; const x = c.getContext('2d'); const gr = x.createRadialGradient(64,64,4,64,64,64); gr.addColorStop(0,'rgba(10,20,35,1)'); gr.addColorStop(0.45,'rgba(10,20,35,0.45)'); gr.addColorStop(1,'rgba(10,20,35,0)'); x.fillStyle=gr; x.fillRect(0,0,128,128);
-    const t = new THREE.CanvasTexture(c); const m = new THREE.Mesh(new THREE.PlaneGeometry(size,size), new THREE.MeshBasicMaterial({ map:t, transparent:true, opacity, depthWrite:false, toneMapped:false })); m.rotation.x = -Math.PI/2; m.position.y = y; m.renderOrder = -1; return m; }
+  /* res: 128 (normal) o 64 (Básica: textura más pequeña y sin mipmaps) */
+  function contactShadow(size, y, opacity=0.35, res=128){ const N = res <= 64 ? 64 : 128, H2 = N/2; const c = document.createElement('canvas'); c.width=c.height=N; const x = c.getContext('2d'); const gr = x.createRadialGradient(H2,H2,N/32,H2,H2,H2); gr.addColorStop(0,'rgba(10,20,35,1)'); gr.addColorStop(0.45,'rgba(10,20,35,0.45)'); gr.addColorStop(1,'rgba(10,20,35,0)'); x.fillStyle=gr; x.fillRect(0,0,N,N);
+    const t = new THREE.CanvasTexture(c); if (N < 128){ t.generateMipmaps = false; t.minFilter = THREE.LinearFilter; } const m = new THREE.Mesh(new THREE.PlaneGeometry(size,size), new THREE.MeshBasicMaterial({ map:t, transparent:true, opacity, depthWrite:false, toneMapped:false })); m.rotation.x = -Math.PI/2; m.position.y = y; m.renderOrder = -1; return m; }
 
   return { rng, n3, fbm, TEX, tissue, sculpt, taper, cap, merge, split, splitPlane, snap, densify, curve, studio, contactShadow, weldNormals };
 })();

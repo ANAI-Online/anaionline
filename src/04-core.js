@@ -491,37 +491,22 @@ function search(q){ q = norm(q.trim()); if (q.length<2) return []; return search
   inp.addEventListener('keydown', e => { if (e.key==='Enter'){ const f = res.querySelector('a'); if (f) f.click(); } });
 })();
 
-/* ---------- Gráficos (canvas, un solo eje, marcas finas, tooltip) ---------- */
+/* ---------- Gráficos (canvas, un solo eje, marcas finas) ----------
+   lineChart(canvas, {series:[{pts:[{x,y}], color, label, dots, dash, width, fill}], xlabel, ylabel, xfmt, yfmt, xmin, xmax, ymin, ymax, xticks, fill})
+   Lo nuevo es opcional y está documentado en src/26-graficos.js (lectura con guía y teclado, leyenda, menú con PNG y tabla,
+   barras de error, tendencia, anotaciones, comparar y «dibuja tu predicción»). Devuelve la geometría {X, Y, pad, …}. */
 function lineChart(canvas, opts){
-  const dpr = Math.min(window.devicePixelRatio||1, 2);
-  const W = canvas.clientWidth||600, H = canvas.clientHeight||280; canvas.width=W*dpr; canvas.height=H*dpr;
-  const ctx = canvas.getContext('2d'); ctx.scale(dpr,dpr);
-  const ink = cssVar('--ink'), ink3 = cssVar('--ink-3'), grid = cssVar('--chart-grid');
-  const pad = {l:48,r:16,t:16,b:36}; const pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
-  const series = opts.series; const xs = series.flatMap(s=>s.pts.map(p=>p.x)), ys = series.flatMap(s=>s.pts.map(p=>p.y));
-  const nice = v => { const p = Math.pow(10, Math.floor(Math.log10(Math.max(v,1)))); const m = v/p; const k = m<=1?1:m<=2?2:m<=2.5?2.5:m<=4?4:m<=5?5:m<=8?8:10; return k*p; };
-  const xmin = opts.xmin ?? Math.min(...xs), xmax = opts.xmax ?? Math.max(...xs); const ymin = opts.ymin ?? 0, ymax = opts.ymax ?? nice(Math.max(...ys,1)*1.2);
-  const X = x => pad.l + (x-xmin)/((xmax-xmin)||1)*pw, Y = y => pad.t + ph - (y-ymin)/((ymax-ymin)||1)*ph;
-  ctx.clearRect(0,0,W,H); ctx.font = '11px "IBM Plex Mono", monospace'; ctx.fillStyle = ink3; ctx.strokeStyle = grid; ctx.lineWidth = 1;
-  const yt = 4; for (let i=0;i<=yt;i++){ const v = ymin + (ymax-ymin)*i/yt; const y = Y(v); ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(W-pad.r,y); ctx.stroke(); ctx.textAlign='right'; ctx.fillText(opts.yfmt ? opts.yfmt(v) : Math.round(v), pad.l-8, y+4); }
-  const xt = opts.xticks || 5; for (let i=0;i<=xt;i++){ const v = xmin + (xmax-xmin)*i/xt; ctx.textAlign='center'; ctx.fillText(opts.xfmt ? opts.xfmt(v) : Math.round(v), X(v), H-pad.b+18); }
-  ctx.fillStyle = ink3; ctx.textAlign='left'; if (opts.ylabel) ctx.fillText(opts.ylabel, pad.l, pad.t-4); if (opts.xlabel){ ctx.textAlign='right'; ctx.fillText(opts.xlabel, W-pad.r, H-6); }
-  /* eje base más marcado */ ctx.strokeStyle = cssVar('--line-2') || grid; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(pad.l, Y(ymin)); ctx.lineTo(W-pad.r, Y(ymin)); ctx.stroke();
-  const rgb = c => { const k = lineChart._c || (lineChart._c = document.createElement('canvas').getContext('2d', { willReadFrequently:true })); k.clearRect(0,0,1,1); k.fillStyle = '#000'; k.fillStyle = c; k.fillRect(0,0,1,1); const d = k.getImageData(0,0,1,1).data; return [d[0],d[1],d[2]]; };
-  const fillOK = opts.fill !== false && series.length <= 3;
-  series.forEach(s => { if (!s.pts.length) return; const pts = s.pts.map(p => [X(p.x), Y(p.y)]);
-    if (fillOK && s.fill !== false && !s.dash && pts.length > 1){ const [r,g,b] = rgb(s.color); const gr = ctx.createLinearGradient(0, pad.t, 0, pad.t+ph); gr.addColorStop(0, `rgba(${r},${g},${b},0.20)`); gr.addColorStop(1, `rgba(${r},${g},${b},0)`);
-      ctx.fillStyle = gr; ctx.beginPath(); ctx.moveTo(pts[0][0], Y(ymin)); pts.forEach(q => ctx.lineTo(q[0], q[1])); ctx.lineTo(pts[pts.length-1][0], Y(ymin)); ctx.closePath(); ctx.fill(); }
-    ctx.save(); ctx.beginPath(); ctx.rect(pad.l-6, pad.t-6, pw+12, ph+12); ctx.clip();
-    ctx.strokeStyle = s.color; ctx.lineWidth = s.width || 2.4; ctx.lineJoin='round'; ctx.lineCap='round'; if (s.dash) ctx.setLineDash(s.dash); ctx.beginPath(); pts.forEach((q,i)=> i?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1])); ctx.stroke(); ctx.setLineDash([]); ctx.restore();
-    if (s.dots) pts.forEach(q => { ctx.fillStyle = s.color; ctx.beginPath(); ctx.arc(q[0],q[1],4.2,0,Math.PI*2); ctx.fill(); ctx.strokeStyle=cssVar('--bg-2'); ctx.lineWidth=2; ctx.stroke(); });
-    if (s.label){ const q = pts[pts.length-1]; ctx.font='600 11px "IBM Plex Sans", sans-serif'; const tw = ctx.measureText(s.label).width; const lx = Math.min(q[0], W-pad.r) - tw - 8, ly = clamp(q[1]-10, pad.t+8, pad.t+ph-4);
-      ctx.fillStyle = cssVar('--bg-2'); ctx.globalAlpha = 0.85; ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(lx-4, ly-10, tw+8, 15, 7); else ctx.rect(lx-4, ly-10, tw+8, 15); ctx.fill(); ctx.globalAlpha = 1; ctx.fillStyle = s.color; ctx.textAlign='left'; ctx.fillText(s.label, lx, ly+1); }
-  });
-  // hover
-  if (!canvas._hover){ canvas._hover = true; const tip = h('div',{class:'phase',style:'position:absolute;pointer-events:none;display:none'}); canvas.parentElement.style.position='relative'; canvas.parentElement.append(tip);
-    canvas.addEventListener('mousemove', e => { const o = canvas._opts; if (!o) return; const r = canvas.getBoundingClientRect(); const mx = e.clientX-r.left; let best=null; o.series.forEach(s=>s.pts.forEach(p=>{ const d=Math.abs(o.X(p.x)-mx); if(!best||d<best.d) best={d,p,s}; })); if (best && best.d<24){ tip.style.display='block'; tip.style.left=(o.X(best.p.x)+10)+'px'; tip.style.top=(o.Y(best.p.y)-28)+'px'; tip.textContent = `${best.s.label||''} ${o.xfmt?o.xfmt(best.p.x):best.p.x} → ${o.yfmt?o.yfmt(best.p.y):Math.round(best.p.y*10)/10}`; } else tip.style.display='none'; });
-    canvas.addEventListener('mouseleave', ()=> tip.style.display='none'); }
-  canvas._opts = Object.assign({}, opts, {X, Y});
+  if (!canvas || !opts) return null;
+  const st = grafEstado(canvas); st.dentro = true; st.externo = false;
+  try {
+    const dpr = Math.min(window.devicePixelRatio||1, 2);
+    const W = canvas.clientWidth||600, H = canvas.clientHeight||280; canvas.width=W*dpr; canvas.height=H*dpr;
+    const ctx = canvas.getContext('2d'); ctx.scale(dpr,dpr);
+    st.opts = opts; st.W = W; st.H = H;
+    const geo = st.geo = grafPintar(ctx, W, H, opts, st);
+    canvas._opts = Object.assign({}, opts, { X:geo.X, Y:geo.Y });
+    try { grafMontar(canvas, opts, geo, st); } catch(e){ console.warn('gráfico: interacción', e); }
+    return geo;
+  } finally { st.dentro = false; }
 }
 </script>

@@ -114,6 +114,8 @@ const CURR = {
     d:'Del músculo al sarcómero y la teoría del filamento deslizante.', reto:'Explica por qué la banda A no cambia de largo cuando el músculo se contrae.', bio:6, cn:['9-cvt-2'] },
   'inmunidad':        { href:'#/explorar/inmunidad', act:'reto-inmunidad', tipo:'Simulador', em:'🛡️', t:'Inmunidad, vacunas y antibióticos',
     d:'Virus y bacterias en 3D, respuesta inmune, inmunidad de grupo y resistencia.', reto:'Explica con los simuladores por qué una vacuna protege también a quien no puede vacunarse.', bio:6, cn:['9-cvt-2'] },
+  'apendicectomia':   { href:'#/simuladores/apendicectomia', act:'reto-apendicectomia', tipo:'Simulador 3D', em:'🩺', t:'Apendicectomía: una cirugía por dentro',
+    d:'Del dolor que migra al punto de McBurney: planos de la pared, técnica abierta y laparoscópica en un modelo 3D estilizado, sin sangre.', reto:'Ordena los síntomas, ubica el punto de McBurney, atraviesa los planos en orden y elige cada paso de la operación explicando por qué.', bio:6, cn:['9-cvt-2'] },
   'sim-circulacion':  { href:'#/simuladores/circulacion', act:'reto-simulador', tipo:'Simulador', em:'∿', t:'Simulador cardiorrespiratorio',
     d:'Actividad física, ventilación, anemia y altitud.', reto:'Con 80 % de actividad, encuentra la frecuencia respiratoria mínima que cubre la demanda de oxígeno.', bio:6, cn:['9-cvt-2'] },
   'lab-frecuencia':   { href:'#/laboratorio/frecuencia-cardiaca', act:'lab-frecuencia-cardiaca', tipo:'Laboratorio', em:'🫀', t:'Laboratorio: frecuencia cardíaca',
