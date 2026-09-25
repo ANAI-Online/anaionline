@@ -91,9 +91,13 @@
 </style>
 <script>
 /* =====================================================================
-   APENDICECTOMÍA: UNA CIRUGÍA POR DENTRO  (v1.9)
+   APENDICECTOMÍA: UNA CIRUGÍA POR DENTRO  (v2.0)
    Simulación educativa de divulgación anatómica y de salud. NO es formación
    quirúrgica: explica qué ocurre en la operación, no enseña a operar.
+   v2.0: escenas 3D con realismo de atlas (texturas propias de piel, grasa,
+   aponeurosis, músculo, peritoneo y serosa; paño quirúrgico y antiséptico;
+   lámpara con sombras suaves; instrumental metálico; monitor con viñeteado).
+   Sin sangre: tejidos limpios, como en un atlas.
    Biología BGU · Unidad 6 (anatomía y fisiología humana, sistema digestivo
    y salud) · Ciencias Naturales 9.º EGB.
    Ruta: #/simuladores/apendicectomia · Actividad: reto-apendicectomia
@@ -186,6 +190,126 @@ function apxFondo(E, osc, c1, c2){
 }
 
 /* =====================================================================
+   TEXTURAS DE ATLAS (v2.0): piel con poros, paño quirúrgico, gasa, grasa
+   lobulada, aponeurosis nacarada, músculo estriado, peritoneo, serosa con
+   red vascular, apéndice hiperémico, metal cepillado. Ruido periódico (sin
+   costuras), 512 px (256 en calidad Básica), pintadas una sola vez y
+   cacheadas. Cada textura da color + relieve (bump).
+   ===================================================================== */
+const apxTex = (() => {
+  const cache = {}, texCache = {};
+  const LOW = () => { try { return Engine3D.bajo(); } catch(e){ return (typeof lowEnd === 'function') ? lowEnd() : false; } };
+  const SZ = () => (LOW() ? 256 : 512);
+  const cl = v => v<0?0:v>1?1:v, mix = (a,b,t) => a+(b-a)*t, hx = h => [(h>>16)&255,(h>>8)&255,h&255];
+  const mixc = (A,B,t,o) => { o[0]=mix(A[0],B[0],t); o[1]=mix(A[1],B[1],t); o[2]=mix(A[2],B[2],t); return o; };
+  const mul = (o,k) => { o[0]*=k; o[1]*=k; o[2]*=k; return o; };
+  /* ruido de valor periódico */
+  const pn = (P, seed) => { const g = new Float32Array(P*P); const R = Kit.rng(seed); for (let i=0;i<g.length;i++) g[i] = R()*2-1;
+    return (x,y) => { const fx=x*P, fy=y*P, x0=Math.floor(fx), y0=Math.floor(fy), tx=fx-x0, ty=fy-y0, sx=tx*tx*(3-2*tx), sy=ty*ty*(3-2*ty);
+      const i0=((x0%P)+P)%P, i1=(i0+1)%P, j0=((y0%P)+P)%P, j1=(j0+1)%P, a=g[j0*P+i0], b=g[j0*P+i1], c=g[j1*P+i0], d=g[j1*P+i1];
+      return a+(b-a)*sx+(c-a)*sy+(a-b-c+d)*sx*sy; }; };
+  const fb = (seed, base=4, oct=4) => { const L = []; for (let i=0;i<oct;i++) L.push(pn(base<<i, seed+i*131)); return (u,v) => { let s=0,a=0.5; for (const n of L){ s+=a*n(u,v); a*=0.5; } return s; }; };
+  /* Worley periódico: f1, f2, r (aleatorio de la celda) y dirección al centro (para «domos») */
+  const worley = (G, seed) => { const R = Kit.rng(seed); const pts = new Float32Array(G*G*2), rnd = new Float32Array(G*G); for (let i=0;i<G*G;i++){ pts[i*2]=R(); pts[i*2+1]=R(); rnd[i]=R(); }
+    return (u,v,o) => { const fx=u*G, fy=v*G, cx=Math.floor(fx), cy=Math.floor(fy); let f1=9, f2=9, id=0;
+      for (let j=-1;j<=1;j++) for (let i=-1;i<=1;i++){ const gx=((cx+i)%G+G)%G, gy=((cy+j)%G+G)%G, k=gy*G+gx; const dx = cx+i+pts[k*2]-fx, dy = cy+j+pts[k*2+1]-fy; const d = dx*dx+dy*dy; if (d<f1){ f2=f1; f1=d; id=k; } else if (d<f2) f2=d; }
+      o.f1 = Math.sqrt(f1); o.f2 = Math.sqrt(f2); o.r = rnd[id]; return o; }; };
+  /* red vascular: bordes finos de celdas Worley a dos escalas */
+  const vasos = (G1, G2, s) => { const w1 = worley(G1, s), w2 = worley(G2, s+7); return (u,v,W) => { w1(u,v,W); const e1 = 1 - cl((W.f2-W.f1)/0.06); w2(u,v,W); const e2 = 1 - cl((W.f2-W.f1)/0.045); return { a:e1*e1*e1, b:e2*e2*e2*e2 }; }; };
+  function paint(key, fn){ const n = SZ(); const k = key+n; if (cache[k]) return cache[k];
+    const cc = document.createElement('canvas'), bc = document.createElement('canvas'); cc.width=cc.height=bc.width=bc.height=n;
+    const cx = cc.getContext('2d'), bx = bc.getContext('2d'); const ci = cx.createImageData(n,n), bi = bx.createImageData(n,n); const out = { c:[0,0,0], h:0.5 }, W = {};
+    for (let y=0;y<n;y++) for (let x=0;x<n;x++){ fn(x/n, y/n, out, W); const q=(y*n+x)*4; ci.data[q]=cl(out.c[0]/255)*255; ci.data[q+1]=cl(out.c[1]/255)*255; ci.data[q+2]=cl(out.c[2]/255)*255; ci.data[q+3]=255; const hv = cl(out.h)*255; bi.data[q]=bi.data[q+1]=bi.data[q+2]=hv; bi.data[q+3]=255; }
+    cx.putImageData(ci,0,0); bx.putImageData(bi,0,0); return (cache[k] = { color:cc, bump:bc }); }
+  const T = {
+    /* piel: tono con variación suave, leve moteado rosado, poros finos y microlíneas; sin vello */
+    skin(){ const tone = fb(501,3,4), mott = fb(503,10,3), pore = worley(70, 507), fine = fb(509,40,2), fine2 = fb(513,64,2);
+      return paint('skin', (u,v,o,W) => { pore(u,v,W); const nn = tone(u,v), mm = mott(u,v); const pr = Math.pow(1 - cl(W.f1/0.075), 2)*(0.35+0.65*W.r);
+        const l1 = 1 - cl(Math.abs(fine(u,v))/0.05), l2 = 1 - cl(Math.abs(fine2(u,v))/0.06);
+        mixc(hx(0xDDB194), hx(0xF1D0B6), cl(0.55 + 0.45*nn + 0.12*mm), o.c); mixc(o.c, hx(0xD8968C), cl(0.05 + 0.1*mm), o.c);
+        mul(o.c, 1 - 0.09*pr - 0.035*l1 - 0.02*l2); o.h = 0.55 + 0.1*mm - 0.3*pr - 0.1*l1 - 0.06*l2 + 0.05*nn; }); },
+    /* paño quirúrgico: tela tejida verde azulada, mate, con sombreado de fibras */
+    drape(){ const n = fb(521,4,3), m = fb(523,24,2); return paint('drape', (u,v,o) => { const wx = 0.5+0.5*Math.sin(u*Math.PI*2*170), wy = 0.5+0.5*Math.sin(v*Math.PI*2*170); const weave = 0.5*(wx+wy) - 0.5*wx*wy; const nn = n(u,v), mm = m(u,v);
+        mixc(hx(0x3F7F79), hx(0x6AA8A1), cl(0.42 + 0.5*weave + 0.35*nn + 0.12*mm), o.c); o.h = 0.35 + 0.5*weave + 0.15*mm; }); },
+    /* gasa / compresa: algodón blanco tejido, hilos gruesos */
+    gauze(){ const n = fb(531,6,3), m = fb(533,30,2); return paint('gauze', (u,v,o) => { const wx = 0.5+0.5*Math.sin(u*Math.PI*2*48), wy = 0.5+0.5*Math.sin(v*Math.PI*2*48); const t = Math.max(wx, wy); const nn = n(u,v);
+        mixc(hx(0xD7D3C8), hx(0xFCFBF6), cl(0.35 + 0.6*t + 0.3*nn + 0.1*m(u,v)), o.c); o.h = 0.25 + 0.6*t + 0.15*nn; }); },
+    /* grasa subcutánea / epiplón: lobulillos amarillos con tabiques finos, húmeda */
+    fat(){ const w = worley(13, 541), w2 = worley(34, 543), n = fb(547,6,3); return paint('fat', (u,v,o,W) => { w(u,v,W); const edge = cl((W.f2-W.f1)*5); const dome = cl(1 - W.f1*2.2); const r1 = W.r; w2(u,v,W); const e2 = cl((W.f2-W.f1)*7); const nn = n(u,v);
+        mixc(hx(0xD39C3E), hx(0xF7DF95), cl(0.3 + 0.45*r1 + 0.35*nn), o.c); mixc(o.c, hx(0xFBF2DE), 0.55*(1-edge) + 0.25*(1-e2), o.c); mul(o.c, 0.9 + 0.12*dome); o.h = 0.3 + 0.5*dome*edge + 0.15*e2 + 0.05*nn; }); },
+    /* aponeurosis: lámina nacarada con fibras tendinosas paralelas (a lo largo de u) */
+    apon(){ const n = fb(551,4,3), j = fb(553,10,2), s = fb(557,48,1); return paint('apon', (u,v,o) => { const q = v*30 + 0.5*j(u,v); const f = q - Math.floor(q); const band = 1 - Math.abs(2*f-1); const fine = 0.5+0.5*Math.sin((v*160 + 3*n(u,v))*Math.PI*2); const nn = n(u,v);
+        mixc(hx(0xE6E0D3), hx(0xFFFDF8), cl(0.45 + 0.35*band + 0.2*fine + 0.4*nn), o.c); mixc(o.c, hx(0xF4E8DA), 0.2*cl(s(u,v)*2), o.c); o.h = 0.4 + 0.3*band + 0.2*fine + 0.05*nn; }); },
+    /* músculo esquelético: fascículos paralelos (u), perimisio claro, estriación fina y brillo húmedo */
+    muscle(){ const n = fb(561,4,4), j = fb(563,8,3), s = fb(567,20,2); return paint('muscle', (u,v,o) => { const q = v*26 + 0.4*j(u,v); const f = q - Math.floor(q); const fasc = Math.sin(f*Math.PI); const per = 1 - cl(Math.min(f, 1-f)/0.07); const fine = Math.sin(v*520*Math.PI*2)*0.5+0.5; const nn = n(u,v), ss = s(u,v);
+        mixc(hx(0x7A2622), hx(0xB7463F), cl(0.5 + 0.9*nn + 0.25*fasc), o.c); mul(o.c, 0.94 + 0.08*fine + 0.06*ss); mixc(o.c, hx(0xE0B4AB), 0.5*per, o.c); o.h = 0.35 + 0.35*fasc - 0.25*per + 0.05*fine + 0.08*nn; }); },
+    /* peritoneo / fascia: membrana pálida, lisa, con vasos muy finos */
+    perit(){ const n = fb(571,5,3), vs = vasos(9, 22, 573); return paint('perit', (u,v,o,W) => { const nn = n(u,v); const V = vs(u,v,W);
+        mixc(hx(0xE4D6DC), hx(0xF8F3F5), cl(0.55 + 0.8*nn), o.c); mixc(o.c, hx(0xB86A74), 0.35*V.a + 0.18*V.b, o.c); o.h = 0.5 + 0.12*nn + 0.12*V.a; }); },
+    /* serosa intestinal: rosa salmón húmedo con red vascular fina (dos calibres) */
+    serosa(){ const n = fb(581,4,4), m = fb(583,12,2), vs = vasos(8, 24, 587); return paint('serosa', (u,v,o,W) => { const nn = n(u,v), mm = m(u,v); const V = vs(u,v,W);
+        mixc(hx(0xD2867A), hx(0xF2C1AF), cl(0.55 + 0.85*nn + 0.2*mm), o.c); mixc(o.c, hx(0x9E3238), 0.55*V.a, o.c); mixc(o.c, hx(0xB5464A), 0.35*V.b, o.c); o.h = 0.5 + 0.12*nn + 0.06*mm + 0.14*V.a + 0.08*V.b; }); },
+    /* apéndice inflamado: serosa hiperémica, vasos congestivos, engrosada, con zonas mates */
+    apend(){ const n = fb(591,4,4), m = fb(593,9,3), vs = vasos(7, 20, 597), p = fb(599,16,2); return paint('apend', (u,v,o,W) => { const nn = n(u,v), mm = m(u,v); const V = vs(u,v,W); const mate = cl((p(u,v)-0.12)*4);
+        mixc(hx(0xBF4B47), hx(0xE38F82), cl(0.5 + 0.85*nn + 0.25*mm), o.c); mixc(o.c, hx(0x8A2028), 0.5*V.a, o.c); mixc(o.c, hx(0xA43038), 0.32*V.b, o.c); mixc(o.c, hx(0xE9C7B8), 0.22*mate, o.c); o.h = 0.5 + 0.12*nn + 0.18*V.a + 0.1*V.b + 0.08*mate; }); },
+    /* colon: serosa algo más pálida y moteada (para haustras) */
+    colon(){ const n = fb(601,3,4), m = fb(603,14,2), vs = vasos(7, 26, 607); return paint('colon', (u,v,o,W) => { const nn = n(u,v), mm = m(u,v); const V = vs(u,v,W);
+        mixc(hx(0xD99E90), hx(0xF5D3C4), cl(0.55 + 0.85*nn + 0.15*mm), o.c); mixc(o.c, hx(0xA33A3C), 0.45*V.a, o.c); mixc(o.c, hx(0xBA5052), 0.3*V.b, o.c); o.h = 0.5 + 0.12*nn + 0.12*V.a + 0.06*V.b; }); },
+    /* metal cepillado (instrumental) */
+    metal(){ const n = fb(611,6,2), s = fb(613,64,1); return paint('metal', (u,v,o) => { const line = 0.5+0.5*Math.sin((v*700 + 4*s(u,v))*Math.PI*2); const nn = n(u,v);
+        mixc(hx(0xC3CAD1), hx(0xEEF2F5), cl(0.55 + 0.25*line + 0.4*nn), o.c); o.h = 0.5 + 0.12*line + 0.04*nn; }); },
+    /* hueso: marfil con poros y láminas */
+    bone(){ const n = fb(621,4,4), w = worley(40, 623), s = fb(627,2,3); return paint('bone', (u,v,o,W) => { w(u,v,W); const pore = 1 - cl(W.f1/0.12); const nn = n(u,v); const lam = Math.sin((v*18 + 3*s(u,v))*Math.PI*2);
+        mixc(hx(0xD8CBAE), hx(0xF3ECDC), cl(0.55 + nn*0.9 + 0.025*lam), o.c); mul(o.c, 1 - 0.18*pore*pore); o.h = 0.55 + 0.2*nn - 0.3*pore*pore + 0.012*lam; }); }
+  };
+  function tex(key, which, rep){ const k = key+which+SZ()+(rep ? rep.join('x') : ''); let t = texCache[k]; if (!t){ const P = T[key](); t = new THREE.CanvasTexture(which === 'c' ? P.color : P.bump); t.wrapS = t.wrapT = THREE.RepeatWrapping; if (which === 'c') t.encoding = THREE.sRGBEncoding; t.anisotropy = LOW() ? 2 : 4; if (rep) t.repeat.set(rep[0], rep[1]); texCache[k] = t; }
+    return t; }
+  /* material físico de tejido: o.tex (clave), rep, bump, color, rough, coat, coatRough, env, sss:[hex, k, pow] */
+  function mat(o={}){
+    const m = new THREE.MeshPhysicalMaterial({ color: o.color === undefined ? 0xffffff : (typeof o.color === 'string' ? apxCol3(o.color) : o.color), roughness: o.rough ?? 0.45, metalness: o.metal ?? 0, clearcoat: o.coat ?? 0.7, clearcoatRoughness: o.coatRough ?? 0.22, side: o.side ?? THREE.FrontSide, vertexColors: !!o.vc, transparent: !!o.transparent, opacity: o.opacity ?? 1, depthWrite: o.depthWrite ?? !o.transparent, envMapIntensity: o.env ?? 1 });
+    if (o.tex){ m.map = tex(o.tex, 'c', o.rep); if (o.bump !== 0){ m.bumpMap = tex(o.tex, 'b', o.rep); m.bumpScale = o.bump ?? 0.02; } }
+    if (o.sss) apxRim(m, o.sss[0], o.sss[1], o.sss[2]);
+    return m;
+  }
+  return { T, tex, mat, paint, fb, worley };
+})();
+/* Subsuperficie simulada: luz que «atraviesa» el borde del tejido (término de Fresnel en el color propio). */
+function apxRim(m, hex, k, pw){
+  const col = apxCol3(hex || '#FF7A5A');
+  m.onBeforeCompile = sh => {
+    sh.uniforms.apxRimC = { value: col }; sh.uniforms.apxRimK = { value: k === undefined ? 0.35 : k }; sh.uniforms.apxRimP = { value: pw === undefined ? 2.5 : pw };
+    sh.fragmentShader = sh.fragmentShader.replace('uniform vec3 emissive;', 'uniform vec3 emissive;\nuniform vec3 apxRimC; uniform float apxRimK; uniform float apxRimP;')
+      .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n{ float apxF = pow(1.0 - clamp(dot(normalize(vViewPosition), normal), 0.0, 1.0), apxRimP); totalEmissiveRadiance += apxRimC * diffuseColor.rgb * (apxF * apxRimK); }');
+  };
+  m.customProgramCacheKey = () => 'apxrim';
+  return m;
+}
+/* Luz cenital de quirófano (lámpara) con sombras suaves; en calidad Básica solo la luz. */
+function apxLampara(E, pos, target, o={}){
+  const low = E.low;
+  const sp = new THREE.SpotLight(0xFFF6EA, o.int ?? 1.1, 0, o.angle ?? 0.62, 0.55, 1.2);
+  sp.position.set(pos[0], pos[1], pos[2]); sp.target.position.set(target[0], target[1], target[2]); E.scene.add(sp); E.scene.add(sp.target);
+  if (!low && !o.noShadow){ E.renderer.shadowMap.enabled = true; E.renderer.shadowMap.type = THREE.VSMShadowMap; sp.castShadow = true; sp.shadow.mapSize.set(1024, 1024); sp.shadow.radius = o.radius ?? 5; sp.shadow.bias = -0.0004; sp.shadow.normalBias = o.nbias ?? 0.02; sp.shadow.camera.near = 2; sp.shadow.camera.far = o.far ?? 40; }
+  return sp;
+}
+function apxSombra(m, cast, recv){ (Array.isArray(m) ? m : [m]).forEach(x => { if (!x) return; x.castShadow = !!cast; x.receiveShadow = !!recv; }); }
+/* Tubo con radio y color dependientes del punto (u) y del ángulo (a): haustras, tenias, vasos */
+function apxTubo(pts, o={}){
+  const c = Kit.curve(pts); const T = o.seg ?? 40, R = o.rad ?? 16; const g = new THREE.TubeGeometry(c, T, 1, R, !!o.closed);
+  const pos = g.attributes.position, P = new THREE.Vector3(), v = new THREE.Vector3(); const cols = o.color ? new Float32Array(pos.count*3) : null; const out = [1,1,1];
+  for (let i=0;i<=T;i++){ const u = i/T; c.getPointAt(u, P); for (let j=0;j<=R;j++){ const k = i*(R+1)+j, a = j/R*Math.PI*2; v.fromBufferAttribute(pos, k).sub(P); const rr = o.rfn(u, a); v.multiplyScalar(rr).add(P); pos.setXYZ(k, v.x, v.y, v.z);
+    if (cols){ o.color(u, a, out); cols[k*3]=out[0]; cols[k*3+1]=out[1]; cols[k*3+2]=out[2]; } } }
+  if (cols) g.setAttribute('color', new THREE.BufferAttribute(cols, 3));
+  g.computeVertexNormals(); g.userData.curve = c; return g;
+}
+/* cinta (tenia) sobre una superficie: banda blanca ligeramente elevada, con suavizado */
+const apxBanda = (a, a0, w) => { let d = Math.abs(((a - a0) % (Math.PI*2) + Math.PI*3) % (Math.PI*2) - Math.PI); return d < w ? 1 : Math.max(0, 1 - (d-w)/(w*0.6)); };
+/* etiqueta de frasco (texto en canvas) */
+function apxEtiqueta(lineas){ const c = document.createElement('canvas'); c.width = 256; c.height = 128; const x = c.getContext('2d'); x.fillStyle = '#FFFFFF'; x.fillRect(0,0,256,128); x.strokeStyle = '#2F6FD6'; x.lineWidth = 6; x.strokeRect(6,6,244,116);
+  x.fillStyle = '#1F2D3D'; x.font = 'bold 26px sans-serif'; x.fillText(lineas[0] || '', 18, 44); x.font = '18px sans-serif'; x.fillStyle = '#4A5A6A'; (lineas.slice(1)).forEach((l, i) => x.fillText(l, 18, 72 + i*24));
+  const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; return t; }
+
+/* =====================================================================
    DATOS DE REFERENCIA
    Torso (1 u = 5 cm): x hacia la IZQUIERDA del paciente (la derecha del
    paciente queda a la izquierda de quien lo mira de frente), y hacia la
@@ -247,7 +371,7 @@ function apxSegD(px, py, ax, ay, bx, by){ const vx = bx-ax, vy = by-ay, t = clam
 function apxRelieve(x, y){
   const g = (d, s) => Math.exp(-(d*d)/(s*s)); const ax = Math.abs(x);
   const r = Math.hypot(x, y);
-  let d = -0.17*g(r, 0.11) + 0.05*g(r-0.19, 0.07);                         /* ombligo con su reborde */
+  let d = -0.16*g(r, 0.1) + 0.04*g(r-0.17, 0.06) + 0.03*g(Math.hypot(x, y-0.12), 0.11)*apxSmooth(0.02, 0.14, y) - 0.015*g(x, 0.045)*g(y+0.04, 0.09);   /* ombligo: fosa, reborde y capuchón superior */
   d += 0.1*g(Math.hypot(ax-2.5, y+1.2), 0.3);                               /* espinas ilíacas anterosuperiores */
   d -= 0.045*g(apxSegD(ax, y, 2.35, -1.45, 0.45, -3.2), 0.13);              /* surco inguinal */
   d -= 0.028*g(x, 0.09)*apxSmooth(0.25, 0.6, r)*(1 - apxSmooth(2.9, 3.3, y))*(y > 0 ? 1 : 0.45);   /* línea alba */
@@ -273,81 +397,137 @@ function apxEscenaTorso(stage, hooks){
   const E = new Engine3D(stage, {
     radius:12.2, phi:1.45, theta:0.0, minR:4.5, maxR:22, target:[0,-0.3,0], floor:APX_Y0-0.32, floorSize:10, dark:osc, exposure:1.0,
     onSelect:(id) => { if (id && hooks.onInfo) hooks.onInfo(id); if (id && APX_INFO[id]) E.select(id); else E.select(null); },
-    aria:'Modelo 3D estilizado de un torso de maniquí anatómico, del borde de las costillas al pubis, visto de frente. Se reconocen el ombligo y las dos espinas ilíacas anterosuperiores. La derecha del paciente está a la izquierda de la pantalla. Arrastra para girar y usa la rueda para acercar. Los botones del panel ofrecen las mismas acciones con el teclado.'
+    aria:'Modelo 3D realista del abdomen de un adolescente delgado, del borde de las costillas al pubis, visto de frente y preparado para cirugía: paños verdes que enmarcan la zona operatoria y piel pintada con antiséptico ámbar. Se reconocen el ombligo y las dos espinas ilíacas anterosuperiores. La derecha del paciente está a la izquierda de la pantalla. Arrastra para girar y usa la rueda para acercar. Los botones del panel ofrecen las mismas acciones con el teclado.'
   });
   stage._apxE = E; apxFrame(E, 0.95);
   const low = E.low, tw = apxTweens(E), meshes = [], hid = [];
-  apxFondo(E, osc, ['#F4EEE9','#1B2433'], ['#E3DCD5','#0E1522']);
+  apxFondo(E, osc, ['#EEF0F2','#1B2433'], ['#D9DEE3','#0E1522']);
+  /* lámpara cenital de quirófano: cálida, con penumbra y sombras suaves */
+  apxLampara(E, [1.6, 9.5, 7.5], [0, -0.7, 1.2], { int: osc ? 1.15 : 1.0, angle:0.6, far:40 });
   const add = (id, list, extra, lbl, anchor) => { list.forEach(m => meshes.push(m)); E.addPart(id, list, extra || {}); if (lbl) E.addLabel(id, lbl[0], lbl[1], anchor); };
 
-  /* ---------- piel del torso ---------- */
+  /* ---------- piel del torso (con antiséptico pintado por vértice) ---------- */
   const NU = low ? 110 : 168, NV = low ? 96 : 150;
   const thOf = u => { const w = 2*u - 1; return Math.PI*(0.34*w + 0.66*w*w*w); };
   const skinG = apxGrid(NU, NV, (u, v, p) => apxTorsoPt(thOf(u), APX_Y0 + (APX_Y1-APX_Y0)*v, p));
   Kit.weldNormals(skinG);
-  const skinM = Kit.tissue({ color:apxCol3('#E8C2A6'), tex:'tissue', rep:[6,6], bump:0.004, rough:0.62, coat:0.2, coatRough:0.5 });
-  const skin = apxDual(new THREE.Mesh(skinG, skinM), '#EFCDB5');
+  /* rectángulo redondeado con signo (ventana del paño) */
+  const sdRect = (x, y, x0, x1, y0, y1, r) => { const cx = (x0+x1)/2, cy = (y0+y1)/2, hx = (x1-x0)/2 - r, hy = (y1-y0)/2 - r; const dx = Math.abs(x-cx) - hx, dy = Math.abs(y-cy) - hy; return Math.hypot(Math.max(dx,0), Math.max(dy,0)) + Math.min(Math.max(dx,dy),0) - r; };
+  const VENT = { amplia:(x, y) => sdRect(x, y, -3.0, 3.0, -3.0, 2.35, 0.8), fid:(x, y) => sdRect(x, y, -3.1, 0.55, -2.75, 0.8, 0.55) };
+  /* zona pintada con antiséptico: todo el abdomen expuesto, más intenso en la fosa ilíaca derecha, con trazos de la torunda */
+  const pos = skinG.attributes.position, nor = skinG.attributes.normal, base = pos.array.slice(), bn = nor.array.slice();
+  const amber = apxCol3('#D98F2E'), white = new THREE.Color(1,1,1), tmpC = new THREE.Color(); const skinCol = new Float32Array(pos.count*3);
+  for (let i=0;i<pos.count;i++){ const x = base[i*3], y = base[i*3+1], z = base[i*3+2]; const front = apxSmooth(0.15, 0.9, z);
+    const nz = 0.22*Kit.fbm(x*1.7+2, y*1.7, 0, 2); const sd = VENT.amplia(x, y) + nz + 0.35; const r = Math.hypot(x+1.4, y+0.9);
+    let w = (1 - apxSmooth(-0.5, 0.15, sd))*front; w *= 0.3 + 0.62*Math.exp(-r*r/5.0); w *= 0.84 + 0.16*Math.sin(r*8 + 2.5*Kit.fbm(x*2.2, y*2.2, 1, 2));
+    tmpC.copy(white).lerp(amber, clamp(w*0.8, 0, 0.8)); skinCol[i*3] = tmpC.r; skinCol[i*3+1] = tmpC.g; skinCol[i*3+2] = tmpC.b; }
+  skinG.setAttribute('color', new THREE.BufferAttribute(skinCol, 3));
+  const skinM = apxTex.mat({ tex:'skin', rep:[7,7], bump: low ? 0.006 : 0.009, color:0xffffff, rough:0.5, coat:0.42, coatRough:0.42, env:0.75, vc:true, sss:['#FF8A62', 0.3, 2.6] });
+  const skin = apxDual(new THREE.Mesh(skinG, skinM), '#EFCDB5'); apxSombra(skin, true, true);
   add('piel', [skin], { pickable:false });
-  /* tapas de corte (maniquí) */
-  const capM = apxDual(new THREE.Mesh(new THREE.BufferGeometry(), Kit.tissue({ color:apxCol3('#D9CBC0'), rough:0.8, coat:0 })), '#DCCFC4');
-  const capG = (y, up) => { const P = [], I = [], n = NU; P.push(0, y, 0); const q = new THREE.Vector3();
-    for (let i=0;i<=n;i++){ apxTorsoPt(thOf(i/n), y, q); P.push(q.x, y, q.z); }
-    for (let i=1;i<=n;i++){ if (up) I.push(0, i+1, i); else I.push(0, i, i+1); }
-    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(P,3)); g.setIndex(I); g.computeVertexNormals(); return g; };
-  capM.geometry = Kit.merge([capG(APX_Y1, true), capG(APX_Y0, false)]);
-  add('tapas', [capM], { pickable:false });
-  /* pedestal */
-  const ped = new THREE.Mesh(new THREE.CylinderGeometry(2.1, 2.3, 0.18, low ? 36 : 64), mat(apxCol3(osc ? '#3A4658' : '#5B6778'), { roughness:0.35, metalness:0.2, clearcoat:0.6 }));
-  ped.position.set(0, APX_Y0-0.1, -0.1); E.scene.add(ped);
-
-  /* datos de la pared para el neumoperitoneo */
-  const pos = skinG.attributes.position, nor = skinG.attributes.normal, base = pos.array.slice(), bn = nor.array.slice(), wgt = new Float32Array(pos.count);
-  for (let i=0;i<pos.count;i++){ const x = base[i*3], y = base[i*3+1], z = base[i*3+2]; const front = apxSmooth(0.2, 1.2, z);
-    wgt[i] = front*apxSmooth(-3.25, -2.3, y)*(1 - apxSmooth(1.5, 2.7, y))*Math.exp(-Math.pow(x/2.3, 4)); }
-  let inflado = 0;
-  function inflar(k){ inflado = k; const A = 0.42*k; for (let i=0;i<pos.count;i++){ const w = wgt[i]*A; pos.array[i*3] = base[i*3] + bn[i*3]*w; pos.array[i*3+1] = base[i*3+1] + bn[i*3+1]*w; pos.array[i*3+2] = base[i*3+2] + bn[i*3+2]*w; }
-    pos.needsUpdate = true; skinG.computeVertexNormals(); Kit.weldNormals(skinG); skinG.computeBoundingSphere(); skinG.computeBoundingBox();
-    pegados.forEach(o => o.upd()); }
-  const inflW = (x, y, z) => apxSmooth(0.2, 1.2, z)*apxSmooth(-3.25, -2.3, y)*(1 - apxSmooth(1.5, 2.7, y))*Math.exp(-Math.pow(x/2.3, 4));
 
   /* punto de la piel (sin inflar) por rayo frontal */
   const rc = new THREE.Raycaster();
   function piel(x, y){ skin.updateMatrixWorld(); rc.set(new THREE.Vector3(x, y, 8), new THREE.Vector3(0,0,-1)); const hh = rc.intersectObject(skin, false)[0];
     if (!hh) return { p:new THREE.Vector3(x, y, apxTorsoZ(x, y)), n:new THREE.Vector3(0,0,1) };
     return { p:hh.point.clone(), n:hh.face ? hh.face.normal.clone() : new THREE.Vector3(0,0,1) }; }
+  const inflW = (x, y, z) => apxSmooth(0.2, 1.2, z)*apxSmooth(-3.25, -2.3, y)*(1 - apxSmooth(1.5, 2.7, y))*Math.exp(-Math.pow(x/2.3, 4));
+  /* datos de la pared para el neumoperitoneo */
+  const wgt = new Float32Array(pos.count);
+  for (let i=0;i<pos.count;i++) wgt[i] = inflW(base[i*3], base[i*3+1], base[i*3+2]);
+
+  /* ---------- paño quirúrgico (dos ventanas: amplia y de fosa ilíaca derecha) ----------
+     Malla derivada de la piel (misma rejilla), desplazada por la normal con arrugas de tela.
+     Los triángulos dentro de la ventana se descartan y los vértices del borde se proyectan
+     sobre la curva de la ventana para que el borde sea limpio. Ambas ventanas comparten
+     los vértices; cada una tiene su propio índice. */
+  const drapeM = apxTex.mat({ tex:'drape', rep:[9,9], bump: low ? 0.012 : 0.02, color:0xffffff, rough:0.95, coat:0, env:0.35, vc:true });
+  const dB = base.slice(), dN = bn.slice(), dW = wgt.slice();
+  const sdA = key => (x, y) => Math.max(VENT[key](x, y), (0.55 - apxTorsoZ(x, y))*1.3);
+  const drapeSD = {}; ['amplia','fid'].forEach(key => { const sd = new Float32Array(pos.count); for (let i=0;i<pos.count;i++){ const x = base[i*3], y = base[i*3+1], z = base[i*3+2]; sd[i] = Math.max(VENT[key](x, y), (0.55 - z)*1.3); } drapeSD[key] = sd; });
+  const proyectar = (i, sdf) => { let x = base[i*3], y = base[i*3+1]; for (let it=0; it<5; it++){ const v = sdf(x, y); if (Math.abs(v) < 0.002) break; const e = 0.01; const gx = (sdf(x+e, y)-sdf(x-e, y))/(2*e), gy = (sdf(x, y+e)-sdf(x, y-e))/(2*e); const gl = gx*gx + gy*gy || 1; x -= v*gx/gl; y -= v*gy/gl; }
+    const sp = piel(x, y); dB[i*3] = sp.p.x; dB[i*3+1] = sp.p.y; dB[i*3+2] = sp.p.z; dN[i*3] = sp.n.x; dN[i*3+1] = sp.n.y; dN[i*3+2] = sp.n.z; dW[i] = inflW(sp.p.x, sp.p.y, sp.p.z); };
+  const drapeIdx = key => { const I = [], sd = drapeSD[key], src = skinG.index.array, sdf = sdA(key), done = new Set(); for (let t=0;t<src.length;t+=3){ const a = src[t], b = src[t+1], c = src[t+2]; const ins = (sd[a] < 0) + (sd[b] < 0) + (sd[c] < 0); if (ins === 3) continue; I.push(a, b, c);
+      if (ins){ [a, b, c].forEach(v => { if (sd[v] < 0 && !done.has(v)){ done.add(v); proyectar(v, sdf); } }); } } return I; };
+  const drapeP = new Float32Array(pos.count*3), drapeC = new Float32Array(pos.count*3), drapeOff = new Float32Array(pos.count);
+  const drapeG = {}; ['amplia','fid'].forEach(key => { const g = new THREE.BufferGeometry(); g.setIndex(drapeIdx(key)); drapeG[key] = g; });
+  const drapePA = new THREE.BufferAttribute(drapeP, 3);
+  for (let i=0;i<pos.count;i++){ const x = dB[i*3], y = dB[i*3+1], z = dB[i*3+2];
+    const dE = Math.min(Math.max(drapeSD.amplia[i], 0), Math.max(drapeSD.fid[i], 0)); const flat = apxSmooth(0.05, 0.9, dE);
+    const wr = (0.1*Kit.fbm(x*0.9+3, y*1.0, 0.5, 3) + 0.035*Kit.fbm(x*2.6, y*2.9, 2, 2) + 0.05*Math.sin(y*1.7 + 1.3*Kit.fbm(x*0.7, y*0.5, 4, 2)))*flat + 0.06*apxSmooth(-0.2, -1.2, z)*Math.sin(y*2.1 + x);
+    drapeOff[i] = 0.012 + 0.06*apxSmooth(0, 0.7, dE) + wr;
+    const k = 1 - 0.12*apxSmooth(0.4, 0.05, dE) - 0.2*clamp(-wr*5, 0, 1); drapeC[i*3] = k; drapeC[i*3+1] = k; drapeC[i*3+2] = k; }
+  ['amplia','fid'].forEach(key => { const g = drapeG[key]; g.setAttribute('position', drapePA); g.setAttribute('uv', skinG.attributes.uv); g.setAttribute('color', new THREE.BufferAttribute(drapeC, 3)); });
+  const drape = { amplia:new THREE.Mesh(drapeG.amplia, drapeM), fid:new THREE.Mesh(drapeG.fid, drapeM) };
+  apxSombra([drape.amplia, drape.fid], true, true);
+  /* tapas de los extremos: también cubiertas por el paño (el paciente sigue tapado por encima y por debajo) */
+  const capM = apxTex.mat({ tex:'drape', rep:[4,4], bump:0.012, color:0xF2F2F2, rough:0.95, coat:0, env:0.35 });
+  const capG = (y, up) => { const P = [], U = [], I = [], n = NU; P.push(0, y, 0); U.push(0.5, 0.5); const q = new THREE.Vector3();
+    for (let i=0;i<=n;i++){ apxTorsoPt(thOf(i/n), y, q); const off = 0.05 + 0.03*Math.sin(i*0.9); P.push(q.x*(1+off/3), y + (up ? off : -off), q.z*(1+off/3)); U.push(0.5 + q.x*0.16, 0.5 + q.z*0.16); }
+    for (let i=1;i<=n;i++){ if (up) I.push(0, i+1, i); else I.push(0, i, i+1); }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(P,3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(U,2)); g.setIndex(I); g.computeVertexNormals(); return g; };
+  const tapas = apxDual(new THREE.Mesh(Kit.merge([capG(APX_Y1, true), capG(APX_Y0, false)]), capM), '#DCCFC4'); apxSombra(tapas, true, true);
+  add('tapas', [tapas], { pickable:false });
+  add('pano', [drape.amplia, drape.fid], { pickable:false, passThrough:true });
+  [drape.amplia, drape.fid].forEach(m => apxDual(m, '#5E9A93', { vertexColors:true }));
+  let ventana = 'amplia';
+  function setVentana(v){ ventana = v; const vis = E.parts.get('pano').visible; drape.amplia.visible = vis && v === 'amplia'; drape.fid.visible = vis && v === 'fid'; E.invalidate(300); }
+  /* pedestal (mesa) */
+  const ped = new THREE.Mesh(new THREE.CylinderGeometry(2.1, 2.3, 0.18, low ? 36 : 64), mat(apxCol3(osc ? '#3A4658' : '#5B6778'), { roughness:0.35, metalness:0.2, clearcoat:0.6 }));
+  ped.position.set(0, APX_Y0-0.1, -0.1); E.scene.add(ped); apxSombra(ped, false, true);
+
+  let inflado = 0;
+  function colocarPano(){ const A = 0.42*inflado; for (let i=0;i<pos.count;i++){ const o = drapeOff[i] + dW[i]*A; drapeP[i*3] = dB[i*3] + dN[i*3]*o; drapeP[i*3+1] = dB[i*3+1] + dN[i*3+1]*o; drapeP[i*3+2] = dB[i*3+2] + dN[i*3+2]*o; }
+    drapePA.needsUpdate = true; drapeG.amplia.computeVertexNormals(); drapeG.fid.computeVertexNormals(); drapeG.amplia.computeBoundingSphere(); drapeG.fid.computeBoundingSphere(); }
+  function inflar(k){ inflado = k; const A = 0.42*k; for (let i=0;i<pos.count;i++){ const w = wgt[i]*A; pos.array[i*3] = base[i*3] + bn[i*3]*w; pos.array[i*3+1] = base[i*3+1] + bn[i*3+1]*w; pos.array[i*3+2] = base[i*3+2] + bn[i*3+2]*w; }
+    pos.needsUpdate = true; skinG.computeVertexNormals(); Kit.weldNormals(skinG); skinG.computeBoundingSphere(); skinG.computeBoundingBox(); colocarPano();
+    pegados.forEach(o => o.upd()); }
+  colocarPano();
+
   /* objetos pegados a la piel que suben con el neumoperitoneo */
   const pegados = [];
-  function pegar(obj, x, y, lift){ const s = piel(x, y); const w = inflW(s.p.x, s.p.y, s.p.z); const o = { upd(){ obj.position.copy(s.p).addScaledVector(s.n, (lift||0) + w*0.42*inflado); } };
+  /* punto de la piel con normal promediada en el entorno (evita que un objeto se incline en el ombligo o en un surco) */
+  function pielSuave(x, y){ const c = piel(x, y); const n = c.n.clone(); [[0.3,0],[-0.3,0],[0,0.3],[0,-0.3]].forEach(([dx, dy]) => n.add(piel(x+dx, y+dy).n)); n.normalize(); return { p:c.p, n }; }
+  function pegar(obj, x, y, lift){ const s = pielSuave(x, y); const w = inflW(s.p.x, s.p.y, s.p.z); const o = { upd(){ obj.position.copy(s.p).addScaledVector(s.n, (lift||0) + w*0.42*inflado); } };
     obj.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), s.n); o.upd(); pegados.push(o); return s; }
 
   /* ---------- órganos (visibles con «ver por dentro») ---------- */
-  const serosa = (tint, rep) => orgvTex.mat({ tex:'serosa', rep:rep || [6,2], bump:0.012, color:tint, rough:0.5, coat:0.6, coatRough:0.24, env:0.85 });
-  const haustra = (r0, n) => u => r0*(0.86 + 0.16*Math.abs(Math.sin(u*Math.PI*n)));
+  const serosa = (tex, tint, rep, extra) => apxTex.mat(Object.assign({ tex:tex || 'serosa', rep:rep || [6,2], bump: low ? 0.012 : 0.02, color:tint, rough:0.42, coat:0.85, coatRough:0.18, env:1.0, sss:['#FF7A5A', 0.28, 2.4] }, extra || {}));
   const inner = [];
-  const cec = apxDual(new THREE.Mesh(Kit.sculpt({ radii:[0.7,0.76,0.6], w: low?28:44, h: low?20:32, disp:(p)=>0.03*Math.sin(p.y*9) }), serosa(0xE9D3C8, [3,2])), '#E9A28C');
+  /* ciego: saco con tres tenias que convergen hacia la base del apéndice y haustras entre ellas */
+  const dBc = new THREE.Vector3(0.4, -0.42, 0.34).normalize(), e1c = new THREE.Vector3(0,1,0).cross(dBc).normalize(), e2c = dBc.clone().cross(e1c);
+  const cecG = Kit.sculpt({ radii:[0.74,0.8,0.64], w: low?36:64, h: low?26:46,
+    disp:(p, d) => { const a = Math.atan2(d.dot(e2c), d.dot(e1c)), lat = Math.acos(clamp(d.dot(dBc), -1, 1)); const ten = Math.max(apxBanda(a, 0.4, 0.14), apxBanda(a, 0.4+2.094, 0.14), apxBanda(a, 0.4+4.189, 0.14))*apxSmooth(0.15, 0.5, lat)*(1 - apxSmooth(2.5, 3.0, lat));
+      const haus = (1 - ten)*0.05*Math.max(0, Math.sin(lat*4.2 + 0.3))*(0.55 + 0.45*Math.cos(3*(a - 0.4) + Math.PI)); return 0.02*ten + haus + 0.012*Kit.fbm(p.x*3, p.y*3, p.z*3, 2); },
+    color:(p, d, dz, out) => { const a = Math.atan2(d.dot(e2c), d.dot(e1c)), lat = Math.acos(clamp(d.dot(dBc), -1, 1)); const ten = Math.max(apxBanda(a, 0.4, 0.13), apxBanda(a, 0.4+2.094, 0.13), apxBanda(a, 0.4+4.189, 0.13))*apxSmooth(0.15, 0.5, lat)*(1 - apxSmooth(2.5, 3.0, lat)); const k = 1 + 0.35*ten; out[0] = k; out[1] = k*(1+0.1*ten); out[2] = k*(1+0.22*ten); } });
+  const cec = apxDual(new THREE.Mesh(cecG, serosa('colon', 0xffffff, [3,2], { vc:true })), '#E9A28C');
   cec.position.set(-1.95, -0.78, 0.3); add('ciego', [cec], {}, ['Ciego', [-3.7,-0.2,1.2]], [-2.35,-0.75,0.8]);
+  /* marco cólico: haustras (radio según ángulo y avance) y tenias claras */
+  const colTubo = (pts, r0, n, seg) => apxTubo(pts, { seg: low ? Math.round(seg*0.6) : seg, rad: low ? 12 : 18,
+    rfn:(u, a) => { const ten = Math.max(apxBanda(a, 0.3, 0.16), apxBanda(a, 0.3+2.094, 0.16), apxBanda(a, 0.3+4.189, 0.16)); const haus = Math.abs(Math.sin(u*Math.PI*n))*(0.5 + 0.5*Math.cos(3*(a-0.3) + Math.PI)); return r0*(0.84 + 0.17*haus*(1-ten) + 0.03*ten); },
+    color:(u, a, out) => { const ten = Math.max(apxBanda(a, 0.3, 0.15), apxBanda(a, 0.3+2.094, 0.15), apxBanda(a, 0.3+4.189, 0.15)); const k = 1 + 0.45*ten; out[0] = k; out[1] = k*(1+0.1*ten); out[2] = k*(1+0.24*ten); } });
   const colG = [
-    Kit.taper([[-2.0,-0.3,0.2],[-2.12,0.6,-0.05],[-2.02,1.9,0.0],[-1.8,2.38,0.3]], 0, 0, { rfn:haustra(0.5, 5), seg: low?22:40, rad: low?10:16 }),
-    Kit.taper([[-1.8,2.38,0.3],[-0.9,1.72,0.95],[0,1.32,1.12],[1.0,1.62,0.98],[1.92,2.48,0.4]], 0, 0, { rfn:haustra(0.44, 7), seg: low?26:48, rad: low?10:16 }),
-    Kit.taper([[1.95,2.5,0.3],[2.18,1.2,-0.1],[2.22,-0.4,-0.1],[2.02,-1.3,0.1]], 0, 0, { rfn:haustra(0.4, 5), seg: low?22:40, rad: low?10:16 }),
-    Kit.taper([[2.02,-1.3,0.1],[1.3,-2.05,0.62],[0.45,-1.85,0.7],[0.02,-2.5,0.3],[0,-3.05,-0.4]], 0, 0, { rfn:haustra(0.34, 4), seg: low?22:40, rad: low?10:16 })
+    colTubo([[-2.0,-0.3,0.2],[-2.12,0.6,-0.05],[-2.02,1.9,0.0],[-1.8,2.38,0.3]], 0.5, 5, 40),
+    colTubo([[-1.8,2.38,0.3],[-0.9,1.72,0.95],[0,1.32,1.12],[1.0,1.62,0.98],[1.92,2.48,0.4]], 0.44, 7, 52),
+    colTubo([[1.95,2.5,0.3],[2.18,1.2,-0.1],[2.22,-0.4,-0.1],[2.02,-1.3,0.1]], 0.4, 5, 40),
+    colTubo([[2.02,-1.3,0.1],[1.3,-2.05,0.62],[0.45,-1.85,0.7],[0.02,-2.5,0.3],[0,-3.05,-0.4]], 0.34, 4, 40)
   ];
-  const colon = apxDual(new THREE.Mesh(Kit.merge(colG), serosa(0xEEDCD2)), '#EDB39F');
+  const colon = apxDual(new THREE.Mesh(Kit.merge(colG), serosa('colon', 0xffffff, [6,2], { vc:true })), '#EDB39F');
   add('colon', [colon], {}, ['Colon', [3.6,2.4,1.2]], [1.95,2.0,0.7]);
-  const ile = apxDual(new THREE.Mesh(Kit.taper([[0.4,-1.0,0.35],[-0.4,-0.62,0.55],[-1.05,-0.42,0.52],[-1.42,-0.5,0.46]], 0.24, 0.25, { seg: low?16:28, rad: low?10:14 }), serosa(0xF3E0DA, [4,1])), '#F2C3B3');
+  const ile = apxDual(new THREE.Mesh(Kit.taper([[0.4,-1.0,0.35],[-0.4,-0.62,0.55],[-1.05,-0.42,0.52],[-1.42,-0.5,0.46]], 0.24, 0.25, { seg: low?16:28, rad: low?10:14 }), serosa('serosa', 0xF6E4DC, [4,1])), '#F2C3B3');
   add('ileon', [ile], {}, ['Íleon terminal', [1.2,0.3,1.7]], [-0.4,-0.62,0.8]);
   const apPts = [[-1.55,-1.18,0.62],[-1.3,-1.58,0.66],[-1.02,-1.95,0.52],[-0.84,-2.22,0.36]];
-  const apM = orgvTex.mat({ tex:'serosa', rep:[2,1], bump:0.02, color:0xE39A90, rough:0.46, coat:0.7, coatRough:0.2 });
-  const apG = Kit.taper(apPts, 0, 0, { rfn:u => 0.13 + 0.03*Math.sin(u*Math.PI) - 0.05*Math.pow(u, 8), seg: low?16:26, rad: low?10:14 });
-  const tipG = new THREE.SphereGeometry(0.1, 12, 10); tipG.translate(-0.84,-2.22,0.36);
+  const apM = serosa('apend', 0xffffff, [2,1], { bump: low ? 0.016 : 0.024, sss:['#FF6A4A', 0.32, 2.2] });
+  const apG = apxTubo(apPts, { seg: low?16:28, rad: low?10:16, rfn:(u, a) => 0.135 + 0.03*Math.sin(u*Math.PI) - 0.05*Math.pow(u, 8) + 0.008*Math.sin(a*3 + u*14) });
+  const tipG = new THREE.SphereGeometry(0.105, 14, 12); tipG.translate(-0.84,-2.22,0.36);
   const apx = apxDual(new THREE.Mesh(Kit.merge([apG, tipG]), apM), '#D9534F');
   add('apendice', [apx], {}, ['Apéndice (inflamado)', [-3.4,-2.6,1.4]], [-1.2,-1.75,0.8]);
   /* asas del intestino delgado, casi transparentes */
   const sb = []; for (let k=0;k<9;k++){ const t = k/8; sb.push([ (k%2 ? 1.2 : -0.8) + 0.25*Math.sin(k*1.7), 0.7 - 2.5*t, 0.15 + 0.25*Math.cos(k)]); }
-  const del = apxDual(new THREE.Mesh(Kit.taper(sb, 0.24, 0.22, { seg: low?60:110, rad: low?8:12 }), Kit.tissue({ color:apxCol3('#EFC6BC'), rough:0.45, coat:0.5, transparent:true, opacity:0.4, depthWrite:false })), '#F4CDC2', { transparent:true, opacity:0.4, depthWrite:false });
+  const del = apxDual(new THREE.Mesh(Kit.taper(sb, 0.24, 0.22, { seg: low?60:110, rad: low?8:12 }), apxTex.mat({ tex:'serosa', rep:[8,1], bump:0.01, color:0xF6D6CC, rough:0.42, coat:0.7, transparent:true, opacity:0.4, depthWrite:false })), '#F4CDC2', { transparent:true, opacity:0.4, depthWrite:false });
   add('delgado', [del], { pickable:false, passThrough:true }, ['Intestino delgado', [2.8,-0.4,1.6]], [0.9,-0.6,0.5]);
   /* pelvis ósea estilizada */
-  const boneM = orgvTex.mat({ tex:'bone', rep:[2,2], bump:0.01, color:0xF4EEE2, rough:0.55, coat:0.25 });
+  const boneM = apxTex.mat({ tex:'bone', rep:[2,2], bump:0.01, color:0xF4EEE2, rough:0.55, coat:0.25 });
   const boneG = [];
   [-1, 1].forEach(sx => { const zA = apxTorsoZ(2.5, -1.2) - 0.22;
     const crest = [[2.5*sx,-1.2,zA],[2.86*sx,-0.55,zA-0.55],[2.98*sx,-0.3,-0.1],[2.72*sx,-0.4,-0.95],[1.95*sx,-0.95,-1.4]];
@@ -361,7 +541,7 @@ function apxEscenaTorso(stage, hooks){
   const hueso = apxDual(new THREE.Mesh(Kit.merge(boneG), boneM), '#EFE6D2'); hueso.material.side = THREE.DoubleSide; hueso.userData.apxM.esq.side = THREE.DoubleSide;
   add('hueso', [hueso], {}, ['Pelvis (hueso coxal)', [-3.9,0.4,0.2]], [-2.9,-0.4,0.0]);
   const ligG = [-1, 1].map(sx => Kit.taper([[2.45*sx,-1.3,apxTorsoZ(2.45,-1.3)-0.12],[1.5*sx,-2.25,apxTorsoZ(1.5,-2.25)-0.14],[0.38*sx,-3.02,apxTorsoZ(0.38,-3.02)-0.12]], 0.035, 0.035, { seg:14, rad:6 }));
-  const lig = apxDual(new THREE.Mesh(Kit.merge(ligG), orgvTex.mat({ tex:'tendon', rep:[1,6], color:0xF6F0E4, rough:0.4, coat:0.5 })), '#F8F3EA');
+  const lig = apxDual(new THREE.Mesh(Kit.merge(ligG), apxTex.mat({ tex:'apon', rep:[1,6], bump:0.01, color:0xF8F3EA, rough:0.35, coat:0.7 })), '#F8F3EA');
   add('lig', [lig], {}, ['Ligamento inguinal', [3.8,-2.9,1.0]], [1.5,-2.25,1.6]);
   inner.push('ciego','colon','ileon','apendice','delgado','hueso','lig');
 
@@ -411,12 +591,18 @@ function apxEscenaTorso(stage, hooks){
   E.setVisible('inc-mcb', false); E.setVisible('inc-rd', false);
   const PORTS = [['Ombligo · cámara', [0, 0.03]], ['Sobre el pubis', [0.05, -2.85]], ['Fosa ilíaca izquierda', [1.75, -1.15]]];
   const portMs = [], trocMs = [], trocGs = [];
+  const metalT = apxTex.mat({ tex:'metal', rep:[2,1], bump:0.004, color:0xE4E9EE, rough:0.24, metal:0.92, coat:0.25, env:1.4 });
   PORTS.forEach(([n, xy], i) => { const r = new THREE.Mesh(new THREE.TorusGeometry(i ? 0.09 : 0.13, 0.022, 8, 28), violeta); r.geometry.rotateX(Math.PI/2); pegar(r, xy[0], xy[1], 0.02); portMs.push(r);
-    const tg = new THREE.Group(); const cuerpo = new THREE.Mesh(new THREE.CylinderGeometry(i ? 0.07 : 0.1, i ? 0.07 : 0.1, 0.55, 18), mat(apxCol3('#C9D2DC'), { metalness:0.85, roughness:0.28 }));
-    cuerpo.position.y = 0.27; const tapa = new THREE.Mesh(new THREE.CylinderGeometry(i ? 0.12 : 0.16, i ? 0.12 : 0.16, 0.14, 18), mat(apxCol3(i ? '#2F6FD6' : '#E0A526'), { roughness:0.4 })); tapa.position.y = 0.58;
-    tg.add(cuerpo, tapa); pegar(tg, xy[0], xy[1], 0.0); E.scene.add(tg); trocMs.push(cuerpo, tapa); trocGs.push([tg, cuerpo, tapa]); });
+    /* trócar: cánula metálica, cabezal con válvula y llave de gas */
+    const tg = new THREE.Group(); const rr = i ? 0.075 : 0.105;
+    const cuerpo = new THREE.Mesh(new THREE.CylinderGeometry(rr, rr*0.9, 0.62, 20), metalT); cuerpo.position.y = 0.3;
+    const cabezal = new THREE.Mesh(new THREE.CylinderGeometry(rr*1.75, rr*1.55, 0.2, 22), mat(apxCol3('#2E3A48'), { roughness:0.45, clearcoat:0.5 })); cabezal.position.y = 0.66;
+    const tapa = new THREE.Mesh(new THREE.CylinderGeometry(rr*1.55, rr*1.75, 0.06, 22), mat(apxCol3(i ? '#2F6FD6' : '#E0A526'), { roughness:0.35, clearcoat:0.6 })); tapa.position.y = 0.79;
+    const llave = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.028, 0.26, 10), metalT); llave.rotation.z = Math.PI/2; llave.position.set(rr*1.7 + 0.1, 0.66, 0);
+    const parts = [cuerpo, cabezal, tapa, llave]; apxSombra(parts, true, false);
+    parts.forEach(m => tg.add(m)); pegar(tg, xy[0], xy[1], 0.0); E.scene.add(tg); trocMs.push(...parts); trocGs.push([tg, ...parts]); });
   add('puertos', portMs, { pickable:false }, ['Puertos', [2.9, 0.9, 1.6]], piel(0.05, 0.03).p);
-  E.addPart('trocares', trocMs, { pickable:true }); trocGs.forEach(([g, a, b]) => g.add(a, b)); E.addLabel('trocares', 'Trócares', [3.3, -1.4, 1.7], piel(1.75, -1.15).p.clone().add(new THREE.Vector3(0,0,0.4)));
+  E.addPart('trocares', trocMs, { pickable:true }); trocGs.forEach(([g, ...ms]) => ms.forEach(m => g.add(m))); E.addLabel('trocares', 'Trócares', [3.3, -1.4, 1.7], piel(1.75, -1.15).p.clone().add(new THREE.Vector3(0,0,0.4)));
   E.setVisible('puertos', false); E.setVisible('trocares', false);
   /* CO₂: partículas dentro del espacio creado */
   const nCO2 = low ? 40 : 90, co2P = new Float32Array(nCO2*3), co2S = [];
@@ -432,7 +618,8 @@ function apxEscenaTorso(stage, hooks){
 
   /* ---------- estado ---------- */
   let dentro = false, esq = false;
-  function setInside(on){ dentro = on; E.setOpacity('piel', on ? 0.26 : 1); inner.forEach(id => E.setVisible(id, on)); }
+  function setInside(on){ dentro = on; E.setOpacity('piel', on ? 0.26 : 1); E.setOpacity('pano', on ? 0.08 : 1); E.setOpacity('tapas', on ? 0.3 : 1); inner.forEach(id => E.setVisible(id, on)); setVentana(ventana);
+    /* la piel translúcida no debe proyectar sombra sobre los órganos */ [skin, drape.amplia, drape.fid, tapas].forEach(m => { m.castShadow = !on; }); }
   setInside(false);
   apxOnTap(E, ev => { if (!hooks.onSkin) return; const hit = apxRayAt(E, ev, [skin]); if (!hit) return; hooks.onSkin(hit.point.clone()); });
 
@@ -445,7 +632,7 @@ function apxEscenaTorso(stage, hooks){
     respuesta(on){ E.setVisible('mcb', on); E.setVisible('linea', on); mcbG.visible = on; },
     candidatos(on){ CANDS.forEach(([k]) => E.setVisible('cand-'+k, on)); },
     CANDS,
-    tecnica(t){ E.setVisible('inc-mcb', t === 'mcb'); E.setVisible('inc-rd', t === 'rd'); E.setVisible('puertos', t === 'lap'); E.setVisible('trocares', t === 'lap' && inflado > 0.5);
+    tecnica(t){ E.setVisible('inc-mcb', t === 'mcb'); E.setVisible('inc-rd', t === 'rd'); E.setVisible('puertos', t === 'lap'); E.setVisible('trocares', t === 'lap' && inflado > 0.5); setVentana(t === 'mcb' || t === 'rd' ? 'fid' : 'amplia');
       if (t !== 'lap' && inflado > 0){ ctrl.neumo(false); } },
     neumo(on, done){ const k0 = inflado, k1 = on ? 1 : 0; E.setVisible('co2', true); tw.run(1.6, k => inflar(k0 + (k1-k0)*k), () => { rehacerTrazos(); E.setVisible('co2', on); E.setVisible('trocares', on && E.parts.get('puertos').visible); done && done(); }); },
     get inflado(){ return inflado; },
@@ -464,44 +651,74 @@ function apxEscenaTorso(stage, hooks){
    deforman en el plano: se abren en forma de ojal, como con separadores.
    ===================================================================== */
 const APX_CAPAS = [
-  { id:'piel',       n:'Piel',                               t:0.16, ang:-64, gap:1.5,  ls:1.95, tex:'k-tissue', tint:'#E8C2A6', side:'#EFBFAE', esq:'#EFCDB5', rep:1.6 },
-  { id:'subcutaneo', n:'Tejido subcutáneo',                  t:0.5,  ang:-64, gap:1.45, ls:1.85, tex:'fat',      tint:0xFFFFFF, side:'#F0CF83', esq:'#F6D77E', rep:0.9 },
-  { id:'apon',       n:'Aponeurosis del oblicuo externo',    t:0.08, ang:-50, gap:1.32, ls:1.75, tex:'tendon',   tint:0xFBF8F2, side:'#EDE7DA', esq:'#F4F1EA', rep:0.7, fib:-50 },
-  { id:'oblint',     n:'Músculo oblicuo interno',            t:0.34, ang:22,  gap:1.22, ls:1.45, tex:'muscle',   tint:0xFFFFFF, side:'#A9443D', esq:'#C8544B', rep:0.55, fib:22 },
-  { id:'transv',     n:'Músculo transverso del abdomen',     t:0.26, ang:8,   gap:1.12, ls:1.35, tex:'muscle',   tint:0xF0E4E4, side:'#9A3D37', esq:'#B04A43', rep:0.55, fib:8 },
-  { id:'peritoneo',  n:'Fascia transversal y peritoneo',     t:0.06, ang:8,   gap:1.02, ls:1.15, tex:'memb',     tint:'#EAD9E0', side:'#D9C3CD', esq:'#CFE3EA', rep:1 }
+  { id:'piel',       n:'Piel',                               t:0.16, ang:-64, gap:1.5,  ls:1.95, tex:'skin',   tint:0xF3D6C0, side:'#E9B9A3', esq:'#EFCDB5', rep:2.2, lift:0.14, rough:0.52, coat:0.35, bump:0.014 },
+  { id:'subcutaneo', n:'Tejido subcutáneo',                  t:0.5,  ang:-64, gap:1.45, ls:1.85, tex:'fat',    tint:0xFFFFFF, side:'#F1CE7E', esq:'#F6D77E', rep:0.9, lift:0.16, rough:0.36, coat:0.95, bump:0.035 },
+  { id:'apon',       n:'Aponeurosis del oblicuo externo',    t:0.08, ang:-50, gap:1.32, ls:1.75, tex:'apon',   tint:0xFFFFFF, side:'#EDE7DA', esq:'#F4F1EA', rep:0.8, lift:0.12, rough:0.25, coat:1.0,  bump:0.02, fib:-50 },
+  { id:'oblint',     n:'Músculo oblicuo interno',            t:0.34, ang:22,  gap:1.22, ls:1.45, tex:'muscle', tint:0xFFFFFF, side:'#A9443D', esq:'#C8544B', rep:0.6, lift:0.12, rough:0.4,  coat:0.85, bump:0.025, fib:22 },
+  { id:'transv',     n:'Músculo transverso del abdomen',     t:0.26, ang:8,   gap:1.12, ls:1.35, tex:'muscle', tint:0xEFDCDC, side:'#9A3D37', esq:'#B04A43', rep:0.6, lift:0.1,  rough:0.4,  coat:0.85, bump:0.025, fib:8 },
+  { id:'peritoneo',  n:'Fascia transversal y peritoneo',     t:0.06, ang:8,   gap:1.02, ls:1.15, tex:'perit',  tint:0xF3E9EE, side:'#D9C3CD', esq:'#CFE3EA', rep:1,   lift:0.1,  rough:0.15, coat:1.0,  bump:0.008 }
 ];
+/* instrumental metálico estilizado (v2.0) */
+const apxMetal = (extra) => apxTex.mat(Object.assign({ tex:'metal', rep:[3,1], bump:0.003, color:0xF6F8FA, rough:0.2, metal:0.88, coat:0.4, coatRough:0.12, env:2.2 }, extra || {}));
+/* separador de Farabeuf: lámina en L (mango horizontal, valva vertical de longitud 1 que se escala) */
+function apxFarabeuf(material){ const g = new THREE.Group(); const w = 0.62, th = 0.05;
+  /* lámina con cantos biselados (atrapa los reflejos), en dos tramos: mango inclinado y valva vertical */
+  const lamina = (L, W) => { const sh = new THREE.Shape(); const r = 0.12; sh.moveTo(r, 0); sh.lineTo(L - r, 0); sh.quadraticCurveTo(L, 0, L, r); sh.lineTo(L, W - r); sh.quadraticCurveTo(L, W, L - r, W); sh.lineTo(r, W); sh.quadraticCurveTo(0, W, 0, W - r); sh.lineTo(0, r); sh.quadraticCurveTo(0, 0, r, 0);
+    const gg = new THREE.ExtrudeGeometry(sh, { depth:th, bevelEnabled:true, bevelThickness:0.014, bevelSize:0.014, bevelSegments:2, curveSegments:4 }); gg.translate(0, -W/2, -th/2); return gg; };
+  const tilt = 0.55, ml = 2.6;
+  const mango = new THREE.Mesh(lamina(ml, w), material); mango.rotation.set(Math.PI/2, 0, tilt, 'ZYX');
+  const codo = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, w, 12), material); codo.rotation.x = Math.PI/2; codo.position.set(0, -0.05, 0);
+  const valva = new THREE.Mesh(lamina(1, w*0.92), material); valva.rotation.set(Math.PI/2, 0, -Math.PI/2, 'ZYX');
+  const punta = new THREE.Mesh(new THREE.BoxGeometry(0.16, th, w*0.9), material); punta.position.set(0.08, -1, 0);
+  const valvaG = new THREE.Group(); valvaG.add(valva, punta); valvaG.position.y = -0.05;
+  g.add(mango, codo, valvaG); g.userData.valva = valvaG; apxSombra([mango, codo, valva, punta], true, false); return { g, meshes:[mango, codo, valva, punta] }; }
+/* pinza hemostática (Kelly) o de Babcock: dos ramas que se cruzan, mandíbulas finas y anillos */
+function apxPinza(material, o={}){ const g = new THREE.Group(); const L = o.L ?? 3.4, r = o.r ?? 0.045; const ms = [];
+  [1, -1].forEach(sg => { const rama = new THREE.Mesh(Kit.taper([[0,0,0],[0.05*sg,L*0.32,0],[-0.12*sg,L*0.62,0],[-0.22*sg,L,0]], r, r*1.1, { seg:10, rad:8 }), material); ms.push(rama);
+    const anillo = new THREE.Mesh(new THREE.TorusGeometry(0.19, 0.035, 8, 20), material); anillo.position.set(-0.33*sg, L + 0.15, 0); ms.push(anillo);
+    if (!o.babcock){ const mand = new THREE.Mesh(Kit.taper([[0,0,0],[0.02*sg,-0.32,0],[0.0,-0.62,0]], r*0.9, r*0.45, { seg:6, rad:8 }), material); ms.push(mand); }
+    else { const mand = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.03, 8, 16, Math.PI), material); mand.rotation.set(0, Math.PI/2, 0); mand.position.set(sg*0.08, -0.34, 0); mand.scale.set(1, 1.7, 1); ms.push(mand); } });
+  const eje = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.12, 10), material); eje.rotation.x = Math.PI/2; eje.position.y = L*0.48; ms.push(eje);
+  ms.forEach(m => { g.add(m); if (!m.geometry.attributes.uv) m.geometry.setAttribute('uv', new THREE.Float32BufferAttribute(new Float32Array(m.geometry.attributes.position.count*2), 2)); }); apxSombra(ms, true, false); return { g, meshes:ms }; }
+/* ligadura anudada alrededor de una curva: lazo, nudo y dos cabos cortos */
+function apxLigadura(curve, u, r, material){ const p = curve.getPointAt(u), t = curve.getTangentAt(u).normalize(); const g = new THREE.Group(); g.position.copy(p); g.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1), t);
+  const lazo = new THREE.Mesh(new THREE.TorusGeometry(r, 0.035, 8, 30), material); const nudo = new THREE.Mesh(new THREE.SphereGeometry(0.075, 12, 10), material); nudo.position.set(0, r+0.02, 0); nudo.scale.set(1.3, 0.9, 1.1);
+  const cabo1 = new THREE.Mesh(Kit.taper([[0, r+0.05, 0],[0.18, r+0.22, 0.08],[0.3, r+0.3, 0.2]], 0.03, 0.03, { seg:6, rad:6 }), material), cabo2 = new THREE.Mesh(Kit.taper([[0, r+0.05, 0],[-0.16, r+0.24, -0.06],[-0.26, r+0.34, -0.16]], 0.03, 0.03, { seg:6, rad:6 }), material);
+  const ms = [lazo, nudo, cabo1, cabo2]; ms.forEach(m => { g.add(m); if (!m.geometry.attributes.uv) m.geometry.setAttribute('uv', new THREE.Float32BufferAttribute(new Float32Array(m.geometry.attributes.position.count*2), 2)); });
+  /* se devuelve con la transformación horneada en cada malla (coordenadas del mundo), para registrarlas como parte */
+  g.updateMatrixWorld(true); ms.forEach(m => { m.updateMatrixWorld(true); const M = m.matrixWorld.clone(); g.remove(m); M.decompose(m.position, m.quaternion, m.scale); }); return { g, meshes:ms }; }
 function apxEscenaPlanos(stage, hooks){
   const osc = apxOscuro();
   const E = new Engine3D(stage, {
     radius:10.5, phi:0.98, theta:0.42, minR:3.5, maxR:18, target:[0.2,-0.9,0], floor:-3.6, floorSize:9, dark:osc, exposure:1.0,
     onSelect:(id) => { if (id && hooks.onInfo) hooks.onInfo(id); E.select(id && APX_INFO[id] ? id : null); },
-    aria:'Modelo 3D de un bloque circular de la pared abdominal de la fosa ilíaca derecha, con sus capas apiladas: piel, tejido subcutáneo, aponeurosis del oblicuo externo, músculo oblicuo interno, músculo transverso y peritoneo. Debajo asoma el ciego. Cada capa se abre en forma de ojal cuando eliges el plano correcto. Usa los botones del panel para hacerlo con el teclado.'
+    aria:'Modelo 3D realista de un bloque circular de la pared abdominal de la fosa ilíaca derecha, con sus capas apiladas: piel, tejido subcutáneo (grasa amarilla), aponeurosis nacarada del oblicuo externo, músculo oblicuo interno, músculo transverso y peritoneo translúcido. Debajo asoma el ciego con sus tenias. Cada capa se abre en forma de ojal y sus bordes se levantan, sostenidos por separadores metálicos, cuando eliges el plano correcto. Usa los botones del panel para hacerlo con el teclado.'
   });
   stage._apxE = E; apxFrame(E, 1.1);
   const low = E.low, tw = apxTweens(E), meshes = [];
-  apxFondo(E, osc, ['#F3EEEA','#1A2332'], ['#E2DAD3','#0E1522']);
+  apxFondo(E, osc, ['#EEF0F2','#1A2332'], ['#D9DEE3','#0E1522']);
+  apxLampara(E, [2.5, 9.5, 5.5], [0.2, -1, 0], { int: osc ? 1.15 : 1.0, angle:0.55, far:30, radius:4 });
   const R = 2.6, N = low ? 36 : 60, M = low ? 10 : 16, DOME = 0.035;
   let top = 0; const capas = {};
   const toW = (X, Y, z) => new THREE.Vector3(X, z - DOME*(X*X + Y*Y), -Y);
+  const metal = apxMetal();
   APX_CAPAS.forEach((C, li) => {
     const a = C.ang*Math.PI/180, d = [Math.cos(a), Math.sin(a)], zt = top, zb = top - C.t;
     const fa = (C.fib !== undefined ? C.fib : C.ang)*Math.PI/180, f = [Math.cos(fa), Math.sin(fa)];
+    const memb = C.tex === 'perit';
     /* material de las caras (con textura orientada a las fibras) y de los bordes de corte */
-    let capM;
-    if (C.tex === 'k-tissue') capM = Kit.tissue({ color:apxCol3(C.tint), tex:'tissue', rep:[1,1], bump:0.006, rough:0.6, coat:0.2 });
-    else if (C.tex === 'memb') capM = new THREE.MeshPhysicalMaterial({ color:apxCol3(C.tint), roughness:0.12, clearcoat:1, clearcoatRoughness:0.1, transparent:true, opacity:0.55, depthWrite:false, side:THREE.DoubleSide, envMapIntensity:1.3 });
-    else capM = orgvTex.mat({ tex:C.tex, rep:[1,1], bump: C.tex==='fat' ? 0.03 : 0.018, color:typeof C.tint === 'string' ? apxCol3(C.tint) : C.tint, rough: C.tex==='tendon' ? 0.32 : 0.48, coat: C.tex==='tendon' ? 0.8 : 0.55, coatRough:0.22 });
-    const sideM = C.tex === 'memb' ? capM : Kit.tissue({ color:apxCol3(C.side), rough:0.55, coat:0.35, tex:'tissue', rep:[3,1], bump:0.004 });
+    const capM = apxTex.mat({ tex:C.tex, rep:[1,1], bump: low ? C.bump*0.7 : C.bump, color:C.tint, rough:C.rough, coat:C.coat, coatRough: memb ? 0.08 : 0.2, env: memb ? 1.4 : 1.0, side:THREE.DoubleSide,
+      transparent: memb, opacity: memb ? 0.62 : 1, depthWrite: !memb, sss: memb ? null : ['#FF7A5A', C.tex === 'skin' ? 0.22 : C.tex === 'apon' ? 0.12 : 0.3, 2.4] });
+    const sideM = memb ? capM : apxTex.mat({ tex: C.tex === 'skin' ? 'fat' : C.tex, rep:[3,0.6], bump: C.tex === 'skin' ? 0.02 : C.bump, color: C.tex === 'skin' ? 0xF7D9A6 : C.tint, rough: C.rough + 0.08, coat: C.coat*0.8, side:THREE.DoubleSide, sss:['#FF7A5A', 0.3, 2.4] });
     const halves = [1, -1].map(sg => {
       const n = [-d[1]*sg, d[0]*sg];
       const nC = (N+1)*(M+1), nW = (N+1)*2;
       const capP = new Float32Array(nC*2*3), capU = new Float32Array(nC*2*2), wallP = new Float32Array(nW*2*3), wallU = new Float32Array(nW*2*2);
       const S = i => -R + 2*R*i/N, TM = s => Math.sqrt(Math.max(0, R*R - s*s));
-      /* UV: a lo largo de las fibras (la textura de músculo y de tendón tiene las fibras en u) */
+      /* UV: a lo largo de las fibras (la textura de músculo y de aponeurosis tiene las fibras en u) */
       for (let i=0;i<=N;i++) for (let j=0;j<=M;j++){ const s = S(i), t = TM(s)*j/M; const X = s*d[0] + t*n[0], Y = s*d[1] + t*n[1];
         const u = (X*f[0] + Y*f[1])*C.rep, v = (-X*f[1] + Y*f[0])*C.rep, k = i*(M+1)+j; capU[k*2] = u; capU[k*2+1] = v; capU[(nC+k)*2] = u; capU[(nC+k)*2+1] = v; }
-      for (let i=0;i<=N;i++){ for (let w=0; w<2; w++){ const k = (w*(N+1) + i)*2; wallU[k*2] = i/N*3; wallU[k*2+1] = 0; wallU[(k+1)*2] = i/N*3; wallU[(k+1)*2+1] = 0.3; } }
+      for (let i=0;i<=N;i++){ for (let w=0; w<2; w++){ const k = (w*(N+1) + i)*2; wallU[k*2] = i/N*3; wallU[k*2+1] = 0; wallU[(k+1)*2] = i/N*3; wallU[(k+1)*2+1] = 0.6; } }
       const idxC = [], idxW = [];
       for (let i=0;i<N;i++) for (let j=0;j<M;j++){ const a0 = i*(M+1)+j, b0 = a0+M+1; idxC.push(a0, b0, a0+1, a0+1, b0, b0+1); idxC.push(nC+a0, nC+a0+1, nC+b0, nC+a0+1, nC+b0+1, nC+b0); }
       for (let w=0; w<2; w++) for (let i=0;i<N;i++){ const k0 = (w*(N+1)+i)*2, k1 = k0+2; idxW.push(k0, k1, k0+1, k0+1, k1, k1+1); }
@@ -509,50 +726,76 @@ function apxEscenaPlanos(stage, hooks){
       gC.setAttribute('position', new THREE.BufferAttribute(capP, 3)); gC.setAttribute('uv', new THREE.BufferAttribute(capU, 2)); gC.setIndex(idxC);
       gW.setAttribute('position', new THREE.BufferAttribute(wallP, 3)); gW.setAttribute('uv', new THREE.BufferAttribute(wallU, 2)); gW.setIndex(idxW);
       const env = s => Math.sqrt(Math.max(0, 1 - (s/C.ls)*(s/C.ls)));
+      /* apertura: las mitades se separan en el plano (ojal) y el borde de corte se levanta y se curva hacia fuera (retraído por el separador) */
       function place(kk){
+        const lift = kk*C.lift;
         for (let i=0;i<=N;i++){ const s = S(i), tm = TM(s), e = env(s);
-          for (let j=0;j<=M;j++){ const t = tm*j/M; const del = kk*C.gap*0.5*e*Math.pow(Math.max(0, 1 - (tm > 1e-6 ? t/tm : 1)), 1.6);
+          for (let j=0;j<=M;j++){ const t = tm*j/M; const q = tm > 1e-6 ? t/tm : 1; const near = Math.pow(Math.max(0, 1 - q), 1.6); const del = kk*C.gap*0.5*e*near; const zl = lift*e*Math.pow(Math.max(0, 1 - q), 2.4);
             const X = s*d[0] + (t+del)*n[0], Y = s*d[1] + (t+del)*n[1], k = i*(M+1)+j;
-            const p1 = toW(X, Y, zt), p2 = toW(X, Y, zb); capP.set([p1.x,p1.y,p1.z], k*3); capP.set([p2.x,p2.y,p2.z], (nC+k)*3); }
+            const p1 = toW(X, Y, zt + zl), p2 = toW(X, Y, zb + zl*0.8); capP.set([p1.x,p1.y,p1.z], k*3); capP.set([p2.x,p2.y,p2.z], (nC+k)*3); }
           /* pared exterior (t = tm) y pared de corte (t = 0) */
-          [[tm, 0], [0, kk*C.gap*0.5*e]].forEach(([t, del], w) => { const X = s*d[0] + (t+del)*n[0], Y = s*d[1] + (t+del)*n[1];
-            const p1 = toW(X, Y, zt), p2 = toW(X, Y, zb), k = (w*(N+1)+i)*2; wallP.set([p1.x,p1.y,p1.z], k*3); wallP.set([p2.x,p2.y,p2.z], (k+1)*3); }); }
+          [[tm, 0, 0], [0, kk*C.gap*0.5*e, lift*e]].forEach(([t, del, zl], w) => { const X = s*d[0] + (t+del)*n[0], Y = s*d[1] + (t+del)*n[1];
+            const p1 = toW(X, Y, zt + zl), p2 = toW(X, Y, zb + zl*0.8), k = (w*(N+1)+i)*2; wallP.set([p1.x,p1.y,p1.z], k*3); wallP.set([p2.x,p2.y,p2.z], (k+1)*3); }); }
         gC.attributes.position.needsUpdate = true; gW.attributes.position.needsUpdate = true; gC.computeVertexNormals(); gW.computeVertexNormals(); gC.computeBoundingSphere(); gW.computeBoundingSphere();
       }
       place(0);
       /* orientación: la tapa superior mira hacia arriba; si no, se invierten los triángulos */
       const fix = (g, want) => { const nn = g.attributes.normal, P = g.attributes.position; const i0 = g.index.array[0]; const got = want(i0, nn, P); if (got < 0){ const a = g.index.array; for (let q=0;q<a.length;q+=3){ const tmp = a[q+1]; a[q+1] = a[q+2]; a[q+2] = tmp; } g.index.needsUpdate = true; g.computeVertexNormals(); } };
       fix(gC, (i, nn) => nn.getY(i));
-      /* pared: la exterior mira hacia fuera del disco */
       fix(gW, (i, nn, P) => nn.getX(i)*P.getX(i) + nn.getZ(i)*P.getZ(i));
-      const mc = apxDual(new THREE.Mesh(gC, capM), C.esq, C.tex === 'memb' ? { transparent:true, opacity:0.55, depthWrite:false, side:THREE.DoubleSide } : { side:THREE.DoubleSide });
-      const mw = apxDual(new THREE.Mesh(gW, sideM), C.side, C.tex === 'memb' ? { transparent:true, opacity:0.55, depthWrite:false, side:THREE.DoubleSide } : { side:THREE.DoubleSide });
-      if (C.tex !== 'memb'){ capM.side = THREE.DoubleSide; sideM.side = THREE.DoubleSide; }
-      if (C.tex === 'memb'){ mc.renderOrder = 2; mw.renderOrder = 2; }
+      const mc = apxDual(new THREE.Mesh(gC, capM), C.esq, memb ? { transparent:true, opacity:0.62, depthWrite:false, side:THREE.DoubleSide } : { side:THREE.DoubleSide });
+      const mw = apxDual(new THREE.Mesh(gW, sideM), C.side, memb ? { transparent:true, opacity:0.62, depthWrite:false, side:THREE.DoubleSide } : { side:THREE.DoubleSide });
+      if (memb){ mc.renderOrder = 2; mw.renderOrder = 2; } else apxSombra([mc, mw], true, true);
       return { mc, mw, place };
     });
     const list = []; halves.forEach(hv => list.push(hv.mc, hv.mw)); list.forEach(m => meshes.push(m));
-    E.addPart(C.id, list, { passThrough: C.tex === 'memb' });
+    E.addPart(C.id, list, { passThrough: memb });
     const anc = toW(R*0.74, -R*0.67, (zt+zb)/2);
     E.addLabel(C.id, C.n, [anc.x + 2.0, anc.y + 0.1, anc.z + 0.9], anc);
-    capas[C.id] = { C, halves, k:0 };
+    capas[C.id] = { C, halves, k:0, zt, zb };
     top = zb - 0.012;
   });
   const fondo = top;
-  /* debajo: el ciego con una tenia y la base del apéndice, vistos a través del ojal */
-  const cecM = orgvTex.mat({ tex:'serosa', rep:[3,2], bump:0.012, color:0xE9D3C8, rough:0.5, coat:0.65, coatRough:0.22 });
-  const cec = apxDual(new THREE.Mesh(Kit.sculpt({ radii:[2.2,1.1,1.7], w: low?36:56, h: low?24:40, disp:p => 0.05*Math.sin(p.x*3.2) }), cecM), '#E9A28C');
+  /* debajo: el ciego con sus tenias y haustras, visto a través del ojal */
+  const ax = new THREE.Vector3(1, 0.25, 0.35).normalize(), e1 = new THREE.Vector3(0,1,0).cross(ax).normalize(), e2 = ax.clone().cross(e1);
+  const tenF = (d, w) => { const a = Math.atan2(d.dot(e2), d.dot(e1)); return Math.max(apxBanda(a, 1.2, w), apxBanda(a, 1.2+2.094, w), apxBanda(a, 1.2+4.189, w)); };
+  const cecG = Kit.sculpt({ radii:[2.3,1.15,1.8], w: low?40:64, h: low?28:48,
+    disp:(p, d) => { const ten = tenF(d, 0.1); const lat = Math.acos(clamp(d.dot(ax), -1, 1)); const a = Math.atan2(d.dot(e2), d.dot(e1)); const haus = (1-ten)*0.09*Math.max(0, Math.sin(lat*4 + 0.4))*(0.5 + 0.5*Math.cos(3*(a-1.2) + Math.PI)); return 0.03*ten + haus + 0.02*Kit.fbm(p.x*1.6, p.y*1.6, p.z*1.6, 2); },
+    color:(p, d, dz, out) => { const ten = tenF(d, 0.09); const k = 1 + 0.32*ten; out[0] = k; out[1] = k*(1+0.08*ten); out[2] = k*(1+0.2*ten); } });
+  const cecM = apxTex.mat({ tex:'colon', rep:[3,2], bump: low ? 0.012 : 0.02, color:0xffffff, rough:0.4, coat:0.9, coatRough:0.16, env:1.0, vc:true, sss:['#FF7A5A', 0.28, 2.4] });
+  const cec = apxDual(new THREE.Mesh(cecG, cecM), '#E9A28C'); apxSombra(cec, false, true);
   cec.position.set(0.1, fondo - 1.45, 0.15); cec.userData.sub = 'ciego';
-  const tenG = Kit.taper([[-2.0, fondo-1.05, -0.9],[-0.6, fondo-0.4, -0.5],[0.5, fondo-0.37, 0.2],[1.5, fondo-0.62, 0.9]], 0.09, 0.09, { seg: low?16:28, rad:8 });
-  const ten = apxDual(new THREE.Mesh(tenG, orgvTex.mat({ tex:'tendon', rep:[1,6], color:0xF6EEE2, rough:0.42, coat:0.6 })), '#FFF3D6');
-  E.addPart('ciego', [cec, ten], {}); E.addLabel('ciego', 'Ciego (bajo el peritoneo)', [-3.4, fondo-1.2, 1.6], new THREE.Vector3(-0.6, fondo-0.45, 0.6));
-  meshes.push(cec, ten);
+  /* vasos finos sobre la serosa (rama de la ileocólica) */
+  const vasM = Kit.tissue({ color:apxCol3('#B93B36'), rough:0.4, coat:0.7 });
+  const vasG = [Kit.taper([[-2.1, fondo-0.9, -0.6],[-1.2, fondo-0.42, -0.2],[-0.3, fondo-0.3, 0.5],[0.7, fondo-0.45, 1.1]], 0.045, 0.03, { seg: low?12:22, rad:7 }), Kit.taper([[-1.2, fondo-0.42, -0.2],[-0.9, fondo-0.35, 0.6],[-0.4, fondo-0.5, 1.2]], 0.03, 0.02, { seg: low?8:14, rad:6 })];
+  vasG.forEach(g => { if (!g.attributes.uv) g.setAttribute('uv', new THREE.Float32BufferAttribute(new Float32Array(g.attributes.position.count*2), 2)); });
+  const vas = apxDual(new THREE.Mesh(Kit.merge(vasG), vasM), '#C8443E');
+  E.addPart('ciego', [cec, vas], {}); E.addLabel('ciego', 'Ciego (bajo el peritoneo)', [-3.4, fondo-1.2, 1.6], new THREE.Vector3(-0.6, fondo-0.45, 0.6));
+  meshes.push(cec, vas);
   /* orientación */
   E.addLabel('o-cab', '↑ Hacia la cabeza', [0, 0.5, -R-0.7]);
   E.addLabel('o-med', 'Hacia el ombligo →', [R+0.9, 0.3, -0.4]);
+
+  /* ---------- instrumental: dos separadores de Farabeuf y una pinza de Kelly ---------- */
+  const a0 = APX_CAPAS[0].ang*Math.PI/180, n0 = [-Math.sin(a0), Math.cos(a0)];
+  const seps = [1, -1].map(sg => { const F = apxFarabeuf(metal); E.scene.add(F.g); F.g.visible = false; F.sg = sg; F.meshes.forEach(m => meshes.push(m)); return F; });
+  E.addPart('separadores', seps.flatMap(F => F.meshes), { pickable:false }); seps.forEach(F => F.meshes.forEach(m => F.g.add(m)));
+  const kelly = apxPinza(metal, { L:3.2 }); E.scene.add(kelly.g); kelly.g.visible = false; kelly.meshes.forEach(m => meshes.push(m));
+  E.addPart('pinza-k', kelly.meshes, { pickable:false }); kelly.meshes.forEach(m => kelly.g.add(m));
+  function colocarInstr(){
+    const kp = capas.piel.k; let prof = 0; APX_CAPAS.forEach(C => { const c = capas[C.id]; if (c.k > 0.05) prof = Math.max(prof, -c.zb*c.k); });
+    seps.forEach(F => { const on = kp > 0.03; F.g.visible = on; if (!on) return; const off = kp*APX_CAPAS[0].gap*0.5 + 0.04 + 0.35*(1-kp);
+      const X = n0[0]*off*F.sg, Y = n0[1]*off*F.sg; const w = toW(X, Y, 0.02 + APX_CAPAS[0].lift*kp);
+      F.g.position.copy(w); F.g.rotation.set(0, Math.atan2(-(-n0[1]*F.sg), n0[0]*F.sg), 0.06); F.g.userData.valva.scale.y = Math.max(0.15, prof + 0.05); });
+    const kper = capas.peritoneo.k; const on = kper > 0.05; kelly.g.visible = on;
+    if (on){ const C = APX_CAPAS[5], a = C.ang*Math.PI/180, n = [-Math.sin(a), Math.cos(a)]; const off = kper*C.gap*0.5 + 0.02; const w = toW(-n[0]*off + 0.3*Math.cos(a), -n[1]*off + 0.3*Math.sin(a), capas.peritoneo.zt + 0.08);
+      kelly.g.position.copy(w); kelly.g.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), new THREE.Vector3(-n[0]*0.55 - 0.15, 0.85, n[1]*0.55).normalize()); kelly.g.scale.setScalar(0.85); }
+    E.invalidate(200);
+  }
+  colocarInstr();
   /* línea de sutura (cierre) en la piel */
   const sutM = Kit.tissue({ color:apxCol3('#6C4FB0'), rough:0.45, coat:0.3 });
-  const sutG = []; const a0 = APX_CAPAS[0].ang*Math.PI/180;
+  const sutG = [];
   for (let i=-5;i<=5;i++){ const s = i*0.32; const X = s*Math.cos(a0), Y = s*Math.sin(a0); const nx = -Math.sin(a0), ny = Math.cos(a0);
     const pA = toW(X - nx*0.16, Y - ny*0.16, 0.012), pB = toW(X + nx*0.16, Y + ny*0.16, 0.012); sutG.push(Kit.taper([pA, pA.clone().lerp(pB, 0.5).add(new THREE.Vector3(0, 0.035, 0)), pB], 0.018, 0.018, { seg:4, rad:5 })); }
   const sut = new THREE.Mesh(Kit.merge(sutG), sutM); E.addPart('cierre', [sut], { pickable:false }); E.setVisible('cierre', false);
@@ -560,11 +803,11 @@ function apxEscenaPlanos(stage, hooks){
   let esq = false;
   const ctrl = {
     E,
-    abrir(id, done){ const c = capas[id]; if (!c) return done && done(); const k0 = c.k; tw.run(1.0, k => { c.k = k0 + (1-k0)*k; c.halves.forEach(hv => hv.place(c.k)); }, done); },
+    abrir(id, done){ const c = capas[id]; if (!c) return done && done(); const k0 = c.k; tw.run(1.0, k => { c.k = k0 + (1-k0)*k; c.halves.forEach(hv => hv.place(c.k)); colocarInstr(); }, done); },
     cerrarTodo(done){ const ids = APX_CAPAS.map(c => c.id).reverse(); let i = 0;
-      const next = () => { if (i >= ids.length){ E.setVisible('cierre', true); done && done(); return; } const c = capas[ids[i++]]; const k0 = c.k; tw.run(0.55, k => { c.k = k0*(1-k); c.halves.forEach(hv => hv.place(c.k)); }, next); };
+      const next = () => { if (i >= ids.length){ E.setVisible('cierre', true); done && done(); return; } const c = capas[ids[i++]]; const k0 = c.k; tw.run(0.55, k => { c.k = k0*(1-k); c.halves.forEach(hv => hv.place(c.k)); colocarInstr(); }, next); };
       next(); },
-    reiniciar(){ tw.clear(); Object.values(capas).forEach(c => { c.k = 0; c.halves.forEach(hv => hv.place(0)); }); E.setVisible('cierre', false); E.select(null); },
+    reiniciar(){ tw.clear(); Object.values(capas).forEach(c => { c.k = 0; c.halves.forEach(hv => hv.place(0)); }); colocarInstr(); E.setVisible('cierre', false); E.select(null); },
     resaltar(id){ E.select(id); },
     setEsq(on){ esq = on; apxSetEsq(meshes, on); E.select(E.selected); },
     dispose(){ tw.clear(); E.dispose(); }
@@ -581,18 +824,20 @@ function apxEscenaPlanos(stage, hooks){
 function apxEscenaCampo(stage, tec, hooks){
   const osc = apxOscuro(), lap = tec === 'lap';
   const E = new Engine3D(stage, {
-    radius: lap ? 23 : 17, phi: lap ? 1.2 : 1.28, theta: lap ? 0.5 : 0.3, minR:4, maxR:34, target: lap ? [1.2,-0.2,1.2] : [0.6,-0.8,0.8], floor: lap ? -8.2 : -6.6, floorSize: lap ? 20 : 15, dark:osc, exposure:1.0,
+    radius: lap ? 24 : 17, phi: lap ? 1.1 : 1.2, theta: lap ? 0.8 : 0.45, minR:4, maxR:34, target: lap ? [1.6,-0.4,1.6] : [0.7,-0.9,0.9], floor: lap ? -8.2 : -6.6, floorSize: lap ? 20 : 15, dark:osc, exposure:1.0,
     onSelect:(id) => { if (id && hooks.onInfo) hooks.onInfo(id); E.select(id && APX_INFO[id] ? id : null); },
-    aria: lap ? 'Modelo 3D estilizado de una apendicectomía laparoscópica: la pared abdominal levantada por el gas, tres trócares con una cámara y dos instrumentos largos que llegan al ciego y al apéndice inflamado. A la izquierda, un monitor muestra lo que ve la cámara. Sin sangre. Las acciones se eligen con los botones del panel.'
-      : 'Modelo 3D estilizado de una apendicectomía abierta: el ciego con sus tenias, el apéndice inflamado, el mesoapéndice con la arteria apendicular y el borde de la incisión con sus capas, sostenido por dos separadores. Sin sangre. Las acciones se eligen con los botones del panel.'
+    aria: lap ? 'Modelo 3D realista de una apendicectomía laparoscópica: la pared abdominal levantada por el gas, tres trócares con una cámara y dos instrumentos largos que llegan al ciego y al apéndice inflamado. A la izquierda, un monitor muestra lo que ve la cámara, con la iluminación de la óptica. Sin sangre. Las acciones se eligen con los botones del panel.'
+      : 'Modelo 3D realista de una apendicectomía abierta: la incisión como una ventana en la piel, con los bordes protegidos por compresas y dos separadores de Farabeuf; dentro, el ciego con sus tenias y haustras, el íleon terminal, el apéndice inflamado sostenido por una pinza de Babcock, el mesoapéndice con la arteria apendicular y el epiplón. Sin sangre. Las acciones se eligen con los botones del panel.'
   });
   stage._apxE = E; apxFrame(E, lap ? 1.45 : 1.15);
   const low = E.low, tw = apxTweens(E), meshes = [];
-  const fondoM = apxFondo(E, osc, ['#F3ECE8','#1C2230'], ['#E4D8D2','#0F1420']);
+  const fondoM = apxFondo(E, osc, ['#EEF0F2','#1C2230'], ['#D8DDE2','#0F1420']);
+  /* lámpara de quirófano sobre el campo (sombras suaves de instrumentos y bordes) */
+  const lamp = apxLampara(E, lap ? [4, 16, 18] : [3, 12, 16], lap ? [1.5, -1, 1] : [0.6, -1.2, 1.5], { int: osc ? 1.2 : 1.05, angle:0.5, far:60, radius:4 });
   /* pared posterior del abdomen (retroperitoneo), telón del campo */
   const post = new THREE.Mesh(apxGrid(low?20:32, low?20:32, (u, v, p) => { const x = -9 + 21*u, y = -9.5 + 18*v; p.set(x, y, -2.5 - 0.035*((x-1)*(x-1) + (y+1)*(y+1)) + 0.12*Math.sin(x*0.9)*Math.cos(y*0.7)); }),
-    orgvTex.mat({ tex:'serosa', rep:[5,5], bump:0.01, color: osc ? 0x9A7F7A : 0xF1E2DC, rough:0.55, coat:0.5, coatRough:0.3, env:0.7 }));
-  apxDual(post, osc ? '#6E5552' : '#EBD3CA'); meshes.push(post); E.addPart('fondo', [post], { pickable:false });
+    apxTex.mat({ tex:'perit', rep:[5,5], bump:0.015, color: osc ? 0xB0908A : 0xE9D2C8, rough:0.5, coat:0.6, coatRough:0.3, env:0.7 }));
+  apxDual(post, osc ? '#6E5552' : '#EBD3CA'); meshes.push(post); apxSombra(post, false, true); E.addPart('fondo', [post], { pickable:false });
   const anat = new THREE.Group(); E.scene.add(anat);
   const hinge = new THREE.Group(); anat.add(hinge);
   const segs = { onLbl:[] };
@@ -603,42 +848,54 @@ function apxEscenaCampo(stage, tec, hooks){
     if (lbl){ E.addLabel(id, lbl[0], lbl[1], anchor); if (grp){ const l = E.labels.get(id); const lp = grp.worldToLocal(l.pos.clone()); const la = l.anchor ? grp.worldToLocal(l.anchor.clone()) : null; segs.onLbl.push({ l, lp, la, grp }); } }
   }
   E.onFrame(() => { segs.onLbl.forEach(o => { o.grp.updateMatrixWorld(true); o.l.pos.copy(o.lp).applyMatrix4(o.grp.matrixWorld); if (o.la && o.l.anchor) o.l.anchor.copy(o.la).applyMatrix4(o.grp.matrixWorld); }); });
-  const serosa = (tint, rep, bump) => orgvTex.mat({ tex:'serosa', rep:rep || [6,2], bump:bump ?? 0.012, color:tint, rough:0.5, coat:0.65, coatRough:0.22, env:0.85 });
+  const serosa = (tex, tint, rep, extra) => apxTex.mat(Object.assign({ tex:tex || 'serosa', rep:rep || [6,2], bump: low ? 0.014 : 0.024, color:tint === undefined ? 0xffffff : tint, rough:0.4, coat:0.9, coatRough:0.16, env:1.05, sss:['#FF7A5A', 0.3, 2.4] }, extra || {}));
   const Rn = Kit.rng(1994);
+  const sombraT = m => apxSombra(m, true, true);
 
-  /* ---------- ciego y colon ascendente ---------- */
+  /* ---------- ciego y colon ascendente (haustras entre las tenias) ---------- */
   const C0 = new THREE.Vector3(0, -0.4, 0);
-  const cec = apxDual(new THREE.Mesh(Kit.sculpt({ radii:[1.55,1.72,1.35], w: low?36:60, h: low?26:44,
-    disp:(p, d) => 0.07*Math.sin(p.y*3.4 + 0.6)*(1 - Math.abs(d.y)) + 0.02*Kit.fbm(p.x*2, p.y*2, p.z*2, 2) }), serosa(0xE9D3C8, [4,3])), '#E9A28C');
-  cec.position.copy(C0);
-  const asc = apxDual(new THREE.Mesh(Kit.taper([[-0.2,0.6,-0.05],[-0.35,2.8,-0.25],[-0.45,5.2,-0.45],[-0.5,6.6,-0.6]], 0, 0, { rfn:u => 1.28*(0.88 + 0.12*Math.abs(Math.sin(u*Math.PI*3.2))), seg: low?26:44, rad: low?14:22 }), serosa(0xEADBD2, [6,3])), '#EDB39F');
+  const PHIS = [0, 2.25, -2.25];
+  const cec = apxDual(new THREE.Mesh(Kit.sculpt({ radii:[1.55,1.72,1.35], w: low?40:64, h: low?28:48,
+    disp:(p, d) => { const a = Math.atan2(d.x, d.z); const ten = Math.max(...PHIS.map(ph => apxBanda(a, ph, 0.2))); const haus = (1 - ten)*0.1*Math.max(0, Math.sin(p.y*3.2 + 0.9))*(1 - Math.abs(d.y)*0.6); return haus + 0.02*Kit.fbm(p.x*2, p.y*2, p.z*2, 2); } }), serosa('colon', 0xffffff, [4,3])), '#E9A28C');
+  cec.position.copy(C0); sombraT(cec);
+  const ascPts = [[-0.2,0.6,-0.05],[-0.35,2.8,-0.25],[-0.45,5.2,-0.45],[-0.5,6.6,-0.6]];
+  const ascC = Kit.curve(ascPts); const fr = ascC.computeFrenetFrames(8, false); const Nf = fr.normals[4], Bf = fr.binormals[4];
+  const angDe = ph => { const dir = new THREE.Vector3(Math.sin(ph), 0, Math.cos(ph)); return Math.atan2(dir.dot(Bf), dir.dot(Nf)); };
+  const ANGS = PHIS.map(angDe);
+  const asc = apxDual(new THREE.Mesh(apxTubo(ascPts, { seg: low?26:44, rad: low?16:24, rfn:(u, a) => { const ten = Math.max(...ANGS.map(t => apxBanda(a, t, 0.2))); const haus = Math.abs(Math.sin(u*Math.PI*3.4 + 0.4)); return 1.28*(0.86 + 0.16*haus*(1 - ten) + 0.02*ten); } }), serosa('colon', 0xffffff, [6,3])), '#EDB39F');
+  sombraT(asc);
   const ascCap = new THREE.Mesh(new THREE.CircleGeometry(1.2, 24), Kit.tissue({ color:apxCol3(osc ? '#6B3B3B' : '#C98A80'), rough:0.8 }));
   ascCap.position.set(-0.5, 6.6, -0.6); ascCap.rotation.x = -Math.PI/2 + 0.08;
   add('ciego', [cec], anat, {}, ['Ciego', [-3.9,-2.2,1.8]], new THREE.Vector3(-1.2,-1.2,0.9));
   add('colon', [asc, ascCap], anat, {}, ['Colon ascendente', [-3.9,4.4,0.9]], new THREE.Vector3(-1.4,4.0,0.6));
   /* apéndices epiploicos (identificación del colon) */
-  const epG = []; [[0.9,3.2,0.9],[-1.5,4.6,0.6],[1.0,5.6,0.4]].forEach(p => { const g = new THREE.SphereGeometry(0.28, 12, 10); g.scale(1, 1.4, 0.8); g.translate(p[0], p[1], p[2]); epG.push(g); });
-  const epi = apxDual(new THREE.Mesh(Kit.merge(epG), orgvTex.mat({ tex:'fat', rep:[1,1], bump:0.03, rough:0.42, coat:0.7 })), '#F2D27A');
+  const fatM = apxTex.mat({ tex:'fat', rep:[1,1], bump: low ? 0.02 : 0.035, rough:0.34, coat:0.95, coatRough:0.15, sss:['#FFB060', 0.22, 2.6] });
+  const epG = []; [[0.9,3.2,0.9],[-1.5,4.6,0.6],[1.0,5.6,0.4]].forEach((p, i) => { const g = Kit.sculpt({ radii:[0.28,0.4,0.24], w:14, h:12, disp:(q, d) => 0.04*Kit.fbm(q.x*6+i, q.y*6, q.z*6, 2) }); g.translate(p[0], p[1], p[2]); epG.push(g); });
+  const epi = apxDual(new THREE.Mesh(Kit.merge(epG), fatM), '#F2D27A'); sombraT(epi);
   add('epiploicos', [epi], anat, { pickable:false });
+  /* epiplón mayor: lámina grasa, lobulada y algo translúcida, que asoma por arriba del campo */
+  const epiG = apxGrid(low?16:26, low?10:16, (u, v, p) => { const x = -3.6 + 8.4*u, y = 5.2 + 3.6*v; p.set(x, y + 0.6*Math.sin(u*Math.PI*2.2), 1.2 + 0.4*Math.sin(u*7 + v*3)*Math.sin(v*Math.PI) - 1.1*v + 0.25*Kit.fbm(x*0.8, y*0.8, 2, 2)); });
+  const epiplon = apxDual(new THREE.Mesh(epiG, apxTex.mat({ tex:'fat', rep:[2.5,1.2], bump: low ? 0.02 : 0.035, rough:0.36, coat:0.95, coatRough:0.15, side:THREE.DoubleSide, transparent:true, opacity:0.92, sss:['#FFB060', 0.2, 2.6] })), '#F2D27A', { side:THREE.DoubleSide, transparent:true, opacity:0.92 });
+  sombraT(epiplon); add('epiplon', [epiplon], anat, { pickable:false, passThrough:true });
 
   /* ---------- íleon terminal ---------- */
-  const ile = apxDual(new THREE.Mesh(Kit.taper([[7.2,1.5,-0.9],[4.8,0.9,-0.35],[2.6,0.45,0.2],[1.3,0.2,0.3]], 0.56, 0.58, { seg: low?20:36, rad: low?12:18 }), serosa(0xF3E2DC, [5,1])), '#F2C3B3');
-  add('ileon', [ile], anat, {}, ['Íleon terminal', [6.8,3.2,1.2]], new THREE.Vector3(4.6,1.3,0.1));
+  const ile = apxDual(new THREE.Mesh(apxTubo([[7.2,1.5,-0.9],[4.8,0.9,-0.35],[2.6,0.45,0.2],[1.3,0.2,0.3]], { seg: low?22:38, rad: low?12:18, rfn:(u, a) => 0.56 + 0.04*Math.sin(u*Math.PI*5) + 0.02*Math.sin(a*2 + u*9) }), serosa('serosa', 0xFAECE6, [5,1])), '#F2C3B3');
+  sombraT(ile); add('ileon', [ile], anat, {}, ['Íleon terminal', [6.8,3.2,1.2]], new THREE.Vector3(4.6,1.3,0.1));
 
   /* ---------- apéndice (base fija + cuerpo en la bisagra) ---------- */
   const dB = new THREE.Vector3(0.42,-0.8,0.44).normalize();
   const B = C0.clone().add(new THREE.Vector3(dB.x*1.5, dB.y*1.68, dB.z*1.3));
   const apC = Kit.curve([B.clone().addScaledVector(dB, -0.25), B.clone().add(new THREE.Vector3(0.55,-0.95,0.35)), new THREE.Vector3(1.95,-3.6,0.95), new THREE.Vector3(2.45,-4.55,0.72)]);
-  const apR = u => 0.3 + 0.08*Math.sin(Math.min(1, u*1.3)*Math.PI*0.9) + 0.02*Math.sin(u*9);
+  const apR = u => 0.32 + 0.09*Math.sin(Math.min(1, u*1.3)*Math.PI*0.9) + 0.02*Math.sin(u*9);
   const sub = (u0, u1, n) => { const P = []; for (let i=0;i<=n;i++) P.push(apC.getPointAt(u0 + (u1-u0)*i/n)); return P; };
-  const apMat = orgvTex.mat({ tex:'serosa', rep:[2,1], bump:0.022, color:0xE8948A, rough:0.45, coat:0.72, coatRough:0.2 });
+  const apMat = serosa('apend', 0xffffff, [2.2,1], { bump: low ? 0.02 : 0.03, rough:0.38, coat:0.95, coatRough:0.14, sss:['#FF5A3A', 0.36, 2.2] });
   const U0 = 0.15;
-  const munG = Kit.taper(sub(0, U0+0.02, 6), 0, 0, { rfn:u => apR(u*(U0+0.02)), seg:10, rad: low?12:18 });
-  const mun = apxDual(new THREE.Mesh(munG, apMat), '#D9534F');
+  const munG = apxTubo(sub(0, U0+0.02, 6), { seg:10, rad: low?12:18, rfn:(u, a) => apR(u*(U0+0.02)) + 0.006*Math.sin(a*4) });
+  const mun = apxDual(new THREE.Mesh(munG, apMat), '#D9534F'); sombraT(mun);
   add('munon', [mun], anat, {}, ['Base del apéndice', [-2.9,-4.3,2.2]], B.clone().add(new THREE.Vector3(0.15,-0.2,0.35)));
-  const cuerpoG = Kit.taper(sub(U0, 1, 22), 0, 0, { rfn:u => apR(U0 + u*(1-U0)), seg: low?22:40, rad: low?12:18 });
+  const cuerpoG = apxTubo(sub(U0, 1, 22), { seg: low?22:40, rad: low?12:18, rfn:(u, a) => apR(U0 + u*(1-U0)) + 0.012*Math.sin(a*3 + u*16) + 0.008*Math.sin(u*31) });
   const tipP = apC.getPointAt(1), tipG = new THREE.SphereGeometry(apR(1)*0.98, 18, 14); tipG.translate(tipP.x, tipP.y, tipP.z);
-  const cuerpo = apxDual(new THREE.Mesh(Kit.merge([cuerpoG, tipG]), apMat.clone()), '#D9534F');
+  const cuerpo = apxDual(new THREE.Mesh(Kit.merge([cuerpoG, tipG]), apMat.clone()), '#D9534F'); sombraT(cuerpo);
   hinge.position.copy(B); hinge.updateMatrixWorld(true);
   add('apendice', [cuerpo], hinge, {}, ['Apéndice inflamado', [-1.4,-6.0,2.4]], new THREE.Vector3(1.8,-3.3,1.3));
 
@@ -648,10 +905,10 @@ function apxEscenaCampo(stage, tec, hooks){
   const tmpA = new THREE.Vector3();
   const mesoG = apxGrid(low?18:30, low?5:8, (u, v, p) => { const uu = 0.04 + u*0.94; apC.getPointAt(uu, tmpA); const F = Fe(uu); const dir = F.clone().sub(tmpA).normalize();
     const A = tmpA.clone().addScaledVector(dir, apR(uu)*0.55); p.copy(A.lerp(F, v)).add(new THREE.Vector3(0, -0.06, -0.12).multiplyScalar(Math.sin(v*Math.PI)*Math.sin(u*Math.PI)*3)); });
-  const mesoM = orgvTex.mat({ tex:'fat', rep:[3,3], bump:0.02, rough:0.4, coat:0.7, coatRough:0.2, color:0xFFF1D0, transparent:true, opacity:0.86, side:THREE.DoubleSide, depthWrite:true });
-  const meso = apxDual(new THREE.Mesh(mesoG, mesoM), '#F2D27A', { side:THREE.DoubleSide, transparent:true, opacity:0.86 });
+  const mesoM = apxTex.mat({ tex:'fat', rep:[3,3], bump: low ? 0.02 : 0.03, rough:0.36, coat:0.9, coatRough:0.16, color:0xFFF3D8, transparent:true, opacity:0.88, side:THREE.DoubleSide, depthWrite:true, sss:['#FFB060', 0.2, 2.6] });
+  const meso = apxDual(new THREE.Mesh(mesoG, mesoM), '#F2D27A', { side:THREE.DoubleSide, transparent:true, opacity:0.88 });
   add('meso', [meso], hinge, {}, ['Mesoapéndice', [6.0,-3.9,1.6]], new THREE.Vector3(3.0,-2.8,-0.1));
-  const artM = Kit.tissue({ color:apxCol3('#C8372F'), rough:0.4, coat:0.6, tex:'tissue', rep:[4,1], bump:0.004 });
+  const artM = Kit.tissue({ color:apxCol3('#C8372F'), rough:0.38, coat:0.75, coatRough:0.2, tex:'artery', rep:[4,1], bump:0.006 });
   const Pb = new THREE.Vector3(3.3, 1.0, -1.1);
   const ileocol = [
     Kit.taper([[5.8,7.0,-1.6],[4.5,3.6,-1.4],[Pb.x,Pb.y,Pb.z]], 0.17, 0.15, { seg: low?14:24, rad: low?8:12 }),
@@ -671,124 +928,155 @@ function apxEscenaCampo(stage, tec, hooks){
   /* ---------- tenias: tres cintas que convergen en la base ---------- */
   anat.updateMatrixWorld(true);
   const rc = new THREE.Raycaster(), tenP = [];
-  const onSurf = (from, to, list) => { const dir = to.clone().sub(from).normalize(); rc.set(from, dir); const hh = rc.intersectObjects(list, false)[0]; return hh ? hh.point.clone().addScaledVector(hh.face.normal.clone().transformDirection(hh.object.matrixWorld), 0.045) : null; };
-  [0, 2.25, -2.25].forEach((phi, k) => { const pts = []; const nS = low ? 14 : 22;
+  const onSurf = (from, to, list) => { const dir = to.clone().sub(from).normalize(); rc.set(from, dir); const hh = rc.intersectObjects(list, false)[0]; return hh ? hh.point.clone().addScaledVector(hh.face.normal.clone().transformDirection(hh.object.matrixWorld), 0.04) : null; };
+  PHIS.forEach((phi, k) => { const pts = []; const nS = low ? 14 : 22;
     for (let i=0;i<=nS;i++){ const t = i/nS; let p;
       if (t < 0.5){ const y = 6.4 - 5.8*(t/0.5); const ax = new THREE.Vector3(-0.2 - 0.3*(y/6.6), y, -0.05 - 0.55*(y/6.6)); const out = ax.clone().add(new THREE.Vector3(Math.sin(phi), 0, Math.cos(phi)).multiplyScalar(6)); p = onSurf(out, ax, [asc, cec]); }
       else { const w = (t - 0.5)/0.5; const d0 = new THREE.Vector3(Math.sin(phi)*0.9, 0.45, Math.cos(phi)*0.9).normalize(); const dd = d0.clone().lerp(dB, Math.pow(w, 0.85)).normalize();
         const out = C0.clone().addScaledVector(dd, 6); p = onSurf(out, C0, [cec]); }
       if (p) pts.push(p); }
     pts.push(B.clone().addScaledVector(dB, 0.05));
-    tenP.push(Kit.taper(pts, 0.13, 0.1, { seg: low?40:70, rad:8 })); });
-  const ten = apxDual(new THREE.Mesh(Kit.merge(tenP), orgvTex.mat({ tex:'tendon', rep:[1,8], bump:0.01, color:0xF7F0E4, rough:0.4, coat:0.6, coatRough:0.25 })), '#FFF3D6');
-  add('tenias', [ten], anat, {}, ['Tenias (convergen en la base)', [-4.6,1.3,2.6]], new THREE.Vector3(-0.05,1.0,1.4));
+    tenP.push(apxTubo(pts, { seg: low?40:70, rad:10, rfn:(u, a) => 0.13*(0.7 + 0.3*Math.abs(Math.cos(a))) })); });
+  const ten = apxDual(new THREE.Mesh(Kit.merge(tenP), apxTex.mat({ tex:'apon', rep:[1,10], bump:0.012, color:0xFBF6EC, rough:0.35, coat:0.8, coatRough:0.2 })), '#FFF3D6');
+  add('tenias', [ten], anat, {}, ['Tenias (convergen en la base)', lap ? [-4.6,1.3,2.6] : [-4.6,0.2,2.8]], lap ? new THREE.Vector3(-0.05,1.0,1.4) : new THREE.Vector3(0.05,-1.0,1.35));
 
-  /* ---------- ligaduras y clips ---------- */
+  /* ---------- ligaduras (con nudo) y clips ---------- */
   const lig = Kit.tissue({ color:apxCol3('#6C4FB0'), rough:0.4, coat:0.5 });
-  const metal = mat(apxCol3('#D3DAE2'), { metalness:0.9, roughness:0.25, clearcoat:0.3 });
-  const anillo = (curve, u, r, material, arc) => { const p = curve.getPointAt(u), t = curve.getTangentAt(u); const g = new THREE.TorusGeometry(r, arc ? 0.05 : 0.045, 8, 28, arc ? Math.PI*1.25 : Math.PI*2);
-    const m = new THREE.Mesh(g, material); m.position.copy(p); m.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1), t.normalize()); return m; };
+  const metal = apxMetal();
+  const clip = (curve, u, r) => { const p = curve.getPointAt(u), t = curve.getTangentAt(u).normalize(); const m = new THREE.Mesh(new THREE.TorusGeometry(r, 0.05, 8, 24, Math.PI*1.25), metal); m.position.copy(p); m.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1), t); return m; };
   const aCurve = Kit.curve(aProxPts);
-  const ligArt = [anillo(aCurve, 0.62, 0.16, lap ? metal : lig, lap), anillo(aCurve, 0.76, 0.16, lap ? metal : lig, lap)];
+  const ligArt = lap ? [clip(aCurve, 0.62, 0.16), clip(aCurve, 0.76, 0.16)] : [apxLigadura(aCurve, 0.62, 0.15, lig), apxLigadura(aCurve, 0.76, 0.15, lig)].flatMap(L => L.meshes);
   add('lig-art', ligArt, anat, { pickable:false }); E.setVisible('lig-art', false);
-  const ligBase = [anillo(apC, 0.07, apR(0.07)+0.05, lig), anillo(apC, 0.12, apR(0.12)+0.05, lig)];
+  /* base: en la abierta, ligaduras anudadas; en la laparoscópica, lazos preanudados (endoloop) */
+  const ligBase = [apxLigadura(apC, 0.07, apR(0.07)+0.05, lig), apxLigadura(apC, 0.12, apR(0.12)+0.05, lig)].flatMap(L => L.meshes);
   add('lig-base', ligBase, anat, { pickable:false }); E.setVisible('lig-base', false);
 
-  /* ---------- técnica abierta: borde de la incisión, separadores y frasco ---------- */
+  /* ---------- técnica abierta: pared con la incisión, compresas, separadores, pinza de Babcock y frasco ---------- */
   const FC = new THREE.Vector3(0.9,-1.9,3.1), HA = -0.95;
-  let marco = null, cerrado = null;
+  let marco = null, cerrado = null, babcock = null;
   if (!lap){
-    const hx = 2.5, hy = 1.75, W = 0.95;
-    const capasB = [['piel',0.14,'#E8C2A6',null],['subcutaneo',0.32,'#F2D27A','fat'],['apon',0.06,'#F4F1EA','tendon'],['oblint',0.28,'#C0544B','muscle'],['peritoneo',0.05,'#E6D3DB',null]];
+    const hx = 2.5, hy = 1.75, OW = 4.9, OH = 4.0, OR = 1.5;
+    const capasB = [['piel',0.16,'#E8C2A6','skin',0xF6DCC8],['subcutaneo',0.34,'#F2D27A','fat',0xffffff],['apon',0.06,'#F4F1EA','apon',0xffffff],['oblint',0.3,'#C0544B','muscle',0xffffff],['peritoneo',0.05,'#E6D3DB','perit',0xF3E9EE]];
+    const outer = sh => { const rr = OR; sh.moveTo(-OW + rr, -OH); sh.lineTo(OW - rr, -OH); sh.quadraticCurveTo(OW, -OH, OW, -OH + rr); sh.lineTo(OW, OH - rr); sh.quadraticCurveTo(OW, OH, OW - rr, OH); sh.lineTo(-OW + rr, OH); sh.quadraticCurveTo(-OW, OH, -OW, OH - rr); sh.lineTo(-OW, -OH + rr); sh.quadraticCurveTo(-OW, -OH, -OW + rr, -OH); return sh; };
     let z = FC.z; const bordeMs = [];
-    capasB.forEach(([id, t, col, tex]) => { const sh = new THREE.Shape(); const O = 44;
-      for (let i=0;i<=O;i++){ const a = i/O*Math.PI*2; const x = Math.cos(a)*(hx+W), y = Math.sin(a)*(hy+W); if (i) sh.lineTo(x, y); else sh.moveTo(x, y); }
-      const hole = new THREE.Path(); for (let i=0;i<=O;i++){ const a = -i/O*Math.PI*2; const x = Math.cos(a)*hx*(1 - 0.04*Math.cos(2*a)), y = Math.sin(a)*hy; if (i) hole.lineTo(x, y); else hole.moveTo(x, y); } sh.holes.push(hole);
-      const g = new THREE.ExtrudeGeometry(sh, { depth:t, bevelEnabled:false, curveSegments:4 }); g.rotateZ(HA); g.translate(FC.x, FC.y, z - t);
-      const mm = tex ? orgvTex.mat({ tex, rep:[0.5,0.5], bump:0.01, color:0xFFFFFF, rough:0.5, coat:0.5 }) : Kit.tissue({ color:apxCol3(col), rough:0.55, coat:0.3, transparent: id==='peritoneo', opacity: id==='peritoneo' ? 0.7 : 1 });
-      if (tex && mm.map){ mm.map.repeat.set(0.5, 0.5); if (mm.bumpMap) mm.bumpMap.repeat.set(0.5, 0.5); }
-      const m = apxDual(new THREE.Mesh(g, mm), col); bordeMs.push(m); z -= t + 0.01; });
-    /* separadores estilizados */
-    const sepG = []; [1, -1].forEach(sg => { const a = HA + Math.PI/2; const ex = Math.cos(a)*sg, ey = Math.sin(a)*sg; const e0 = FC.clone().add(new THREE.Vector3(ex*1.75, ey*1.75, 0));
-      sepG.push(Kit.taper([e0.clone().add(new THREE.Vector3(-ex*0.25,-ey*0.25,-0.9)), e0.clone().add(new THREE.Vector3(0,0,0.1)), e0.clone().add(new THREE.Vector3(ex*0.7,ey*0.7,0.35)), e0.clone().add(new THREE.Vector3(ex*3.2,ey*3.2,0.9))], 0.09, 0.09, { seg:24, rad:10 }));
-      const hb = new THREE.CylinderGeometry(0.16, 0.16, 1.6, 14); hb.rotateZ(Math.atan2(ey, ex) - Math.PI/2); const hp = e0.clone().add(new THREE.Vector3(ex*3.9, ey*3.9, 1.05)); hb.translate(hp.x, hp.y, hp.z); sepG.push(hb); });
-    sepG.forEach(g => { if (!g.attributes.uv) g.setAttribute('uv', new THREE.Float32BufferAttribute(new Float32Array(g.attributes.position.count*2), 2)); });
-    const sep = new THREE.Mesh(Kit.merge(sepG), metal);
+    capasB.forEach(([id, t, col, tex, tint], li) => { const sh = outer(new THREE.Shape()); const O = 48;
+      const hole = new THREE.Path(); const ex = 1 + 0.06*li, ey = 1 + 0.05*li; for (let i=0;i<=O;i++){ const a = -i/O*Math.PI*2; const x = Math.cos(a)*hx*ex*(1 - 0.04*Math.cos(2*a)), y = Math.sin(a)*hy*ey; if (i) hole.lineTo(x, y); else hole.moveTo(x, y); } sh.holes.push(hole);
+      const g = new THREE.ExtrudeGeometry(sh, { depth:t, bevelEnabled: li === 0, bevelThickness:0.05, bevelSize:0.05, bevelSegments:2, curveSegments:6 }); g.rotateZ(HA); g.translate(FC.x, FC.y, z - t);
+      /* UV planas (ExtrudeGeometry usa coordenadas del contorno) */
+      const uv = g.attributes.uv; for (let i=0;i<uv.count;i++) uv.setXY(i, uv.getX(i)*0.35, uv.getY(i)*0.35);
+      const mm = tex === 'skin' ? apxTex.mat({ tex:'skin', rep:[1,1], bump: low ? 0.006 : 0.01, color:tint, rough:0.5, coat:0.4, coatRough:0.4, sss:['#FF8A62', 0.22, 2.6] })
+        : tex === 'perit' ? apxTex.mat({ tex:'perit', rep:[1,1], bump:0.006, color:tint, rough:0.15, coat:1, coatRough:0.08, transparent:true, opacity:0.7, depthWrite:false })
+        : apxTex.mat({ tex, rep:[1,1], bump: low ? 0.015 : 0.025, color:tint, rough: tex === 'apon' ? 0.25 : 0.4, coat: tex === 'apon' ? 1 : 0.9, coatRough:0.18, sss:['#FF7A5A', 0.28, 2.4] });
+      const m = apxDual(new THREE.Mesh(g, mm), col); if (tex !== 'perit') sombraT(m); bordeMs.push(m); z -= t + 0.01; });
+    /* compresas húmedas que protegen los bordes (dos rollos de gasa siguiendo el óvalo) */
+    const gasaM = apxTex.mat({ tex:'gauze', rep:[7,1.4], bump: low ? 0.025 : 0.045, color:0xFFFFFF, rough:0.85, coat:0.12, coatRough:0.6, env:0.7 });
+    const gasaG = []; [[0.12, 0.88], [1.12, 1.88]].forEach(([a0, a1], k) => { const pts = []; for (let i=0;i<=14;i++){ const a = (a0 + (a1-a0)*i/14)*Math.PI; const x = Math.cos(a)*(hx+0.02), y = Math.sin(a)*(hy+0.02); const c = Math.cos(HA), s2 = Math.sin(HA); pts.push([FC.x + x*c - y*s2, FC.y + x*s2 + y*c, FC.z + 0.1 + 0.05*Math.sin(i*1.7)]); }
+      gasaG.push(apxTubo(pts, { seg: low?20:36, rad: low?10:14, rfn:(u, a) => 0.3*(0.82 + 0.1*Math.sin(u*23 + k) + 0.08*Math.sin(a*3 + u*9))*Math.sqrt(Math.sin(u*Math.PI)*0.7 + 0.3) })); });
+    const gasa = new THREE.Mesh(Kit.merge(gasaG), gasaM); sombraT(gasa);
+    /* separadores de Farabeuf en los extremos del eje menor de la incisión */
+    const seps = [1, -1].map(sg => { const F = apxFarabeuf(metal); const ax = [Math.cos(HA + Math.PI/2)*sg, Math.sin(HA + Math.PI/2)*sg]; const e0 = FC.clone().add(new THREE.Vector3(ax[0]*(hy+0.05), ax[1]*(hy+0.05), 0.05));
+      F.g.position.copy(e0); const X = new THREE.Vector3(ax[0], ax[1], 0), Y = new THREE.Vector3(0, 0, 1), Z = X.clone().cross(Y); F.g.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(X, Y, Z)); F.g.scale.setScalar(1.1); F.g.userData.valva.scale.y = 1.0; E.scene.add(F.g); return F; });
     add('borde', bordeMs, null, {}, ['Bordes de la incisión', [-3.6,-6.2,3.6]], FC.clone().add(new THREE.Vector3(-2.3,-1.9,0.1)));
-    E.addPart('separadores', [sep], { pickable:false });
-    marco = bordeMs.concat([sep]);
-    /* frasco para patología */
+    E.addPart('separadores', seps.flatMap(F => F.meshes), { pickable:false }); seps.forEach(F => F.meshes.forEach(m => F.g.add(m)));
+    E.addPart('compresas', [gasa], { pickable:false });
+    marco = bordeMs.concat([gasa], seps.flatMap(F => F.meshes));
+    /* pinza de Babcock sujetando el apéndice (sigue a la bisagra) */
+    babcock = apxPinza(metal, { babcock:true, L:5.2, r:0.055 }); hinge.updateMatrixWorld(true);
+    const grip = apC.getPointAt(0.58); babcock.g.position.copy(grip); babcock.g.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), new THREE.Vector3(0.8, -0.55, 0.62).normalize());
+    E.scene.add(babcock.g); E.addPart('pinza', babcock.meshes, {}); babcock.meshes.forEach(m => { babcock.g.add(m); meshes.push(m); }); hinge.attach(babcock.g);
+    E.addLabel('pinza', 'Pinza de Babcock', [7.4,-6.6,3.0], grip.clone().add(new THREE.Vector3(0.6,-0.5,1.1)));
+    segs.onLbl.push({ l:E.labels.get('pinza'), lp:hinge.worldToLocal(E.labels.get('pinza').pos.clone()), la:hinge.worldToLocal(E.labels.get('pinza').anchor.clone()), grp:hinge });
+    /* frasco para patología: vidrio, formol, tapa y etiqueta */
     const fr = new THREE.Group(); fr.position.set(7.6,-5.4,1.6);
-    const vidrio = new THREE.Mesh(new THREE.CylinderGeometry(1.05, 1.05, 2.3, 32, 1, true), new THREE.MeshPhysicalMaterial({ color:0xE8F2F8, transparent:true, opacity:0.28, roughness:0.05, clearcoat:1, side:THREE.DoubleSide, depthWrite:false, envMapIntensity:1.6 }));
-    const fondoF = new THREE.Mesh(new THREE.CircleGeometry(1.05, 32), new THREE.MeshPhysicalMaterial({ color:0xDDE8F0, transparent:true, opacity:0.5, roughness:0.1 })); fondoF.rotation.x = -Math.PI/2; fondoF.position.y = -1.15;
-    const tapa = new THREE.Mesh(new THREE.CylinderGeometry(1.12, 1.12, 0.32, 32), mat(apxCol3('#2F6FD6'), { roughness:0.4 })); tapa.position.set(0, 1.9, 0);
-    const etq = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 0.62), new THREE.MeshBasicMaterial({ color:0xFFFFFF, toneMapped:false })); etq.position.set(0, 0.05, 1.07);
-    [vidrio, fondoF, tapa, etq].forEach(m => fr.add(m)); E.scene.add(fr);
-    E.addPart('frasco', [vidrio, fondoF, tapa, etq], { passThrough:true }); [vidrio, fondoF, tapa, etq].forEach(m => fr.add(m));
+    const vidrio = new THREE.Mesh(new THREE.CylinderGeometry(1.05, 1.0, 2.3, 36, 1, true), new THREE.MeshPhysicalMaterial({ color:0xEAF3F8, transparent:true, opacity:0.3, roughness:0.04, clearcoat:1, clearcoatRoughness:0.05, side:THREE.DoubleSide, depthWrite:false, envMapIntensity:1.8 }));
+    const formol = new THREE.Mesh(new THREE.CylinderGeometry(0.98, 0.94, 1.55, 32), new THREE.MeshPhysicalMaterial({ color:0xF3E6B8, transparent:true, opacity:0.42, roughness:0.1, clearcoat:0.8, depthWrite:false })); formol.position.y = -0.35;
+    const fondoF = new THREE.Mesh(new THREE.CylinderGeometry(1.0, 0.98, 0.12, 32), new THREE.MeshPhysicalMaterial({ color:0xDDE8F0, transparent:true, opacity:0.55, roughness:0.1 })); fondoF.position.y = -1.15;
+    const tapa = new THREE.Mesh(new THREE.CylinderGeometry(1.12, 1.12, 0.32, 36), mat(apxCol3('#2F6FD6'), { roughness:0.35, clearcoat:0.7 })); tapa.position.set(0, 1.9, 0);
+    const rosca = new THREE.Mesh(new THREE.CylinderGeometry(1.06, 1.06, 0.12, 36), mat(apxCol3('#244F9A'), { roughness:0.4 })); rosca.position.set(0, 1.7, 0);
+    const etq = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 0.7), new THREE.MeshBasicMaterial({ map:apxEtiqueta(['PATOLOGÍA', 'Apéndice cecal', 'formol 10 %']), toneMapped:false })); etq.position.set(0, 0.25, 1.07);
+    const frM = [vidrio, formol, fondoF, tapa, rosca, etq]; frM.forEach(m => fr.add(m)); E.scene.add(fr); apxSombra([tapa, rosca], true, false);
+    E.addPart('frasco', frM, { passThrough:true }); frM.forEach(m => fr.add(m));
     E.addLabel('frasco', 'Frasco para patología', [8.6,-2.2,2.4], fr.position.clone().add(new THREE.Vector3(0,1.9,0)));
-    /* cierre: parche de piel con sutura */
-    const sh2 = new THREE.Shape(); for (let i=0;i<=44;i++){ const a = i/44*Math.PI*2; const x = Math.cos(a)*(hx+W), y = Math.sin(a)*(hy+W); if (i) sh2.lineTo(x, y); else sh2.moveTo(x, y); }
-    const g2 = new THREE.ExtrudeGeometry(sh2, { depth:0.3, bevelEnabled:true, bevelThickness:0.06, bevelSize:0.06, bevelSegments:2, curveSegments:4 }); g2.rotateZ(HA); g2.translate(FC.x, FC.y, FC.z - 0.3);
-    const parche = new THREE.Mesh(g2, Kit.tissue({ color:apxCol3('#E8C2A6'), tex:'tissue', rep:[0.4,0.4], bump:0.004, rough:0.6, coat:0.2 }));
+    /* cierre: la misma pared, sin ventana, con la sutura y el portaagujas al lado */
+    const sh2 = outer(new THREE.Shape());
+    const g2 = new THREE.ExtrudeGeometry(sh2, { depth:0.3, bevelEnabled:true, bevelThickness:0.06, bevelSize:0.06, bevelSegments:2, curveSegments:6 }); g2.rotateZ(HA); g2.translate(FC.x, FC.y, FC.z - 0.3);
+    { const uv = g2.attributes.uv; for (let i=0;i<uv.count;i++) uv.setXY(i, uv.getX(i)*0.35, uv.getY(i)*0.35); }
+    const parche = new THREE.Mesh(g2, apxTex.mat({ tex:'skin', rep:[1,1], bump: low ? 0.006 : 0.01, color:0xF6DCC8, rough:0.5, coat:0.4, coatRough:0.4, sss:['#FF8A62', 0.22, 2.6] })); sombraT(parche);
     const sutG = []; const ax = [Math.cos(HA), Math.sin(HA)], nx = [-ax[1], ax[0]];
     for (let i=-4;i<=4;i++){ const c = FC.clone().add(new THREE.Vector3(ax[0]*i*0.45, ax[1]*i*0.45, 0.07)); const pa = c.clone().add(new THREE.Vector3(nx[0]*0.26, nx[1]*0.26, 0)), pb = c.clone().add(new THREE.Vector3(-nx[0]*0.26, -nx[1]*0.26, 0));
-      sutG.push(Kit.taper([pa, pa.clone().lerp(pb, 0.5).add(new THREE.Vector3(0,0,0.07)), pb], 0.04, 0.04, { seg:4, rad:6 })); }
+      sutG.push(Kit.taper([pa, pa.clone().lerp(pb, 0.5).add(new THREE.Vector3(0,0,0.07)), pb], 0.04, 0.04, { seg:4, rad:6 })); const nudo = new THREE.SphereGeometry(0.055, 8, 6); nudo.translate(pa.x, pa.y, pa.z + 0.05); sutG.push(nudo); }
     const sutL = Kit.taper([FC.clone().add(new THREE.Vector3(-ax[0]*2.1, -ax[1]*2.1, 0.02)), FC.clone().add(new THREE.Vector3(ax[0]*2.1, ax[1]*2.1, 0.02))], 0.025, 0.025, { seg:4, rad:6 }); sutG.push(sutL);
+    sutG.forEach(g => { if (!g.attributes.uv) g.setAttribute('uv', new THREE.Float32BufferAttribute(new Float32Array(g.attributes.position.count*2), 2)); });
     const sut = new THREE.Mesh(Kit.merge(sutG), lig);
-    E.addPart('cierre', [parche, sut], {}); E.addLabel('cierre', 'Cierre por planos', [-3.4,-6.4,3.6], FC.clone().add(new THREE.Vector3(-1.2,-0.7,0.1)));
+    const porta = apxPinza(metal, { L:4.2, r:0.05 }); porta.g.position.copy(FC.clone().add(new THREE.Vector3(-1.3, 2.4, 0.16))); porta.g.rotation.set(0.12, 0, HA + 0.35); E.scene.add(porta.g); apxSombra(porta.meshes, true, false);
+    E.addPart('cierre', [parche, sut].concat(porta.meshes), {}); porta.meshes.forEach(m => porta.g.add(m)); E.addLabel('cierre', 'Cierre por planos', [-3.4,-6.4,3.6], FC.clone().add(new THREE.Vector3(-1.2,-0.7,0.1)));
     cerrado = [parche, sut]; E.setVisible('cierre', false);
   }
 
   /* ---------- técnica laparoscópica: pared levantada, trócares, instrumentos y monitor ---------- */
-  const inst = {}; let rt = null, scopeCam = null, monitor = null, pared = null, frameN = 0;
+  const inst = {}; let rt = null, scopeCam = null, monitor = null, pared = null, frameN = 0, luzOptica = null;
   const PT = { cam:new THREE.Vector3(4.6,0.6,6.2), sup:new THREE.Vector3(4.4,-5.4,5.6), fii:new THREE.Vector3(9.6,-2.2,5.4) };
   if (lap){
-    const pg = apxGrid(low?30:48, low?24:36, (u, v, p) => { const x = -4.5 + 16*u, y = -8 + 14*v; const r2 = Math.pow((x-4)/8.5, 2) + Math.pow((y+1)/7.5, 2); p.set(x, y, 2.6 + 3.6*Math.max(0, 1 - r2)); });
-    pared = new THREE.Mesh(pg, Kit.tissue({ color:apxCol3('#E8C2A6'), tex:'tissue', rep:[3,3], rough:0.6, coat:0.2, transparent:true, opacity:0.16, depthWrite:false, side:THREE.DoubleSide }));
+    const pg = apxGrid(low?30:48, low?24:36, (u, v, p) => { const x = -4.5 + 16*u, y = -8 + 14*v; const r2 = Math.pow((x-4)/8.5, 2) + Math.pow((y+1)/7.5, 2); p.set(x, y, 2.6 + 3.8*Math.max(0, 1 - r2)); });
+    pared = new THREE.Mesh(pg, apxTex.mat({ tex:'skin', rep:[3,3], bump:0.006, color:0xF6DCC8, rough:0.5, coat:0.3, transparent:true, opacity:0.18, depthWrite:false, side:THREE.DoubleSide }));
     pared.renderOrder = 3; add('pared', [pared], null, { passThrough:true, pickable:false }, ['Pared abdominal levantada por el CO₂', [-3.6,5.8,5.2]], new THREE.Vector3(1.2,4.2,5.4));
     /* instrumento: punta en el origen, eje hacia +Y */
-    const mkInst = (kind) => { const g = new THREE.Group(); const L = 13;
-      const eje = new THREE.Mesh(new THREE.CylinderGeometry(kind==='cam' ? 0.2 : 0.12, kind==='cam' ? 0.2 : 0.12, L, 16), metal); eje.position.y = L/2 + 0.3;
-      const mango = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.3, 1.8, 16), mat(apxCol3(kind==='cam' ? '#2B3440' : kind==='sel' ? '#2F6FD6' : '#E0A526'), { roughness:0.45 })); mango.position.y = L + 1.1;
-      const partes = [eje, mango];
-      if (kind === 'cam'){ const lente = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.2, 0.3, 16), new THREE.MeshBasicMaterial({ color:0xFFF6D8, toneMapped:false })); lente.position.y = 0.15; partes.push(lente); }
-      else { [1, -1].forEach(s => { const j = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.62, 0.2), kind==='sel' ? mat(apxCol3('#8A96A6'), { metalness:0.8, roughness:0.3 }) : metal); j.position.set(s*0.08, 0.3, 0); j.rotation.z = s*0.2; partes.push(j); }); }
-      partes.forEach(m => g.add(m)); return { g, partes }; };
+    const mkInst = (kind) => { const g = new THREE.Group(); const L = 13; const partes = [];
+      const eje = new THREE.Mesh(new THREE.CylinderGeometry(kind==='cam' ? 0.2 : 0.11, kind==='cam' ? 0.2 : 0.11, L, 18), metal); eje.position.y = L/2 + 0.3; partes.push(eje);
+      const mango = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.3, 1.9, 18), mat(apxCol3(kind==='cam' ? '#2B3440' : kind==='sel' ? '#2F6FD6' : '#E0A526'), { roughness:0.45, clearcoat:0.5 })); mango.position.y = L + 1.15; partes.push(mango);
+      if (kind === 'cam'){ const lente = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.2, 0.3, 18), new THREE.MeshBasicMaterial({ color:0xFFFBEA, toneMapped:false })); lente.position.y = 0.15; partes.push(lente);
+        const cable = new THREE.Mesh(Kit.taper([[0.3, L+0.6, 0],[1.4, L+1.2, 0.3],[2.6, L+1.0, 0.9]], 0.09, 0.09, { seg:10, rad:8 }), mat(apxCol3('#3A4350'), { roughness:0.7 })); partes.push(cable); }
+      else if (kind === 'sel'){ /* endograpadora estilizada: cabezal articulado con yunque */
+        const cab = new THREE.Mesh(new THREE.BoxGeometry(0.22, 1.2, 0.36), mat(apxCol3('#8A96A6'), { metalness:0.85, roughness:0.3 })); cab.position.set(0, 0.6, 0.1); partes.push(cab);
+        const yunque = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1.2, 0.3), metal); yunque.position.set(0, 0.6, -0.16); yunque.rotation.x = 0.28; partes.push(yunque);
+        const gat = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.7, 0.28), mat(apxCol3('#2F6FD6'), { roughness:0.45 })); gat.position.set(0, L + 0.5, 0.5); partes.push(gat); }
+      else { [1, -1].forEach(s => { const j = new THREE.Mesh(new THREE.TorusGeometry(0.16, 0.035, 8, 14, Math.PI), metal); j.rotation.set(0, Math.PI/2, 0); j.position.set(s*0.05, 0.28, 0); j.scale.set(1, 2.2, 1); partes.push(j); }); }
+      partes.forEach(m => g.add(m)); apxSombra(partes, true, false); return { g, partes }; };
     const kinds = [['camara','cam',PT.cam,'Cámara (laparoscopio)'],['pinza','pin',PT.fii,'Pinza de agarre'],['sellador','sel',PT.sup,'Instrumento de sellado']];
     kinds.forEach(([id, kind, port, nom]) => { const o = mkInst(kind); E.scene.add(o.g); E.addPart(id, o.partes, {}); o.partes.forEach(m => o.g.add(m));
       o.port = port; o.tip = port.clone().lerp(new THREE.Vector3(1,-1.5,0.5), 0.35); o.id = id;
       o.put = () => { const dir = o.port.clone().sub(o.tip).normalize(); o.g.position.copy(o.tip); o.g.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), dir); };
       o.put(); inst[id] = o; E.addLabel(id, nom, [0,0,0]); o.lbl = E.labels.get(id); meshes.push(...o.partes); });
     E.onFrame(() => { Object.values(inst).forEach(o => { const dir = o.port.clone().sub(o.tip).normalize(); o.lbl.pos.copy(o.tip).addScaledVector(dir, o.id==='camara' ? 9.5 : 8.5); }); });
-    /* trócares en la pared */
-    const trG = []; const diana = new THREE.Vector3(1,-1.5,0.5); Object.values(PT).forEach(p => { const g = new THREE.CylinderGeometry(0.34, 0.34, 1.4, 18); const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), p.clone().sub(diana).normalize()); g.applyMatrix4(new THREE.Matrix4().makeRotationFromQuaternion(q)); g.translate(p.x, p.y, p.z); trG.push(g); });
-    const tro = new THREE.Mesh(Kit.merge(trG), mat(apxCol3('#9AA6B4'), { metalness:0.5, roughness:0.35 }));
-    tro.rotation.set(0, 0, 0); add('trocares', [tro], null, {}, null);
-    /* monitor con la vista de la cámara */
+    /* trócares en la pared: cánula, cabezal con válvula y llave de gas */
+    const trM = []; const diana = new THREE.Vector3(1,-1.5,0.5);
+    Object.values(PT).forEach(p => { const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), p.clone().sub(diana).normalize()); const g = new THREE.Group(); g.position.copy(p); g.quaternion.copy(q);
+      const can = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.28, 1.6, 20), metal); can.position.y = -0.2;
+      const cab = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.42, 0.55, 22), mat(apxCol3('#2E3A48'), { roughness:0.45, clearcoat:0.5 })); cab.position.y = 0.85;
+      const tapa = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.5, 0.14, 22), mat(apxCol3('#E0A526'), { roughness:0.35, clearcoat:0.6 })); tapa.position.y = 1.19;
+      const llave = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.7, 10), metal); llave.rotation.z = Math.PI/2; llave.position.set(0.72, 0.85, 0);
+      [can, cab, tapa, llave].forEach(m => { g.add(m); trM.push(m); }); apxSombra([can, cab, tapa], true, false); E.scene.add(g); g.userData.ms = [can, cab, tapa, llave]; g.userData.tro = g; PT[p === PT.cam ? '_gc' : p === PT.sup ? '_gs' : '_gf'] = g; });
+    E.addPart('trocares', trM, {}); [PT._gc, PT._gs, PT._gf].forEach(g => g.userData.ms.forEach(m => g.add(m)));
+    /* monitor con la vista de la cámara: viñeteado, gran angular y luz de la óptica */
     const RW = low ? 384 : 640, RH = low ? 240 : 400;
     rt = new THREE.WebGLRenderTarget(RW, RH, { minFilter:THREE.LinearFilter, magFilter:THREE.LinearFilter }); rt.texture.encoding = THREE.sRGBEncoding;
-    scopeCam = new THREE.PerspectiveCamera(58, RW/RH, 0.05, 60);
-    monitor = new THREE.Group(); monitor.position.set(-7.2, 3.6, 1.2); monitor.rotation.y = 0.42;
+    scopeCam = new THREE.PerspectiveCamera(70, RW/RH, 0.05, 60);
+    luzOptica = new THREE.SpotLight(0xFFF9EC, 1.6, 22, 0.75, 0.6, 1.4); E.scene.add(luzOptica); E.scene.add(luzOptica.target);
+    monitor = new THREE.Group(); monitor.position.set(-6.6, 2.4, 3.6); monitor.rotation.y = 0.62;
     const caja = new THREE.Mesh(new THREE.BoxGeometry(6.0, 3.9, 0.3), mat(apxCol3('#1E2530'), { roughness:0.4, clearcoat:0.6 }));
-    const pant = new THREE.Mesh(new THREE.PlaneGeometry(5.6, 3.5), new THREE.MeshBasicMaterial({ map:rt.texture, toneMapped:false })); pant.position.z = 0.16;
+    const pantM = new THREE.ShaderMaterial({ uniforms:{ map:{ value:rt.texture }, k:{ value:0.18 } }, transparent:false, depthWrite:true,
+      vertexShader:'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+      fragmentShader:'uniform sampler2D map; uniform float k; varying vec2 vUv; void main(){ vec2 c = vUv - 0.5; float r2 = dot(c, c); vec2 uv = 0.5 + c*(1.0 + k*r2*2.0); vec3 col = texture2D(map, uv).rgb; float v = smoothstep(0.62, 0.2, sqrt(r2)); col *= 0.35 + 0.65*v; col += 0.05*(1.0 - r2*3.0); gl_FragColor = vec4(col, 1.0); }' });
+    const pant = new THREE.Mesh(new THREE.PlaneGeometry(5.6, 3.5), pantM); pant.position.z = 0.16;
     const pie = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 7.4, 12), mat(apxCol3('#6B7684'), { metalness:0.7, roughness:0.35 })); pie.position.y = -5.6;
     const base = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.2, 0.2, 24), mat(apxCol3('#4A5462'), { metalness:0.5, roughness:0.4 })); base.position.y = -9.3;
     [caja, pant, pie, base].forEach(m => monitor.add(m)); E.scene.add(monitor);
     E.addPart('monitor', [caja, pant, pie, base], {}); [caja, pant, pie, base].forEach(m => monitor.add(m));
-    E.addLabel('monitor', 'Monitor: lo que ve la cámara', [-7.2, 6.4, 1.6], monitor.position.clone().add(new THREE.Vector3(0, 1.95, 0)));
+    E.addLabel('monitor', 'Monitor: lo que ve la cámara', [-6.6, 5.2, 3.8], monitor.position.clone().add(new THREE.Vector3(0, 1.95, 0)));
     let mira = new THREE.Vector3(1.2,-1.6,0.4), miraGoal = mira.clone();
     segs.mira = v => { miraGoal.copy(v); };
     E.onFrame((t, dt) => {
       if (!rt) return; frameN++; if (low && frameN % 2) return;
       mira.lerp(miraGoal, Math.min(1, dt*3));
       const cam = inst.camara; scopeCam.position.copy(cam.tip); scopeCam.lookAt(mira); cam.tip.copy(cam.port).lerp(mira, 0.62); cam.put();
+      luzOptica.position.copy(cam.tip); luzOptica.target.position.copy(mira);
       const vis = monitor.visible; monitor.visible = false; const pv = pared.visible; pared.visible = false; inst.camara.g.visible = false; fondoM.visible = false;
       const r = E.renderer, cc = r.getClearColor(new THREE.Color()), ca = r.getClearAlpha();
       r.setRenderTarget(rt); r.setClearColor(apxCol3('#2A1414'), 1); r.clear(); r.render(E.scene, scopeCam); r.setRenderTarget(null); r.setClearColor(cc, ca);
       monitor.visible = vis; pared.visible = pv; inst.camara.g.visible = true; fondoM.visible = true;
     });
     /* bolsa de extracción */
-    const bolsa = new THREE.Mesh(Kit.sculpt({ radii:[1.1,1.9,0.9], w:28, h:20 }), new THREE.MeshPhysicalMaterial({ color:0xDCEBF5, transparent:true, opacity:0.35, roughness:0.15, clearcoat:1, side:THREE.DoubleSide, depthWrite:false }));
+    const bolsa = new THREE.Mesh(Kit.sculpt({ radii:[1.1,1.9,0.9], w:28, h:20, disp:(p, d) => 0.05*Kit.fbm(p.x*4, p.y*4, p.z*4, 2) }), new THREE.MeshPhysicalMaterial({ color:0xDCEBF5, transparent:true, opacity:0.35, roughness:0.12, clearcoat:1, side:THREE.DoubleSide, depthWrite:false }));
     bolsa.position.copy(tipP).add(new THREE.Vector3(0.4, 1.6, 0.9)); E.scene.add(bolsa); E.addPart('bolsa', [bolsa], { passThrough:true, pickable:false });
     E.addLabel('bolsa', 'Bolsa de extracción', [8.2,-4.6,3.2], bolsa.position.clone()); E.setVisible('bolsa', false);
   }
@@ -814,7 +1102,7 @@ function apxEscenaCampo(stage, tec, hooks){
     base(done){ E.setVisible('lig-base', true); E.select('munon');
       const separar = (fin) => { const c0 = centroMundo(); const dir = new THREE.Vector3(0.7, -0.8, 0.9).normalize(); tw.run(1.1, k => { ponerCentro(c0.clone().addScaledVector(dir, 1.1*k), 1); pinzaSigue(); }, fin); };
       if (lap){ segs.mira(B.clone().add(new THREE.Vector3(0.6,-0.6,0.4))); instA('sellador', B.clone().add(new THREE.Vector3(0.45,-0.55,0.5)), 1.0, () => separar(done)); }
-      else separar(() => { const c0 = centroMundo(); const to = new THREE.Vector3(7.6,-5.3,1.6); tw.run(1.6, k => { const p = c0.clone().lerp(to, k); p.y += Math.sin(k*Math.PI)*2.4; ponerCentro(p, 1 - 0.66*k); }, () => { E.scene.attach(hinge); done && done(); }); }); },
+      else separar(() => { if (babcock){ E.scene.attach(babcock.g); } const c0 = centroMundo(); const to = new THREE.Vector3(7.6,-5.3,1.6); tw.run(1.6, k => { const p = c0.clone().lerp(to, k); p.y += Math.sin(k*Math.PI)*2.4; ponerCentro(p, 1 - 0.66*k); if (babcock){ const bp = babcock.g.position; bp.lerp(new THREE.Vector3(6.2, -8.2, 2.6), 0.08); } }, () => { E.scene.attach(hinge); if (babcock) E.setVisible('pinza', false); done && done(); }); }); },
     revisar(done){ E.select('munon'); anat.updateMatrixWorld(true); E.focus(mundo(B), 11);
       if (!lap){ mover(null, 'ext', 0, 1.5, () => { E.focus(mundo(B), 12); done && done(); }); }
       else { segs.mira(B.clone().add(new THREE.Vector3(0.3,-0.3,0.4)));
@@ -826,7 +1114,7 @@ function apxEscenaCampo(stage, tec, hooks){
         tw.run(1.6, k => { const p = b0.clone().lerp(to, k); bol.position.copy(p); bol.scale.setScalar(1 - 0.75*k); ponerCentro(p, 0.5*(1 - 0.75*k)); inst.pinza.tip.copy(p); inst.pinza.put(); },
           () => { E.setVisible('bolsa', false); ['apendice','meso','aapend-d'].forEach(id => E.setVisible(id, false)); segs.mira(B.clone().add(new THREE.Vector3(0.3,-0.3,0.4))); instA('pinza', PT.fii.clone().lerp(B, 0.5), 0.6, done); }); }); },
     cerrar(done){ E.select(null);
-      const fin = () => { if (marco){ marco.forEach(m => m.visible = false); E.setVisible('borde', false); E.setVisible('separadores', false); E.setVisible('cierre', true); E.select('cierre'); } E.resetView(); done && done(); };
+      const fin = () => { if (marco){ marco.forEach(m => m.visible = false); E.setVisible('borde', false); E.setVisible('separadores', false); E.setVisible('compresas', false); E.setVisible('cierre', true); E.select('cierre'); } E.resetView(); done && done(); };
       if (est.ext > 0.01) mover(null, 'ext', 0, 1.2, fin); else fin(); }
   };
   if (lap){ segs.mira(C0.clone().add(new THREE.Vector3(0.6,-0.8,1))); }
@@ -1004,24 +1292,97 @@ const APX_RETO = [
 
 /* ---------- ilustraciones 2D (SVG, colores del tema) ---------- */
 function apxSvgFisio(k){
-  const P = APX_FISIO[k], sw = [5, 6, 9, 12, 13][k], hin = [0, 0.1, 0.35, 0.55, 0.6][k];
-  const wall = ['#E9A7A0','#E6998F','#DD7F74','#CC5E57','#C0524C'][k];
-  const lumen = k >= 2 ? '#CFE7F0' : 'var(--bg-2)';
-  const ry = 16 + 12*hin, isq = k >= 3;
-  const bact = []; const nb = [4, 5, 14, 22, 26][k]; for (let i=0;i<nb;i++){ const x = 176 + (i*37 % 170), y = 70 + ((i*23) % 20) - 10*(1+hin)*Math.sin(i); bact.push(`<rect x="${x}" y="${y.toFixed(0)}" width="7" height="3.4" rx="1.7" fill="#5E9F4E" transform="rotate(${(i*47)%180} ${x+3} ${y.toFixed(0)})"/>`); }
-  return `<svg viewBox="0 0 420 150" role="img" aria-label="Esquema del apéndice en la etapa: ${P.n}">
-  <defs><linearGradient id="apx-gc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EFC9BD"/><stop offset="1" stop-color="#D9A493"/></linearGradient></defs>
-  <path d="M10 20 Q70 6 130 26 L140 124 Q70 142 10 128 Z" fill="url(#apx-gc)" stroke="#B98676"/>
-  <text x="30" y="80" font-size="12" fill="#6B3F33" font-weight="600">ciego</text>
-  <path d="M135 ${75-ry-sw} C200 ${75-ry-sw-6} 300 ${75-ry-sw} 370 ${75-ry*0.7-sw} Q408 75 370 ${75+ry*0.7+sw} C300 ${75+ry+sw} 200 ${75+ry+sw+6} 135 ${75+ry+sw} Z" fill="${wall}" stroke="#9E4B45"/>
-  <path d="M138 ${75-ry} C200 ${75-ry-4} 300 ${75-ry} 366 ${75-ry*0.7} Q392 75 366 ${75+ry*0.7} C300 ${75+ry} 200 ${75+ry+4} 138 ${75+ry} Z" fill="${lumen}" stroke="${k>=2?'#8FC3D6':'#C98A80'}"/>
-  ${isq ? `<path d="M318 ${75-ry-sw} Q388 ${75-ry} 392 75 Q388 ${75+ry} 318 ${75+ry+sw}" fill="none" stroke="#7E5A8C" stroke-width="7" stroke-dasharray="${k===4?'5 4':'none'}" opacity=".75"/>` : ''}
+  /* Ilustración anatómica de la región ileocecal (como en un atlas: íleon → ciego, apéndice que cuelga
+     de la base donde convergen las tenias, con su mesoapéndice y su arteria) y, al lado, un corte
+     transversal del apéndice con las capas de la pared. Todo lo que cambia con la etapa (presión, moco,
+     bacterias, fecalito, riego, perforación) se muestra en el corte, con leyenda. */
+  const P = APX_FISIO[k];
+  const wall  = ['#E8B4AA','#E5A79B','#DC8A7E','#CF6A61','#C25A54'][k];      // serosa/muscular
+  const muc   = ['#F2CDC4','#EFC2B6','#E9A99B','#E08A7C','#D67A6E'][k];      // mucosa
+  const lum   = ['#FBF3EE','#F6E7E1','#DCEAF2','#CFE3EE','#C9DEEA'][k];      // luz (moco celeste desde 2)
+  const rIn   = [14, 12, 15, 14, 13][k];                                      // radio de la luz
+  const rMuc  = rIn + [8, 8, 9, 12, 14][k];                                   // mucosa + submucosa
+  const rOut  = rMuc + [9, 9, 10, 13, 15][k];                                 // muscular + serosa
+  const wAp   = [11, 11, 13, 16, 18][k];                                      // grosor del apéndice en la vista general
+  const nb    = [3, 4, 12, 20, 24][k];
+  const cx = 342, cy = 104;
+  const bact = []; let sd = 7 + k*13; const rnd = () => { sd = (sd*9301 + 49297) % 233280; return sd/233280; };
+  for (let i=0;i<nb;i++){ const a = rnd()*Math.PI*2, r = rnd()*(rIn-3); const x = cx + Math.cos(a)*r, y = cy + Math.sin(a)*r;
+    bact.push(`<rect x="${(x-2.8).toFixed(1)}" y="${(y-1.2).toFixed(1)}" width="5.6" height="2.4" rx="1.2" fill="#5E9F4E" transform="rotate(${(rnd()*180).toFixed(0)} ${x.toFixed(1)} ${y.toFixed(1)})"/>`); }
+  const capa = (r, fill, stroke) => `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="1"/>`;
+  const isq = k >= 3 ? `<path d="${apxSector(cx, cy, rMuc-1, rOut+0.5, -35, 40)}" fill="#8E6BA0" opacity=".55"/>` : '';
+  const perf = k === 4 ? `<path d="${apxSector(cx, cy, rIn-1, rOut+3, -6, 12)}" fill="var(--bg-3)"/><g fill="#5E9F4E"><rect x="${cx+rOut+5}" y="${cy-5}" width="5.6" height="2.4" rx="1.2" transform="rotate(20 ${cx+rOut+7} ${cy-4})"/><rect x="${cx+rOut+13}" y="${cy+4}" width="5.6" height="2.4" rx="1.2" transform="rotate(-30 ${cx+rOut+15} ${cy+5})"/></g><g fill="#D9E8F0"><circle cx="${cx+rOut+9}" cy="${cy+1}" r="2.6"/><circle cx="${cx+rOut+17}" cy="${cy-3}" r="2"/></g>` : '';
+  const feca = k >= 1 ? `<ellipse cx="${cx}" cy="${cy}" rx="${Math.min(rIn-2, 7+k)}" ry="${Math.min(rIn-2, 6+k*0.8)}" fill="#8A6A4E" stroke="#5F4632" stroke-width=".8"/>` : '';
+  const vasos = k >= 2 ? `<g stroke="#B33A3A" stroke-width=".9" fill="none" opacity="${k>=3?0.9:0.6}">${[20,80,140,200,260,320].map(a => { const r0 = rMuc+1, r1 = rOut-1.5, t = a*Math.PI/180; return `<path d="M${(cx+Math.cos(t)*r0).toFixed(1)} ${(cy+Math.sin(t)*r0).toFixed(1)} Q${(cx+Math.cos(t+0.25)*(r0+r1)/2).toFixed(1)} ${(cy+Math.sin(t+0.25)*(r0+r1)/2).toFixed(1)} ${(cx+Math.cos(t)*r1).toFixed(1)} ${(cy+Math.sin(t)*r1).toFixed(1)}"/>`; }).join('')}</g>` : '';
+  const edema = k >= 3 ? `<circle cx="${cx}" cy="${cy}" r="${rOut+4}" fill="none" stroke="#E7B7B0" stroke-width="6" opacity=".55"/>` : '';
+  const ang = -120 + 240*P.p;
+  const gx = 436, gy = 176, gr = 20;
+  const aguja = `<line x1="${gx}" y1="${gy}" x2="${(gx+Math.sin(ang*Math.PI/180)*gr*0.85).toFixed(1)}" y2="${(gy-Math.cos(ang*Math.PI/180)*gr*0.85).toFixed(1)}" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/>`;
+  const AP = 'M58 134 Q70 168 108 176 Q148 184 178 166';   // eje del apéndice: nace en la base del ciego y cuelga curvado
+  return `<svg viewBox="0 0 470 210" role="img" aria-label="Región ileocecal y corte transversal del apéndice en la etapa: ${P.n}">
+  <defs>
+    <linearGradient id="apx-gcol" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E4B2A4"/><stop offset=".5" stop-color="#F0C9BC"/><stop offset="1" stop-color="#DDA898"/></linearGradient>
+    <linearGradient id="apx-gil" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EFC6B8"/><stop offset=".5" stop-color="#F6DACF"/><stop offset="1" stop-color="#E4AE9E"/></linearGradient>
+    <linearGradient id="apx-gmes" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F3DFA8"/><stop offset="1" stop-color="#E4C67E"/></linearGradient>
+  </defs>
+  <!-- colon ascendente (arriba) y ciego (fondo de saco), con haustras y las tres tenias que convergen en la base del apéndice -->
+  <path d="M104 6 L104 68 Q104 118 74 132 Q44 146 24 128 Q10 114 12 90 L12 62 Q12 6 44 6 Z" fill="url(#apx-gcol)" stroke="#B98676" stroke-width="1.2"/>
+  <path d="M14 40 Q58 30 102 40 M14 76 Q58 66 102 76 M20 108 Q58 100 100 108" fill="none" stroke="#C99483" stroke-width="1" opacity=".8"/>
+  <path d="M62 6 Q66 80 58 134 M36 6 Q30 80 58 134 M94 8 Q98 96 58 134" fill="none" stroke="#F7E7DF" stroke-width="3.2" stroke-linecap="round"/>
+  <path d="M62 6 Q66 80 58 134 M36 6 Q30 80 58 134 M94 8 Q98 96 58 134" fill="none" stroke="#C48E7C" stroke-width=".9"/>
+  <!-- íleon terminal, que desemboca en el ciego por la izquierda (válvula ileocecal) -->
+  <path d="M-2 76 Q40 68 72 84 L72 102 Q40 116 -2 104 Z" fill="url(#apx-gil)" stroke="#B98676" stroke-width="1.2"/>
+  <path d="M8 84 Q30 80 60 90 M8 96 Q30 94 60 98" fill="none" stroke="#D3A090" stroke-width=".8"/>
+  <!-- mesoapéndice (pliegue de peritoneo) con la arteria apendicular -->
+  <path d="M30 128 Q80 146 128 158 Q156 164 176 156 L178 166 Q148 184 108 176 Q70 168 58 134 Z" fill="url(#apx-gmes)" stroke="#C7A85C" stroke-width=".9" opacity=".92"/>
+  <path d="M60 128 Q92 150 128 160 Q150 166 170 160" fill="none" stroke="#B83A3A" stroke-width="1.9" stroke-linecap="round"/>
+  <path d="M100 152 Q104 160 106 166 M134 162 Q136 168 136 174 M156 166 Q158 172 157 178" fill="none" stroke="#B83A3A" stroke-width="1" stroke-linecap="round"/>
+  <!-- apéndice: tubo que nace en la base del ciego y cuelga curvado hacia abajo y adentro -->
+  <path d="${AP}" fill="none" stroke="#9E4B45" stroke-width="${wAp+2.4}" stroke-linecap="round"/>
+  <path d="${AP}" fill="none" stroke="${wall}" stroke-width="${wAp}" stroke-linecap="round"/>
+  <path d="${AP}" fill="none" stroke="${muc}" stroke-width="${Math.max(2, wAp*0.3)}" stroke-linecap="round" opacity=".8"/>
+  <!-- línea del corte -->
+  <path d="M118 154 L108 194" stroke="var(--ink)" stroke-width="1" stroke-dasharray="3 2"/>
+  <text x="112" y="204" font-size="8" fill="var(--ink-2)">línea de corte</text>
+  <path d="M124 170 Q220 150 ${cx-rOut-4} ${cy+rOut*0.4}" fill="none" stroke="var(--ink-3)" stroke-width=".9" stroke-dasharray="3 2"/>
+  <!-- rótulos anatómicos -->
+  <text x="40" y="28" font-size="8.5" fill="#6B3F33" font-weight="600">colon ascendente</text>
+  <text x="8" y="124" font-size="8.5" fill="#6B3F33" font-weight="600">ciego</text>
+  <text x="4" y="70" font-size="8" fill="#6B3F33">íleon</text>
+  <text x="66" y="118" font-size="7.5" fill="#6B3F33">tenias</text>
+  <text x="132" y="150" font-size="8" fill="#7A5A1E">mesoapéndice</text>
+  <text x="184" y="176" font-size="8.5" fill="#6B3F33" font-weight="600">apéndice</text>
+  <!-- corte transversal ampliado -->
+  ${edema}
+  ${capa(rOut, wall, '#9E4B45')}
+  ${vasos}
+  ${capa(rMuc, muc, '#C98A80')}
+  ${capa(rIn, lum, k>=2 ? '#8FC3D6' : '#D6ABA1')}
+  ${isq}
   ${bact.join('')}
-  ${k >= 1 ? `<ellipse cx="150" cy="75" rx="13" ry="${Math.min(15, 9+ry*0.3)}" fill="#8A6A4E" stroke="#5F4632"/><text x="150" y="${75+ry+sw+20}" text-anchor="middle" font-size="11" fill="var(--ink-2)">fecalito</text>` : ''}
-  ${k === 4 ? `<g fill="#E0A526"><circle cx="400" cy="58" r="3"/><circle cx="410" cy="70" r="2.5"/><circle cx="404" cy="92" r="3"/></g><text x="404" y="140" text-anchor="end" font-size="11" fill="var(--bad)" font-weight="600">pared debilitada</text>` : ''}
-  <g transform="translate(18 8)"><rect width="84" height="9" rx="4.5" fill="var(--bg-3)" stroke="var(--line-2)"/><rect width="${(84*P.p).toFixed(0)}" height="9" rx="4.5" fill="${P.p>0.7?'var(--bad)':P.p>0.4?'var(--warn)':'var(--ok)'}"/><text x="0" y="-1" font-size="0" /></g>
-  <text x="108" y="16" font-size="10.5" fill="var(--ink-2)">presión en la luz</text>
+  ${feca}
+  ${perf}
+  <text x="${cx}" y="30" text-anchor="middle" font-size="9" fill="var(--ink-2)" font-weight="600">corte transversal (ampliado)</text>
+  <g font-size="7.5" fill="var(--ink-2)">
+    <line x1="${cx+rOut*0.72}" y1="${cy-rOut*0.72}" x2="${cx+rOut+18}" y2="${cy-rOut-12}" stroke="var(--ink-3)" stroke-width=".7"/><text x="${cx+rOut+20}" y="${cy-rOut-14}">serosa y muscular</text>
+    <line x1="${cx-rMuc*0.7}" y1="${cy-rMuc*0.7}" x2="${cx-rOut-24}" y2="${cy-rOut-6}" stroke="var(--ink-3)" stroke-width=".7"/><text x="${cx-rOut-56}" y="${cy-rOut-8}">mucosa</text>
+    <line x1="${cx-rIn*0.4}" y1="${cy+rIn*0.6}" x2="${cx-34}" y2="${cy+rOut+16}" stroke="var(--ink-3)" stroke-width=".7"/><text x="${cx-52}" y="${cy+rOut+25}">luz${k>=2?' con moco':''}</text>
+    ${k>=1 ? `<text x="${cx+rOut+6}" y="${cy+rOut+14}">fecalito</text>` : ''}
+    ${k>=3 ? `<text x="${cx+rOut+8}" y="${cy-8}" fill="#6E4A80" font-weight="600">sin riego</text>` : ''}
+    ${k===4 ? `<text x="${cx+rOut+8}" y="${cy+12}" fill="var(--bad)" font-weight="600">perforación</text>` : ''}
+  </g>
+  <!-- manómetro de presión en la luz -->
+  <path d="${apxSector(gx, gy, gr-4, gr, -120, 120)}" fill="var(--bg-2)" stroke="var(--line-2)" stroke-width=".8"/>
+  <path d="${apxSector(gx, gy, gr-4, gr, -120, ang)}" fill="${P.p>0.7?'var(--bad)':P.p>0.4?'var(--warn)':'var(--ok)'}"/>
+  ${aguja}<circle cx="${gx}" cy="${gy}" r="2.2" fill="var(--ink)"/>
+  <text x="${gx}" y="${gy+16}" text-anchor="middle" font-size="7.5" fill="var(--ink-2)">presión en la luz</text>
 </svg>`;
+}
+/* sector de anillo entre dos radios y dos ángulos (grados, 0 = arriba) */
+function apxSector(cx, cy, r0, r1, a0, a1){
+  const P = (r, a) => { const t = (a-90)*Math.PI/180; return `${(cx+Math.cos(t)*r).toFixed(1)} ${(cy+Math.sin(t)*r).toFixed(1)}`; };
+  const big = (a1-a0) > 180 ? 1 : 0;
+  return `M${P(r1,a0)} A${r1} ${r1} 0 ${big} 1 ${P(r1,a1)} L${P(r0,a1)} A${r0} ${r0} 0 ${big} 0 ${P(r0,a0)} Z`;
 }
 function apxSvgDolor(){
   return `<svg viewBox="0 0 300 250" role="img" aria-label="Silueta del abdomen: una banda alrededor del ombligo marca el dolor visceral inicial y una flecha lleva a un punto en la fosa ilíaca derecha, donde se localiza el dolor somático después.">
@@ -1159,7 +1520,7 @@ function apxVista(view){
       stepsF.innerHTML = ''; APX_FISIO.forEach((p,i) => stepsF.append(h('button',{type:'button','aria-current':String(i===St.fisio), onclick:()=>{ St.fisio = i; pintarF(); }}, p.n))); };
     pintarF();
     wrap.append(h('div',{class:'card stack'}, h('span',{class:'eyebrow anat'},'Qué pasa dentro del apéndice'), stepsF, figF, txtF,
-      h('p',{class:'small muted',style:'margin:0'},'Esquema simplificado. Colores convencionales: rosado, pared sana; rojo, pared inflamada; violeta, zona con poco riego; celeste, moco acumulado; verde, bacterias.')));
+      h('p',{class:'small muted',style:'margin:0'},'A la izquierda, la región ileocecal como en un atlas: el íleon entra al ciego y el apéndice cuelga de su base, donde convergen las tres tenias. A la derecha, un corte transversal ampliado del apéndice. Colores convencionales: rosado, pared sana; rojo, pared inflamada; violeta, zona sin riego; celeste, moco acumulado; verde, bacterias; café, fecalito.')));
     /* --- hallazgos --- */
     const cirBox = h('div',{class:'stack'});
     const lista = h('div',{class:'apx-checks'}), fbH = h('div',{'aria-live':'polite'});
